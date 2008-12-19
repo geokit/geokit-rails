@@ -1,3 +1,11 @@
+## IMPORTANT: Gem dependency
+  
+Geocoding is provided by the geokit gem at http://github.com/andre/geokit/tree/master
+
+To install the gem:
+    gem sources -a http://gems.github.com
+    sudo gem install andre-geokit
+
 ## FEATURE SUMMARY
 
 This plugin provides key functionality for location-oriented Rails applications:
@@ -7,14 +15,15 @@ This plugin provides key functionality for location-oriented Rails applications:
   between them.
 - ActiveRecord distance-based finders. For example, you can find all the points 
   in your database within a 50-mile radius.
-- Geocoding from multiple providers. It currently supports Google, Yahoo, 
-  Geocoder.us, and Geocoder.ca geocoders, and it provides a uniform response 
-  structure from all of them. It also provides a fail-over mechanism, in case 
-  your input fails to geocode in one service.
 - IP-based location lookup utilizing hostip.info. Provide an IP address, and get
   city name and latitude/longitude in return
 - A before_filter helper to geocoder the user's location based on IP address, 
   and retain the location in a cookie.
+- Geocoding from multiple providers. It currently supports Google, Yahoo, 
+  Geocoder.us, and Geocoder.ca geocoders, and it provides a uniform response 
+  structure from all of them. It also provides a fail-over mechanism, in case 
+  your input fails to geocode in one service. Geocoding is provided buy the Geokit
+  gem, which you must have installed
   
 The goal of this plugin is to provide the common functionality for location-oriented 
 applications (geocoding, location lookup, distance calculation) in an easy-to-use 
@@ -227,6 +236,9 @@ done nevertheless.
 
 ## ADDRESS GEOCODING
 
+Geocoding is provided by the Geokit gem, which is required for this plugin.
+See the top of this file for instructions on installing the Geokit gem.
+
 GeoKit can geocode addresses using multiple geocodeing web services.
 Currently, GeoKit supports Google, Yahoo, and Geocoder.us geocoding 
 services. 
@@ -255,10 +267,11 @@ to be used independently.
 
 The MultiGeocoder class requires the configuration of a provider
 order which dictates what order to use the various geocoders.  Ordering
-is done through the PROVIDER_ORDER constant found in environment.rb.
+is done through the PROVIDER_ORDER constant found in 
+config/initializers/geokit_config.rb.
 
-On installation, this plugin appends a template for your API keys to 
-your environment.rb. 
+If you don't already have a geokit_config.rb file, the plugin creates one
+when it is first installed.
 
 Make sure your failover configuration matches the usage characteristics 
 of your application -- for example, if you routinely get bogus input to 
@@ -341,10 +354,11 @@ HOW TO . . .
 =================================================================================
 
 ## How to install the GeoKit plugin 
-    cd [APP_ROOT]
-    ruby script/plugin install svn://rubyforge.org/var/svn/geokit/trunk
-      or, to install as an external (your project must be version controlled):
-    ruby script/plugin install -x svn://rubyforge.org/var/svn/geokit/trunk
+    cd [YOUR_APP_ROOT]
+    script/plugin install git://github.com/andre/geokit-rails.git
+
+## How to install the Geokit gem (required dependency)
+(See the very top of this file)
 
 ## How to find all stores within a 10-mile radius of a given lat/lng
 1. ensure your stores table has lat and lng columns with numeric or float 
@@ -368,7 +382,7 @@ HOW TO . . .
     PROVIDER_ORDER=[:google]
    
 3. Test it out in script/console
-    include GeoKit::Geocoders
+    include Geokit::Geocoders
     res = MultiGeocoder.geocode('100 Spear St, San Francisco, CA')
     puts res.lat
     puts res.lng
@@ -438,15 +452,13 @@ has been geocoded. You can get the city, zipcode, street address, etc.
 from a GeoLoc object. GeoLoc extends LatLng, so you also get lat/lng
 AND the Mappable modeule goodness for free.
 
-geocoders.rb contains the geocoder classes.
-
 ip_geocode_lookup.rb contains the before_filter helper method which
 enables auto lookup of the requesting IP address.
 
 ## IMPORTANT NOTE: The configuration file
 
-Geokit for Rails uses an configuration file in config/initializers. You *must* add your own keys for the various
+Geokit for Rails uses a configuration file in config/initializers. You *must* add your own keys for the various
 geocoding services if you want to use geocoding. If you need to refer to the original
-template again, see the api_keys_template file in the root of the plugin.
+template again, see the assets/api_keys_template file.
 
 
