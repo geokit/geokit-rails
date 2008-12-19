@@ -77,7 +77,7 @@ module Geokit
     
     # this is the callback for auto_geocoding
     def auto_geocode_address
-      address=self.send(auto_geocode_field)
+      address=self.send(auto_geocode_field).to_s
       geo=Geokit::Geocoders::MultiGeocoder.geocode(address)
   
       if geo.success
@@ -292,7 +292,7 @@ module Geokit
         # Alters the conditions to include rectangular bounds conditions.
         def apply_bounds_conditions(options,bounds)
           sw,ne=bounds.sw,bounds.ne
-          lng_sql= bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{sw.lng} OR #{qualified_lng_column_name}>#{ne.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
+          lng_sql= bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
           bounds_sql="#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
           options[:conditions]=augment_conditions(options[:conditions],bounds_sql)          
         end
@@ -364,7 +364,7 @@ module Geokit
         def substitute_distance_in_conditions(options, origin, units=default_units, formula=default_formula)
           original_conditions = options[:conditions]
           condition = original_conditions.is_a?(String) ? original_conditions : original_conditions.first
-          pattern = Regexp.new("\s*#{distance_column_name}(\s<>=)*")
+          pattern = Regexp.new("\\b#{distance_column_name}\\b")
           condition = condition.gsub(pattern, distance_sql(origin, units, formula))
           original_conditions = condition if original_conditions.is_a?(String)
           original_conditions[0] = condition if original_conditions.is_a?(Array)
