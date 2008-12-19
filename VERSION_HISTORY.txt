@@ -1,0 +1,5 @@
+12/18/08	Split Rails plugin from geocoder gem, updated for Rails 2.2.2
+01/20/08	Version 1.0.1. Further fix of distance calculation, this time in SQL. Now uses least() function, which is available in MySQL version 3.22.5+ and postgres versions 8.1+
+01/16/08  fixed the "zero-distance" bug (calculating between two points that are the same)
+12/11/07	fixed a small but with queries crossing meridian, and also fixed find(:closest)
+10/11/07	Fixed Rails2/Edge compatability

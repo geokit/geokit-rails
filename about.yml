@@ -1,0 +1,9 @@
+author:
+  name_1: Bill Eisenhauer
+  homepage_1: http://blog.billeisenhauer.com
+  name_2: Andre Lewis
+  homepage_2: http://www.earthcode.com
+summary: Geo distance calculations, distance calculation query support, geocoding for physical and ip addresses.
+version: 1.0.1
+rails_version: 1.0+
+license: MIT
