@@ -9,6 +9,6 @@ if File.exists?(path)
 else
   File.open(path, "w") do |f|
     f.puts IO.read(template_path)
-    puts "We created a configuration file for you in config/initializers/geokit_config.rb. Add your Google API keys, etc. there."
+    puts "We created a configuration file for you in config/initializers/geokit_config.rb. Add your Google API keys, etc there."
   end  
 end
