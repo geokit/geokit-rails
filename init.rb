@@ -2,9 +2,9 @@
 # ActionController helpers.  All other functionality must be explicitly 
 # required.
 require 'geokit' #requires the geokit gem
-require 'geokit/defaults'
-require 'geokit/acts_as_mappable'
-require 'geokit/ip_geocode_lookup'
+require 'geokit-rails/defaults'
+require 'geokit-rails/acts_as_mappable'
+require 'geokit-rails/ip_geocode_lookup'
 
 # Automatically mix in distance finder support into ActiveRecord classes.
 ActiveRecord::Base.send :include, GeoKit::ActsAsMappable
