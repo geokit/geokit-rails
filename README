@@ -445,7 +445,7 @@ enables auto lookup of the requesting IP address.
 
 ## IMPORTANT NOTE: The configuration file
 
-Geokit for Rails uses an configuratio file in config/initializers. You *must* add your own keys for the various
+Geokit for Rails uses an configuration file in config/initializers. You *must* add your own keys for the various
 geocoding services if you want to use geocoding. If you need to refer to the original
 template again, see the api_keys_template file in the root of the plugin.
 
