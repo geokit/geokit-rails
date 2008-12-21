@@ -1,10 +1,10 @@
 ## IMPORTANT: Gem dependency
   
-Geocoding is provided by the geokit gem at http://github.com/andre/geokit/tree/master
+To use geokit-rails, you need the Geokit gem at http://github.com/andre/geokit-gem/tree/master
 
 To install the gem:
     gem sources -a http://gems.github.com
-    sudo gem install andre-geokit
+    sudo gem install andre-geokit-gem
 
 ## FEATURE SUMMARY
 
@@ -31,7 +31,7 @@ package.
 
 ## A NOTE ON TERMINOLOGY
 
-Throughout the code and API of this, latitude and longitude are referred to as lat 
+Throughout the code and API, latitude and longitude are referred to as lat 
 and lng.  We've found over the long term the abbreviation saves lots of typing time.
 
 ## DISTANCE CALCULATIONS AND QUERIES
@@ -353,7 +353,9 @@ before_validate callback.
 HOW TO . . .
 =================================================================================
 
-## How to install the GeoKit plugin 
+A few quick examples to get you started ....
+
+## How to install the GeoKit Rails plugin 
     cd [YOUR_APP_ROOT]
     script/plugin install git://github.com/andre/geokit-rails.git
 
@@ -374,9 +376,9 @@ HOW TO . . .
 
 ## How to geocode an address
 
-1. configure your geocoder key(s) in environment.rb
+1. configure your geocoder key(s) in config/initializers/geokit_config.rb
 
-2. also in environment.rb, make sure that PROVIDER_ORDER reflects the 
+2. also in geokit_config.rb, make sure that PROVIDER_ORDER reflects the 
    geocoder(s). If you only want to use one geocoder, there should
    be only one symbol in the array. For example:
     PROVIDER_ORDER=[:google]
@@ -423,37 +425,38 @@ If you need to sort things post-query, you can do so:
 Obviously, each of the items in the array must have a latitude/longitude so
 they can be sorted by distance.
 
-Database Compatability
-=================================================================================
+## Database Compatability
+
 GeoKit does *not* work with SQLite, as it lacks the necessary geometry functions. 
 GeoKit works with MySQL (tested with version 5.0.41) or PostgreSQL (tested with version 8.2.6)
 GeoKit is known to *not* work with Postgres <8.1 -- it uses the least() funciton.
 
 
-HIGH-LEVEL NOTES ON WHAT'S WHERE
-=================================================================================
+## HIGH-LEVEL NOTES ON WHAT'S WHERE
 
 acts_as_mappable.rb, as you'd expect, contains the ActsAsMappable
 module which gets mixed into your models to provide the 
 location-based finder goodness.
 
-mappable.rb contains the Mappable module, which provides basic
+ip_geocode_lookup.rb contains the before_filter helper method which
+enables auto lookup of the requesting IP address.
+
+### The Geokit gem provides the building blocks of distance-based operations:
+
+The Mappable module, which provides basic
 distance calculation methods, i.e., calculating the distance
 between two points. 
 
-mappable.rb also contains LatLng, GeoLoc, and Bounds.
-LatLng is a simple container for latitude and longitude, but 
+The LatLng class  is a simple container for latitude and longitude, but 
 it's made more powerful by mixing in the above-mentioned Mappable
 module -- therefore, you can calculate easily the distance between two
 LatLng ojbects with distance = first.distance_to(other)
 
-GeoLoc (also in mappable.rb) represents an address or location which
+GeoLoc represents an address or location which
 has been geocoded. You can get the city, zipcode, street address, etc.
 from a GeoLoc object. GeoLoc extends LatLng, so you also get lat/lng
 AND the Mappable modeule goodness for free.
 
-ip_geocode_lookup.rb contains the before_filter helper method which
-enables auto lookup of the requesting IP address.
 
 ## IMPORTANT NOTE: The configuration file
 

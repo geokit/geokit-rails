@@ -71,5 +71,10 @@ class BoundsTest < Test::Unit::TestCase #:nodoc: all
     assert bounds.contains?(inside)
     assert !bounds.contains?(outside)
   end
-  
+
+  def test_creation_with_invalid_arguments
+    assert_raise ArgumentError do
+      GeoKit::Bounds.new('bogus', 'bogus')
+    end
+  end  
 end
