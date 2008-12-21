@@ -1,8 +1,9 @@
 ## IMPORTANT: Gem dependency
   
-To use geokit-rails, you need the Geokit gem at http://github.com/andre/geokit-gem/tree/master
+To use geokit-rails, you need the Geokit gem at [http://github.com/andre/geokit-gem/tree/master](http://github.com/andre/geokit-gem/tree/master)
 
 To install the gem:
+
     gem sources -a http://gems.github.com
     sudo gem install andre-geokit-gem
 
@@ -64,12 +65,12 @@ achieved through mixing into an ActiveRecord model object:
     end
 
 The plug-in uses the above-mentioned defaults, but can be modified to use 
-different units and a different formulae.  This is done through the :default_units
-and :default_formula keys which accept the same values as mentioned above.
+different units and a different formulae.  This is done through the `:default_units`
+and `:default_formula` keys which accept the same values as mentioned above.
 
 The plug-in creates a calculated column and potentially a calculated condition.  
 By default, these are known as "distance" but this can be changed through the
-:distance_field_name key.  
+`:distance_field_name` key.  
 
 So, an alternative invocation would look as below:
 
@@ -80,7 +81,7 @@ So, an alternative invocation would look as below:
     end
 
 You can also define alternative column names for latitude and longitude using
-the :lat_column_name and :lng_column_name keys.  The defaults are 'lat' and
+the `:lat_column_name` and `:lng_column_name` keys.  The defaults are 'lat' and
 'lng' respectively.
 
 Thereafter, a set of finder methods are made available.  Below are the 
@@ -96,7 +97,7 @@ Origin as a geocodeable string:
 
 Origin as an object which responds to lat and lng methods, 
 or latitude and longitude methods, or whatever methods you have 
-specified for lng_column_name and lat_column_name:
+specified for `lng_column_name` and `lat_column_name`:
 
 		find(:all, :origin=>my_store) # my_store.lat and my_store.lng methods exist
 
@@ -212,8 +213,8 @@ Usage is as below:
     end
 
 A first-time lookup will result in the GeoLoc class being stored
-in the session as :geo_location as well as in a cookie called
-:geo_session.  Subsequent lookups will use the session value if it
+in the session as `:geo_location` as well as in a cookie called
+`:geo_session`.  Subsequent lookups will use the session value if it
 exists or the cookie value if it doesn't exist.  The last resort is
 to make a call to the web service.  Clients are free to manage the
 cookie as they wish.
@@ -260,7 +261,7 @@ If successful, the lat and lng properties will be populated.
 
 Geocoders are named with the naming convention NameGeocoder.  This
 naming convention enables Geocoder to auto-detect its sub-classes
-in order to create methods called name_geocoder(address) so that
+in order to create methods called `name_geocoder(address)` so that
 all geocoders are called through the base class.  This is done 
 purely for convenience; the individual geocoder classes are expected
 to be used independently.
@@ -270,7 +271,7 @@ order which dictates what order to use the various geocoders.  Ordering
 is done through the PROVIDER_ORDER constant found in 
 config/initializers/geokit_config.rb.
 
-If you don't already have a geokit_config.rb file, the plugin creates one
+If you don't already have a `geokit_config.rb` file, the plugin creates one
 when it is first installed.
 
 Make sure your failover configuration matches the usage characteristics 
@@ -333,7 +334,7 @@ It takes two optional params:
     end
     
 If you need any more complicated geocoding behavior for your model, you should roll your own 
-before_validate callback.
+`before_validate` callback.
 
 
 ## Distances, headings, endpoints, and midpoints
@@ -356,6 +357,7 @@ HOW TO . . .
 A few quick examples to get you started ....
 
 ## How to install the GeoKit Rails plugin 
+
     cd [YOUR_APP_ROOT]
     script/plugin install git://github.com/andre/geokit-rails.git
 
@@ -366,24 +368,29 @@ A few quick examples to get you started ....
 1. ensure your stores table has lat and lng columns with numeric or float 
    datatypes to store your latitude/longitude
 
-3. use acts_as_mappable on your store model:
+3. use `acts_as_mappable` on your store model:
+
     class Store < ActiveRecord::Base
        acts_as_mappable
        ...
     end
+
 3. finders now have extra capabilities:
+
     Store.find(:all, :origin =>[32.951613,-96.958444], :within=>10)
 
 ## How to geocode an address
 
-1. configure your geocoder key(s) in config/initializers/geokit_config.rb
+1. configure your geocoder key(s) in `config/initializers/geokit_config.rb`
 
-2. also in geokit_config.rb, make sure that PROVIDER_ORDER reflects the 
+2. also in `geokit_config.rb`, make sure that `PROVIDER_ORDER` reflects the 
    geocoder(s). If you only want to use one geocoder, there should
    be only one symbol in the array. For example:
+   
     PROVIDER_ORDER=[:google]
    
 3. Test it out in script/console
+
     include Geokit::Geocoders
     res = MultiGeocoder.geocode('100 Spear St, San Francisco, CA')
     puts res.lat
@@ -395,15 +402,17 @@ A few quick examples to get you started ....
 ## How to find all stores within 10 miles of a given address
 
 1. as above, ensure your table has the lat/lng columns, and you've
-   applied acts_as_mappable to the Store model.
+   applied `acts_as_mappable` to the Store model.
 
 2. configure and test out your geocoder, as above
 
 3. pass the address in under the :origin key
+
 		Store.find(:all, :origin=>'100 Spear st, San Francisco, CA', 
 		           :within=>10)
 
 4. you can also use a zipcode, or anything else that's geocodable:
+
 		Store.find(:all, :origin=>'94117', 
 		           :conditions=>'distance<10')
 
@@ -434,11 +443,11 @@ GeoKit is known to *not* work with Postgres <8.1 -- it uses the least() funciton
 
 ## HIGH-LEVEL NOTES ON WHAT'S WHERE
 
-acts_as_mappable.rb, as you'd expect, contains the ActsAsMappable
+`acts_as_mappable.rb`, as you'd expect, contains the ActsAsMappable
 module which gets mixed into your models to provide the 
 location-based finder goodness.
 
-ip_geocode_lookup.rb contains the before_filter helper method which
+`ip_geocode_lookup.rb` contains the before_filter helper method which
 enables auto lookup of the requesting IP address.
 
 ### The Geokit gem provides the building blocks of distance-based operations:
@@ -450,7 +459,7 @@ between two points.
 The LatLng class  is a simple container for latitude and longitude, but 
 it's made more powerful by mixing in the above-mentioned Mappable
 module -- therefore, you can calculate easily the distance between two
-LatLng ojbects with distance = first.distance_to(other)
+LatLng ojbects with distance = `first.distance_to(other)`
 
 GeoLoc represents an address or location which
 has been geocoded. You can get the city, zipcode, street address, etc.
@@ -462,6 +471,6 @@ AND the Mappable modeule goodness for free.
 
 Geokit for Rails uses a configuration file in config/initializers. You *must* add your own keys for the various
 geocoding services if you want to use geocoding. If you need to refer to the original
-template again, see the assets/api_keys_template file.
+template again, see the `assets/api_keys_template` file.
 
 
