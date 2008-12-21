@@ -1,15 +1,22 @@
-## IMPORTANT: Gem dependency
+## INSTALLATION
   
-To use geokit-rails, you need the Geokit gem at [http://github.com/andre/geokit-gem/tree/master](http://github.com/andre/geokit-gem/tree/master)
+Geokit consists of a Gem ([geokit-gem](http://github.com/andre/geokit-gem/tree/master)) and a Rails plugin ([http://github.com/andre/geokit-rails/tree/master](http://github.com/andre/geokit-rails/tree/master)).
 
-To install the gem:
+### First install the gem:
 
     gem sources -a http://gems.github.com
     sudo gem install andre-geokit-gem
 
+### Next, install the Rails plugin:
+
+    cd [YOUR_RAILS_APP_ROOT]
+    script/plugin install git://github.com/andre/geokit-rails.git
+
+And you're good to go! FYI, the gem stands alone (you can use it without the plugin), but the plugin requires the gem.
+
 ## FEATURE SUMMARY
 
-This plugin provides key functionality for location-oriented Rails applications:
+Geokit provides key functionality for location-oriented Rails applications:
 
 - Distance calculations, for both flat and spherical environments. For example, 
   given the location of two points on the earth, you can calculate the miles/KM 
@@ -357,12 +364,7 @@ HOW TO . . .
 A few quick examples to get you started ....
 
 ## How to install the GeoKit Rails plugin 
-
-    cd [YOUR_APP_ROOT]
-    script/plugin install git://github.com/andre/geokit-rails.git
-
-## How to install the Geokit gem (required dependency)
-(See the very top of this file)
+(See the very top of this file)	
 
 ## How to find all stores within a 10-mile radius of a given lat/lng
 1. ensure your stores table has lat and lng columns with numeric or float 
@@ -459,7 +461,7 @@ between two points.
 The LatLng class  is a simple container for latitude and longitude, but 
 it's made more powerful by mixing in the above-mentioned Mappable
 module -- therefore, you can calculate easily the distance between two
-LatLng ojbects with distance = `first.distance_to(other)`
+LatLng ojbects with `distance = first.distance_to(other)`
 
 GeoLoc represents an address or location which
 has been geocoded. You can get the city, zipcode, street address, etc.
