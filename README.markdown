@@ -438,9 +438,9 @@ they can be sorted by distance.
 
 ## Database Compatability
 
-Geokit does *not* work with SQLite, as it lacks the necessary geometry functions. 
-Geokit works with MySQL (tested with version 5.0.41) or PostgreSQL (tested with version 8.2.6)
-Geokit is known to *not* work with Postgres <8.1 -- it uses the least() funciton.
+* Geokit works with MySQL (tested with version 5.0.41) or PostgreSQL (tested with version 8.2.6)
+* Geokit does *not* work with SQLite, as it lacks the necessary geometry functions. 
+* Geokit is known to *not* work with Postgres versions under 8.1 -- it uses the least() funciton.
 
 
 ## HIGH-LEVEL NOTES ON WHAT'S WHERE
