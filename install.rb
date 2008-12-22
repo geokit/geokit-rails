@@ -1,5 +1,5 @@
 # Display to the console the contents of the README file.
-puts IO.read(File.join(File.dirname(__FILE__), 'README'))
+puts IO.read(File.join(File.dirname(__FILE__), 'README.markdown'))
 
 # place the api_keys_template in the application's /config/initializers/geokit_config.rb
 path=File.expand_path(File.join(File.dirname(__FILE__), '../../../config/initializers/geokit_config.rb'))
