@@ -1,11 +1,11 @@
 ## INSTALLATION
   
-Geokit consists of a Gem ([geokit-gem](http://github.com/andre/geokit-gem/tree/master)) and a Rails plugin ([http://github.com/andre/geokit-rails/tree/master](http://github.com/andre/geokit-rails/tree/master)).
+Geokit consists of a Gem ([geokit-gem](http://github.com/andre/geokit-gem/tree/master)) and a Rails plugin ([geokit-rails](http://github.com/andre/geokit-rails/tree/master)).
 
 ### First install the gem:
 
     gem sources -a http://gems.github.com
-    sudo gem install andre-geokit-gem
+    sudo gem install andre-geokit
 
 ### Next, install the Rails plugin:
 
@@ -48,7 +48,7 @@ If you want only distance calculation services, you need only mix in the Mappabl
 module like so:
 
     class Location
-    	include GeoKit::Mappable
+    	include Geokit::Mappable
     end
 
 After doing so, you can do things like:
@@ -118,7 +118,7 @@ Often you will need to find within a certain distance. The prefered syntax is:
     find(:all, :origin => @somewhere, :conditions => "distance < 5")
     
 Note however that the third form should be avoided. With either of the first two,
-GeoKit automatically adds a bounding box to speed up the radial query in the database.
+Geokit automatically adds a bounding box to speed up the radial query in the database.
 With the third form, it does not.
 
 If you need to combine distance conditions with other conditions, you should do
@@ -247,8 +247,8 @@ done nevertheless.
 Geocoding is provided by the Geokit gem, which is required for this plugin.
 See the top of this file for instructions on installing the Geokit gem.
 
-GeoKit can geocode addresses using multiple geocodeing web services.
-Currently, GeoKit supports Google, Yahoo, and Geocoder.us geocoding 
+Geokit can geocode addresses using multiple geocodeing web services.
+Currently, Geokit supports Google, Yahoo, and Geocoder.us geocoding 
 services. 
 
 These geocoder services are made available through three classes: 
@@ -258,7 +258,7 @@ sequence to increase the probability of successful geocoding.
 
 All classes are called using the following signature:
 
-    include GeoKit::Geocoders
+    include Geokit::Geocoders
     location = XxxGeocoder.geocode(address)
 
 where you replace Xxx Geocoder with the appropriate class.  A GeoLoc
@@ -275,8 +275,8 @@ to be used independently.
 
 The MultiGeocoder class requires the configuration of a provider
 order which dictates what order to use the various geocoders.  Ordering
-is done through the PROVIDER_ORDER constant found in 
-config/initializers/geokit_config.rb.
+is done through the `PROVIDER_ORDER` constant found in 
+`config/initializers/geokit_config.rb`.
 
 If you don't already have a `geokit_config.rb` file, the plugin creates one
 when it is first installed.
@@ -334,7 +334,7 @@ It takes two optional params:
 
       private
       def geocode_address
-        geo=GeoKit::Geocoders::MultiGeocoder.geocode (address)
+        geo=Geokit::Geocoders::MultiGeocoder.geocode (address)
         errors.add(:address, "Could not Geocode address") if !geo.success
         self.lat, self.lng = geo.lat,geo.lng if geo.success
       end
@@ -363,7 +363,7 @@ HOW TO . . .
 
 A few quick examples to get you started ....
 
-## How to install the GeoKit Rails plugin 
+## How to install the Geokit Rails plugin 
 (See the very top of this file)	
 
 ## How to find all stores within a 10-mile radius of a given lat/lng
@@ -438,9 +438,9 @@ they can be sorted by distance.
 
 ## Database Compatability
 
-GeoKit does *not* work with SQLite, as it lacks the necessary geometry functions. 
-GeoKit works with MySQL (tested with version 5.0.41) or PostgreSQL (tested with version 8.2.6)
-GeoKit is known to *not* work with Postgres <8.1 -- it uses the least() funciton.
+Geokit does *not* work with SQLite, as it lacks the necessary geometry functions. 
+Geokit works with MySQL (tested with version 5.0.41) or PostgreSQL (tested with version 8.2.6)
+Geokit is known to *not* work with Postgres <8.1 -- it uses the least() funciton.
 
 
 ## HIGH-LEVEL NOTES ON WHAT'S WHERE
