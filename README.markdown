@@ -55,8 +55,8 @@ After doing so, you can do things like:
 
     Location.distance_between(from, to) 
 
-with optional parameters :units and :formula.  Values for :units can be :miles or 
-:kms with :miles as the default.  Values for :formula can be :sphere or :flat with
+with optional parameters :units and :formula.  Values for :units can be :miles, 
+:kms (kilometers), or :nms (nautical miles) with :miles as the default.  Values for :formula can be :sphere or :flat with
 :sphere as the default.  :sphere gives you Haversine calculations, while :flat 
 gives the Pythagoreum Theory.  These defaults persist through out the plug-in.
 
