@@ -251,9 +251,9 @@ Geokit can geocode addresses using multiple geocodeing web services.
 Currently, Geokit supports Google, Yahoo, and Geocoder.us geocoding 
 services. 
 
-These geocoder services are made available through three classes: 
-GoogleGeocoder, YahooGeocoder, and UsGeocoder.  Further, an additional
-geocoder class called MultiGeocoder incorporates an ordered failover
+These geocoder services are made available through the following classes: 
+GoogleGeocoder, YahooGeocoder, UsGeocoder, CaGeocoder, and GeonamesGeocoder.
+Further, an additional geocoder class called MultiGeocoder incorporates an ordered failover
 sequence to increase the probability of successful geocoding.
 
 All classes are called using the following signature:
@@ -294,6 +294,18 @@ The Geocoder.geocode method returns a GeoLoc object. Basic usage:
       puts loc.lng
       puts loc.full_address
     end
+
+## REVERSE GEOCODING
+
+Currently, only the Google Geocoder supports reverse geocoding. Pass the lat/lng as a string, array or LatLng instance:
+
+		res=Geokit::Geocoders::GoogleGeocoder.reverse_geocode "37.791821,-122.394679"
+		=> #<Geokit::GeoLoc:0x558ed0 ...
+		res.full_address
+		"101-115 Main St, San Francisco, CA 94105, USA"
+
+The address will usually appear as a range, as it does in the above example.
+
 
 ## INTEGRATED FIND WITH ADDRESS GEOCODING
 
