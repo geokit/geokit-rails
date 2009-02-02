@@ -1,4 +1,5 @@
 require 'test/unit'
+require 'geokit'
 
 plugin_test_dir = File.dirname(__FILE__)
 

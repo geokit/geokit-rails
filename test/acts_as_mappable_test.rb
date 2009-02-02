@@ -2,7 +2,7 @@ require 'rubygems'
 require 'mocha'
 require File.join(File.dirname(__FILE__), 'test_helper')
 
-GeoKit::Geocoders::provider_order=[:google,:us]
+Geokit::Geocoders::provider_order=[:google,:us]
 
 # Uses defaults
 class Company < ActiveRecord::Base #:nodoc: all
