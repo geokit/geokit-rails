@@ -48,29 +48,42 @@ module Geokit
       # and create your own AR callback to handle geocoding.
       def acts_as_mappable(options = {})
         # Mix in the module, but ensure to do so just once.
-        return if self.included_modules.include?(Geokit::ActsAsMappable::InstanceMethods)
+        return if !defined?(Geokit::Mappable) || self.included_modules.include?(Geokit::ActsAsMappable::InstanceMethods)
         send :include, Geokit::ActsAsMappable::InstanceMethods
         # include the Mappable module.
         send :include, Geokit::Mappable
         
         # Handle class variables.
-        cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
-        self.distance_column_name = options[:distance_column_name]  || 'distance'
-        self.default_units = options[:default_units] || Geokit::default_units
-        self.default_formula = options[:default_formula] || Geokit::default_formula
-        self.lat_column_name = options[:lat_column_name] || 'lat'
-        self.lng_column_name = options[:lng_column_name] || 'lng'
-        self.qualified_lat_column_name = "#{table_name}.#{lat_column_name}"
-        self.qualified_lng_column_name = "#{table_name}.#{lng_column_name}"
-        if options.include?(:auto_geocode) && options[:auto_geocode]
-          # if the form auto_geocode=>true is used, let the defaults take over by suppling an empty hash
-          options[:auto_geocode] = {} if options[:auto_geocode] == true 
-          cattr_accessor :auto_geocode_field, :auto_geocode_error_message
-          self.auto_geocode_field = options[:auto_geocode][:field] || 'address'
-          self.auto_geocode_error_message = options[:auto_geocode][:error_message] || 'could not locate address'
+        cattr_accessor :through
+        if self.through = options[:through]
+          if reflection = self.reflect_on_association(self.through)
+            (class << self; self; end).instance_eval do
+              [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name ].each do |method_name|
+                define_method method_name do
+                  reflection.klass.send(method_name)
+                end
+              end
+            end
+          end
+        else
+          cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
+          self.distance_column_name = options[:distance_column_name]  || 'distance'
+          self.default_units = options[:default_units] || Geokit::default_units
+          self.default_formula = options[:default_formula] || Geokit::default_formula
+          self.lat_column_name = options[:lat_column_name] || 'lat'
+          self.lng_column_name = options[:lng_column_name] || 'lng'
+          self.qualified_lat_column_name = "#{table_name}.#{lat_column_name}"
+          self.qualified_lng_column_name = "#{table_name}.#{lng_column_name}"
+          if options.include?(:auto_geocode) && options[:auto_geocode]
+            # if the form auto_geocode=>true is used, let the defaults take over by suppling an empty hash
+            options[:auto_geocode] = {} if options[:auto_geocode] == true 
+            cattr_accessor :auto_geocode_field, :auto_geocode_error_message
+            self.auto_geocode_field = options[:auto_geocode][:field] || 'address'
+            self.auto_geocode_error_message = options[:auto_geocode][:error_message] || 'could not locate address'
           
-          # set the actual callback here
-          before_validation_on_create :auto_geocode_address        
+            # set the actual callback here
+            before_validation_on_create :auto_geocode_address        
+          end
         end
       end
     end
@@ -105,7 +118,7 @@ module Geokit
         #   conditions, substitutes the distance sql for the distance column -- this saves
         #   having to write the gory SQL.
         def find(*args)
-          prepare_for_find_or_count(:find, args)
+          prepare_for_find_or_count(:find, *args)
           super(*args)
         end     
         
@@ -114,7 +127,7 @@ module Geokit
         #   conditions, substitutes the distance sql for the distance column -- this saves
         #   having to write the gory SQL.
         def count(*args)
-          prepare_for_find_or_count(:count, args)
+          prepare_for_find_or_count(:count, *args)
           super(*args)
         end
         
@@ -197,8 +210,10 @@ module Geokit
         
         # Prepares either a find or a count action by parsing through the options and
         # conditionally adding to the select clause for finders.
-        def prepare_for_find_or_count(action, args)
-          options = defined?(args.extract_options!) ? args.extract_options! : extract_options_from_args!(args)
+        def prepare_for_find_or_count(action, *args)
+          options = args.extract_options!
+          # Handle :through
+          apply_include_for_through(options)
           # Obtain items affecting distance condition.
           origin = extract_origin_from_options(options)
           units = extract_units_from_options(options)
@@ -220,6 +235,19 @@ module Geokit
           # Restore options minus the extra options that we used for the
           # Geokit API.
           args.push(options)   
+        end
+        
+        def apply_include_for_through(options)
+          if self.through
+            case options[:include]
+            when Array
+              options[:include] << self.through
+            when Hash, String, Symbol
+              options[:include] = [ self.through, options[:include] ]
+            else
+              options[:include] = self.through
+            end
+          end
         end
         
         # If we're here, it means that 1) an origin argument, 2) an :include, 3) an :order clause were supplied.
