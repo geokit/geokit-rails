@@ -2,17 +2,23 @@
   
 Geokit consists of a Gem ([geokit-gem](http://github.com/andre/geokit-gem/tree/master)) and a Rails plugin ([geokit-rails](http://github.com/andre/geokit-rails/tree/master)).
 
-### First install the gem:
-
-    gem sources -a http://gems.github.com
-    sudo gem install andre-geokit
-
-### Next, install the Rails plugin:
+#### 1. Install the Rails plugin:
 
     cd [YOUR_RAILS_APP_ROOT]
     script/plugin install git://github.com/andre/geokit-rails.git
+    
+#### 2. Add this line to your environment.rb 
+(inside the Rails::Initializer.run do |config| block)
 
-And you're good to go! FYI, the gem stands alone (you can use it without the plugin), but the plugin requires the gem.
+		config.gem "andre-geokit", :lib=>'geokit', :source => 'http://gems.github.com'    
+
+This informs Rails of the gem dependency.
+
+#### 3. Tell Rails to install the gem:
+
+		rake gems:install
+
+And you're good to go! 
 
 ## FEATURE SUMMARY
 
@@ -275,7 +281,7 @@ to be used independently.
 
 The MultiGeocoder class requires the configuration of a provider
 order which dictates what order to use the various geocoders.  Ordering
-is done through the `PROVIDER_ORDER` constant found in 
+is done through `Geokit::Geocoders::provider_order`, found in 
 `config/initializers/geokit_config.rb`.
 
 If you don't already have a `geokit_config.rb` file, the plugin creates one
@@ -397,11 +403,11 @@ A few quick examples to get you started ....
 
 1. configure your geocoder key(s) in `config/initializers/geokit_config.rb`
 
-2. also in `geokit_config.rb`, make sure that `PROVIDER_ORDER` reflects the 
+2. also in `geokit_config.rb`, make sure that `Geokit::Geocoders::provider_order` reflects the 
    geocoder(s). If you only want to use one geocoder, there should
    be only one symbol in the array. For example:
    
-    PROVIDER_ORDER=[:google]
+    Geokit::Geocoders::provider_order=[:google]
    
 3. Test it out in script/console
 
@@ -481,10 +487,12 @@ from a GeoLoc object. GeoLoc extends LatLng, so you also get lat/lng
 AND the Mappable modeule goodness for free.
 
 
-## IMPORTANT NOTE: The configuration file
+## IMPORTANT POST-INSTALLATION NOTES: 
 
-Geokit for Rails uses a configuration file in config/initializers. You *must* add your own keys for the various
-geocoding services if you want to use geocoding. If you need to refer to the original
-template again, see the `assets/api_keys_template` file.
+*1. The configuration file*: Geokit for Rails uses a configuration file in config/initializers. 
+You *must* add your own keys for the various geocoding services if you want to use geocoding. 
+If you need to refer to the original template again, see the `assets/api_keys_template` file.
 
-
+*2. The gem dependency*: Geokit for Rails depends on the Geokit gem. Tell Rails about this 
+dependency in `config/environment.rb`, within the initializer block:
+config.gem "andre-geokit", :lib=>'geokit', :source => 'http://gems.github.com'
