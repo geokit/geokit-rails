@@ -118,7 +118,7 @@ module Geokit
         #   conditions, substitutes the distance sql for the distance column -- this saves
         #   having to write the gory SQL.
         def find(*args)
-          prepare_for_find_or_count(:find, *args)
+          prepare_for_find_or_count(:find, args)
           super(*args)
         end     
         
@@ -127,7 +127,7 @@ module Geokit
         #   conditions, substitutes the distance sql for the distance column -- this saves
         #   having to write the gory SQL.
         def count(*args)
-          prepare_for_find_or_count(:count, *args)
+          prepare_for_find_or_count(:count, args)
           super(*args)
         end
         
@@ -210,8 +210,9 @@ module Geokit
         
         # Prepares either a find or a count action by parsing through the options and
         # conditionally adding to the select clause for finders.
-        def prepare_for_find_or_count(action, *args)
+        def prepare_for_find_or_count(action, args)
           options = args.extract_options!
+          #options = defined?(args.extract_options!) ? args.extract_options! : extract_options_from_args!(args)
           # Handle :through
           apply_include_for_through(options)
           # Obtain items affecting distance condition.
