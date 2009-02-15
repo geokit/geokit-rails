@@ -35,27 +35,26 @@ class CustomLocation < ActiveRecord::Base #:nodoc: all
 end
 
 # Uses :through
-class Organization < ActiveRecord::Base #:nodoc: all
-  has_one :address, :as => :addressable
-  acts_as_mappable :through => :address
+class MockOrganization < ActiveRecord::Base #:nodoc: all
+  has_one :mock_address, :as => :addressable
+  acts_as_mappable :through => :mock_address
 end
 
 # Used by :through
-class Address < ActiveRecord::Base #:nodoc: all
+class MockAddress < ActiveRecord::Base #:nodoc: all
   belongs_to :addressable, :polymorphic => true
   acts_as_mappable
 end
 
-class ActsAsMappableTest < Test::Unit::TestCase #:nodoc: all
+class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
     
   LOCATION_A_IP = "217.10.83.5"  
     
-  #self.fixture_path = File.dirname(__FILE__) + '/fixtures'  
-  #self.fixture_path = RAILS_ROOT + '/test/fixtures/'
-  #puts "Rails Path #{RAILS_ROOT}"
-  #puts "Fixture Path: #{self.fixture_path}"
-  #self.fixture_path = ' /Users/bill_eisenhauer/Projects/geokit_test/test/fixtures/'
-  fixtures :companies, :locations, :custom_locations, :stores
+  self.fixture_path = File.dirname(__FILE__) + '/fixtures'  
+  self.use_transactional_fixtures = true
+  self.use_instantiated_fixtures  = false
+  self.pre_loaded_fixtures = true
+  fixtures :companies, :locations, :custom_locations, :stores, :mock_organizations, :mock_addresses
 
   def setup
     @location_a = GeoKit::GeoLoc.new
@@ -76,8 +75,8 @@ class ActsAsMappableTest < Test::Unit::TestCase #:nodoc: all
     @loc_e = locations(:e)
     @custom_loc_e = custom_locations(:e)
 
-    @barnes_and_noble = organizations(:barnes_and_noble)
-    @address = address(:address_barnes_and_noble)
+    @barnes_and_noble = mock_organizations(:barnes_and_noble)
+    @address = mock_addresses(:address_barnes_and_noble)
   end
   
   def test_override_default_units_the_hard_way
@@ -498,9 +497,9 @@ class ActsAsMappableTest < Test::Unit::TestCase #:nodoc: all
   # Test :through
     
   def test_find_with_through
-    organizations = Organization.find(:all, :origin => @location_a, :order => 'distance ASC')
+    organizations = MockOrganization.find(:all, :origin => @location_a, :order => 'distance ASC')
     assert_equal 2, organizations.size
-    organizations = Organization.count(:origin => @location_a, :conditions => "distance < 3.97")
+    organizations = MockOrganization.count(:origin => @location_a, :conditions => "distance < 3.97")
     assert_equal 1, organizations
   end 
 end

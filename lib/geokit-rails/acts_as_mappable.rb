@@ -383,7 +383,7 @@ module Geokit
             distance_selector = distance_sql(origin, units, formula) + " AS #{distance_column_name}"
             selector = options.has_key?(:select) && options[:select] ? options[:select] : "*"
             options[:select] = "#{selector}, #{distance_selector}"  
-          end   
+          end
         end
 
         # Looks for the distance column and replaces it with the distance sql. If an origin was not 

@@ -1,5 +1,5 @@
 address_starbucks:
-  addressable: starbucks (Organization)
+  addressable: starbucks (MockOrganization)
   street: 106 N Denton Tap Rd # 350
   city: Coppell
   state: TX
@@ -8,7 +8,7 @@ address_starbucks:
   lng: -96.990159
   
 address_barnes_and_noble:
-  addressable: barnes_and_noble (Organization)
+  addressable: barnes_and_noble (MockOrganization)
   street: 5904 N Macarthur Blvd # 160
   city: Irving
   state: TX

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '../../../../config/environment')
+require ENV['environment'] || File.join(plugin_test_dir, '../../../../config/environment')
 require 'action_controller/test_process'
 require 'test/unit'
 require 'rubygems'
