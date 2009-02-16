@@ -28,4 +28,19 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :lat,         :decimal, :precision => 15, :scale => 10
     t.column :lng,         :decimal, :precision => 15, :scale => 10
   end
+
+  create_table :mock_organizations, :force => true do |t|
+    t.column :name, :string
+  end  
+  
+  create_table :mock_addresses, :force => true do |t|
+    t.column :addressable_id,   :integer, :null => false
+    t.column :addressable_type, :string, :null => false
+    t.column :street,      :string,  :limit => 60
+    t.column :city,        :string,  :limit => 60
+    t.column :state,       :string,  :limit => 2
+    t.column :postal_code, :string,  :limit => 16
+    t.column :lat,         :decimal, :precision => 15, :scale => 10
+    t.column :lng,         :decimal, :precision => 15, :scale => 10
+  end
 end

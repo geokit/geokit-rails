@@ -191,6 +191,28 @@ condition alone in your SQL (there's no use calculating the distance twice):
     bounds=Bounds.from_point_and_radius(home,5)
     stores=Store.find :all, :include=>[:reviews,:cities] :bounds=>bounds
     stores.sort_by_distance_from(home)
+    
+## USING :through
+
+You can also specify a model as mappable "through" another associated model.  In other words, that associated model is the
+actual mappable model with "lat" and "lng" attributes, but this "through" model can still utilize all of the above find methods
+to search for records.
+
+    class Location < ActiveRecord::Base
+      belongs_to :locatable, :polymorphic => true
+    	acts_as_mappable
+    end
+
+    class Company < ActiveRecord::Base
+      has_one :location, :as => :locatable  # also works for belongs_to associations
+    	acts_as_mappable :through => :location
+    end
+    
+Then you can still call:
+    
+    Company.find_within(distance, :origin => @somewhere)
+
+Remember that the notes above about USING INCLUDES apply to the results from this find, since an include is automatically used.
 
 ## IP GEOCODING
 
