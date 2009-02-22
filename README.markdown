@@ -518,3 +518,8 @@ If you need to refer to the original template again, see the `assets/api_keys_te
 *2. The gem dependency*: Geokit for Rails depends on the Geokit gem. Tell Rails about this 
 dependency in `config/environment.rb`, within the initializer block:
 config.gem "andre-geokit", :lib=>'geokit', :source => 'http://gems.github.com'
+
+*If you're having trouble with dependencies ....*
+
+Try installing the gem manually, then adding a `require 'geokit'` to the top of 
+`vendor/plugins/geokit-rails/init.rb` and/or `config/geokit_config.rb`.
