@@ -1,5 +1,4 @@
 if defined? Geokit
-	require 'geokit' #requires the Geokit gem
 
 	# These defaults are used in Geokit::Mappable.distance_to and in acts_as_mappable
 	Geokit::default_units = :miles
