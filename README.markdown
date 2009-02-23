@@ -508,6 +508,9 @@ has been geocoded. You can get the city, zipcode, street address, etc.
 from a GeoLoc object. GeoLoc extends LatLng, so you also get lat/lng
 AND the Mappable modeule goodness for free.
 
+## GOOGLE GROUP
+
+Follow the Google Group for updates and discussion on Geokit: http://groups.google.com/group/geokit 
 
 ## IMPORTANT POST-INSTALLATION NOTES: 
 
