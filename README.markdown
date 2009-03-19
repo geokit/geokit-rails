@@ -10,7 +10,7 @@ Geokit consists of a Gem ([geokit-gem](http://github.com/andre/geokit-gem/tree/m
 #### 2. Add this line to your environment.rb 
 (inside the Rails::Initializer.run do |config| block)
 
-		config.gem "andre-geokit", :lib=>'geokit', :source => 'http://gems.github.com'    
+		config.gem "geokit"
 
 This informs Rails of the gem dependency.
 
@@ -18,7 +18,7 @@ This informs Rails of the gem dependency.
 
 		rake gems:install
 
-And you're good to go! 
+And you're good to go! If you're running an older verion of Rails, just install the gem manually: `sudo gem install rails`
 
 ## FEATURE SUMMARY
 
@@ -520,9 +520,9 @@ If you need to refer to the original template again, see the `assets/api_keys_te
 
 *2. The gem dependency*: Geokit for Rails depends on the Geokit gem. Tell Rails about this 
 dependency in `config/environment.rb`, within the initializer block:
-config.gem "andre-geokit", :lib=>'geokit', :source => 'http://gems.github.com'
+config.gem "geokit"
 
 *If you're having trouble with dependencies ....*
 
-Try installing the gem manually, then adding a `require 'geokit'` to the top of 
+Try installing the gem manually (sudo gem install geokit), then adding a `require 'geokit'` to the top of 
 `vendor/plugins/geokit-rails/init.rb` and/or `config/geokit_config.rb`.

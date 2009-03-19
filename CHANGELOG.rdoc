@@ -1,0 +1,20 @@
+== 2008-02-20
+* More powerful assosciations in the Rails Plugin:You can now specify a model as mappable "through" an associated model. 
+In other words, that associated model is the actual mappable model with "lat" and "lng" attributes, but this "through" model 
+can still utilize all Geokit's "find by distance" finders. Also Rails 2.3 compatibility (thanks github/glennpow)
+
+== 2008-12-18
+* Split Rails plugin from geocoder gem
+* updated for Rails 2.2.2
+
+== 2008-08-20
+* Further fix of distance calculation, this time in SQL. Now uses least() function, which is available in MySQL version 3.22.5+ and postgres versions 8.1+
+
+== 2008-01-16
+* fixed the "zero-distance" bug (calculating between two points that are the same)
+
+== 2007-11-12
+* fixed a small but with queries crossing meridian, and also fixed find(:closest)
+
+== 2008-10-11
+* Fixed Rails2/Edge compatability
