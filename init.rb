@@ -9,7 +9,8 @@ if defined? Geokit
   require 'geokit-rails/defaults'
   require 'geokit-rails/acts_as_mappable'
   require 'geokit-rails/ip_geocode_lookup'
-  
+  require 'geokit-rails/geocoder_control'
+
   # Automatically mix in distance finder support into ActiveRecord classes.
   ActiveRecord::Base.send :include, GeoKit::ActsAsMappable
   
