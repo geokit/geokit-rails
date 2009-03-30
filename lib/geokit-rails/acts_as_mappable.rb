@@ -312,6 +312,9 @@ module Geokit
           elsif current_conditions && current_conditions.is_a?(Array)
             current_conditions[0]="#{current_conditions[0]} AND #{sql}"
             res=current_conditions
+          elsif current_conditions && current_conditions.is_a?(Hash)
+            res = "#{sanitize_sql_for_conditions(current_conditions)} AND " || ''
+            res += sql
           else
             res=sql
           end
