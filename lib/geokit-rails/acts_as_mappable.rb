@@ -315,6 +315,9 @@ module Geokit
           elsif current_conditions && current_conditions.is_a?(Hash)
             res = "#{sanitize_sql_for_conditions(current_conditions)} AND " || ''
             res += sql
+          elsif current_conditions && current_conditions.is_a?(Hash)
+            res = "#{sanitize_sql_for_conditions(current_conditions)} AND " || ''
+            res += sql
           else
             res=sql
           end
