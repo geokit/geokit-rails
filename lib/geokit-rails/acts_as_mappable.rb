@@ -305,26 +305,43 @@ module Geokit
         # 
         # Takes the current conditions (which can be an array or a string, or can be nil/false), 
         # and a SQL string. It inserts the sql into the existing conditions, and returns new conditions
-        # (which can be a string or an array
+        # (which can be a string, an array, or a hash)
         def augment_conditions(current_conditions,sql)
           if current_conditions && current_conditions.is_a?(String)
-            res="#{current_conditions} AND #{sql}"  
+            current_conditions += ' AND ' unless current_conditions.blank?
+            res = current_conditions + sql   
           elsif current_conditions && current_conditions.is_a?(Array)
-            current_conditions[0]="#{current_conditions[0]} AND #{sql}"
-            res=current_conditions
-          elsif current_conditions && current_conditions.is_a?(Hash)
-            res = "#{sanitize_sql_for_conditions(current_conditions)} AND " || ''
-            res += sql
+            current_conditions[0] ||= ''
+            current_conditions[0] += " AND " unless current_conditions[0].blank? 
+            current_conditions[0] += sql
+            res = current_conditions
           elsif current_conditions && current_conditions.is_a?(Hash)
             res = "#{sanitize_sql_for_conditions(current_conditions)}" || ''
             res += ' AND ' unless res.blank?
-            res = "#{sanitize_sql_for_conditions(current_conditions)} AND " || ''
             res += sql
           else
-            res=sql
+            res = sql
           end
           res
         end
+        # def augment_conditions(current_conditions,sql)
+        #   if current_conditions && current_conditions.is_a?(String)
+        #     current_conditions += ' AND ' unless current_conditions.blank?
+        #     res = current_conditions + sql   
+        #   elsif current_conditions && current_conditions.is_a?(Array)
+        #     current_conditions[0] ||= ''
+        #     current_conditions[0] += " AND " unless current_conditions[0].blank? 
+        #     current_conditions[0] += sql
+        #     res = current_conditions[0] + sql
+        #   elsif current_conditions && current_conditions.is_a?(Hash)
+        #     res = "#{sanitize_sql_for_conditions(current_conditions)}" || ''
+        #     res += ' AND ' unless res.blank?
+        #     res += sql
+        #   else
+        #     res=sql
+        #   end
+        #   res
+        # end
 
         # Alters the conditions to include rectangular bounds conditions.
         def apply_bounds_conditions(options,bounds)
