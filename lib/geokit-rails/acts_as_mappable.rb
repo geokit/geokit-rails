@@ -324,24 +324,6 @@ module Geokit
           end
           res
         end
-        # def augment_conditions(current_conditions,sql)
-        #   if current_conditions && current_conditions.is_a?(String)
-        #     current_conditions += ' AND ' unless current_conditions.blank?
-        #     res = current_conditions + sql   
-        #   elsif current_conditions && current_conditions.is_a?(Array)
-        #     current_conditions[0] ||= ''
-        #     current_conditions[0] += " AND " unless current_conditions[0].blank? 
-        #     current_conditions[0] += sql
-        #     res = current_conditions[0] + sql
-        #   elsif current_conditions && current_conditions.is_a?(Hash)
-        #     res = "#{sanitize_sql_for_conditions(current_conditions)}" || ''
-        #     res += ' AND ' unless res.blank?
-        #     res += sql
-        #   else
-        #     res=sql
-        #   end
-        #   res
-        # end
 
         # Alters the conditions to include rectangular bounds conditions.
         def apply_bounds_conditions(options,bounds)
