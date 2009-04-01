@@ -308,13 +308,14 @@ module Geokit
         # (which can be a string, an array, or a hash)
         def augment_conditions(current_conditions,sql)
           if current_conditions && current_conditions.is_a?(String)
-            current_conditions += ' AND ' unless current_conditions.blank?
+            sql = ' AND ' + sql unless current_conditions.blank?
             res = current_conditions + sql   
           elsif current_conditions && current_conditions.is_a?(Array)
-            current_conditions[0] ||= ''
-            current_conditions[0] += " AND " unless current_conditions[0].blank? 
-            current_conditions[0] += sql
-            res = current_conditions
+            cond_copy = current_conditions.dup
+            cond_copy[0] ||= ''
+            cond_copy[0] += " AND " unless cond_copy[0].blank? 
+            cond_copy[0] += sql
+            res = cond_copy
           elsif current_conditions && current_conditions.is_a?(Hash)
             res = "#{sanitize_sql_for_conditions(current_conditions)}" || ''
             res += ' AND ' unless res.blank?

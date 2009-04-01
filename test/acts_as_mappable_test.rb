@@ -516,7 +516,7 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
   def test_augment_conditions_with_a_conditional_string
     assert_equal 'my_filter=my_value AND distance < 5', Location.send(:augment_conditions, 'my_filter=my_value', 'distance < 5')    
   end
-
+  
   def test_augment_conditions_with_an_empty_array
     assert_equal ['distance < 5'], Location.send(:augment_conditions, [], 'distance < 5')    
   end
@@ -528,6 +528,18 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
   def test_augment_conditions_with_a_prepared_value_array
     assert_equal ['my_filter=? AND distance < 5', 10], Location.send(:augment_conditions, ['my_filter=?', 10], 'distance < 5')    
   end
+  
+  def test_augment_conditions_should_not_modify_an_empty_conditional_array
+    conditions = []
+    Location.send(:augment_conditions, conditions, 'distance < 5')    
+    assert_equal [], conditions
+  end
+
+  def test_augment_conditions_with_simple_conditional_should_not_modify_the_conditional_array
+    conditions = ['my_filter=my_value']
+    Location.send(:augment_conditions, conditions, 'distance < 5')    
+    assert_equal ['my_filter=my_value'], conditions
+  end
 
   def test_augment_conditions_with_an_empty_hash
     assert_equal 'distance < 5', Location.send(:augment_conditions, {}, 'distance < 5')    
@@ -538,7 +550,19 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
   end
 
   def test_augment_conditions_with_a_mixed_hash
-    assert_equal "`locations`.`my_filter` = 'my_value' AND `locations`.`my_filter2` = 200 AND distance < 5", Location.send(:augment_conditions, {:my_filter => 'my_value', :my_filter2 => 200}, 'distance < 5')    
+    # assert_equal "`locations`.`my_filter` = 'my_value' AND `locations`.`my_filter2` = 200 AND distance < 5",
+    result = Location.send(:augment_conditions, {:my_filter => 'my_value', :my_filter2 => 200}, 'distance < 5')    
+    #the order of the hash, at least in ruby < 1.9, is not guaranteed
+    result =~ /#{Regexp.escape("`locations`.`my_filter` = 'my_value'")}/
+    result =~ /#{Regexp.escape("`locations`.`my_filter2` = 200")}/
+    result =~ /#{Regexp.escape(" AND distance < 5")}/
+  end
+  
+  def test_augment_conditions_with_a_simple_conditional_should_not_modify_the_conditional_hash
+    conditions = {:my_filter => 'my_value'}
+    Location.send(:augment_conditions, conditions, 'distance < 5')
+    orig_conditions = {:my_filter => 'my_value'}
+    assert_equal orig_conditions, conditions
   end
   
   # Test :through
