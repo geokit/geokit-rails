@@ -213,8 +213,6 @@ module Geokit
         def prepare_for_find_or_count(action, args)
           options = args.extract_options!
           #options = defined?(args.extract_options!) ? args.extract_options! : extract_options_from_args!(args)
-          # Handle :through
-          apply_include_for_through(options)
           # Obtain items affecting distance condition.
           origin = extract_origin_from_options(options)
           units = extract_units_from_options(options)
@@ -231,6 +229,8 @@ module Geokit
           substitute_distance_in_conditions(options, origin, units, formula) if origin && options.has_key?(:conditions)
           # Order by scoping for find action.
           apply_find_scope(args, options) if action == :find
+          # Handle :through
+          apply_include_for_through(options) if origin
           # Unfortunatley, we need to do extra work if you use an :include. See the method for more info.
           handle_order_with_include(options,origin,units,formula) if options.include?(:include) && options.include?(:order) && origin
           # Restore options minus the extra options that we used for the
@@ -246,7 +246,7 @@ module Geokit
             when Hash, String, Symbol
               options[:include] = [ self.through, options[:include] ]
             else
-              options[:include] = self.through
+              options[:include] = [ self.through ]
             end
           end
         end
