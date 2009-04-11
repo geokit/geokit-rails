@@ -1,4 +1,11 @@
-== 2008-02-20
+== 2009-04-11
+* Fixed :through usages so that the through model is only included in the query if there 
+	is an :origin passed in (Only if it is a geokit search) (Thanks Glenn Pow)
+* Move library initialisation into lib/geokit-rails. init.rb uses lib/geokit-rails now (thanks Alban Peignier)
+* Handle the case where a user passes a hash to the :conditions Finder option (thanks Adam Greene)
+* Added ability to specify domain-specific API keys (Thanks Glenn Pow)
+
+== 2009-02-20
 * More powerful assosciations in the Rails Plugin:You can now specify a model as mappable "through" an associated model. 
 In other words, that associated model is the actual mappable model with "lat" and "lng" attributes, but this "through" model 
 can still utilize all Geokit's "find by distance" finders. Also Rails 2.3 compatibility (thanks github/glennpow)
@@ -16,5 +23,5 @@ can still utilize all Geokit's "find by distance" finders. Also Rails 2.3 compat
 == 2007-11-12
 * fixed a small but with queries crossing meridian, and also fixed find(:closest)
 
-== 2008-10-11
+== 2007-10-11
 * Fixed Rails2/Edge compatability
