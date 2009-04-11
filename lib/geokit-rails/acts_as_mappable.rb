@@ -305,15 +305,23 @@ module Geokit
         # 
         # Takes the current conditions (which can be an array or a string, or can be nil/false), 
         # and a SQL string. It inserts the sql into the existing conditions, and returns new conditions
-        # (which can be a string or an array
+        # (which can be a string, an array, or a hash)
         def augment_conditions(current_conditions,sql)
           if current_conditions && current_conditions.is_a?(String)
-            res="#{current_conditions} AND #{sql}"  
+            sql = ' AND ' + sql unless current_conditions.blank?
+            res = current_conditions + sql   
           elsif current_conditions && current_conditions.is_a?(Array)
-            current_conditions[0]="#{current_conditions[0]} AND #{sql}"
-            res=current_conditions
+            cond_copy = current_conditions.dup
+            cond_copy[0] ||= ''
+            cond_copy[0] += " AND " unless cond_copy[0].blank? 
+            cond_copy[0] += sql
+            res = cond_copy
+          elsif current_conditions && current_conditions.is_a?(Hash)
+            res = "#{sanitize_sql_for_conditions(current_conditions)}" || ''
+            res += ' AND ' unless res.blank?
+            res += sql
           else
-            res=sql
+            res = sql
           end
           res
         end
