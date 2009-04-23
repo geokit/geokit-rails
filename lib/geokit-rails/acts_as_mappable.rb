@@ -64,6 +64,8 @@ module Geokit
                 end
               end
             end
+          else
+            raise ArgumentError, "You gave :through as option, but I could not find #{self.through} association."
           end
         else
           cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
