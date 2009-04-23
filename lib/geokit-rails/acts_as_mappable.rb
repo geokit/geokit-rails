@@ -293,47 +293,26 @@ module Geokit
         # Replace :within, :beyond and :range distance tokens with the appropriate distance 
         # where clauses.  Removes these tokens from the options hash.
         def apply_distance_scope(options)
-          distance_condition = "#{distance_column_name} <= #{options[:within]}" if options.has_key?(:within)
-          distance_condition = "#{distance_column_name} > #{options[:beyond]}" if options.has_key?(:beyond)
-          distance_condition = "#{distance_column_name} >= #{options[:range].first} AND #{distance_column_name} <#{'=' unless options[:range].exclude_end?} #{options[:range].last}" if options.has_key?(:range)
-          [:within, :beyond, :range].each { |option| options.delete(option) } if distance_condition
-          
-          options[:conditions]=augment_conditions(options[:conditions],distance_condition) if distance_condition
-        end
-
-        # This method lets you transparently add a new condition to a query without
-        # worrying about whether it currently has conditions, or what kind of conditions they are
-        # (string or array).
-        # 
-        # Takes the current conditions (which can be an array or a string, or can be nil/false), 
-        # and a SQL string. It inserts the sql into the existing conditions, and returns new conditions
-        # (which can be a string, an array, or a hash)
-        def augment_conditions(current_conditions,sql)
-          if current_conditions && current_conditions.is_a?(String)
-            sql = ' AND ' + sql unless current_conditions.blank?
-            res = current_conditions + sql   
-          elsif current_conditions && current_conditions.is_a?(Array)
-            cond_copy = current_conditions.dup
-            cond_copy[0] ||= ''
-            cond_copy[0] += " AND " unless cond_copy[0].blank? 
-            cond_copy[0] += sql
-            res = cond_copy
-          elsif current_conditions && current_conditions.is_a?(Hash)
-            res = "#{sanitize_sql_for_conditions(current_conditions)}" || ''
-            res += ' AND ' unless res.blank?
-            res += sql
-          else
-            res = sql
+          distance_condition = if options.has_key?(:within)
+            "#{distance_column_name} <= #{options[:within]}"
+          elsif options.has_key?(:beyond)
+            "#{distance_column_name} > #{options[:beyond]}"
+          elsif options.has_key?(:range)
+            "#{distance_column_name} >= #{options[:range].first} AND #{distance_column_name} <#{'=' unless options[:range].exclude_end?} #{options[:range].last}"
           end
-          res
+
+          if distance_condition
+            [:within, :beyond, :range].each { |option| options.delete(option) }
+            options[:conditions] = merge_conditions(options[:conditions], distance_condition)
+          end
         end
 
         # Alters the conditions to include rectangular bounds conditions.
         def apply_bounds_conditions(options,bounds)
-          sw,ne=bounds.sw,bounds.ne
-          lng_sql= bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
-          bounds_sql="#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
-          options[:conditions]=augment_conditions(options[:conditions],bounds_sql)          
+          sw,ne = bounds.sw, bounds.ne
+          lng_sql = bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
+          bounds_sql = "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
+          options[:conditions] = merge_conditions(options[:conditions], bounds_sql)
         end
 
         # Extracts the origin instance out of the options if it exists and returns
@@ -401,13 +380,9 @@ module Geokit
         # Conditions are either a string or an array.  In the case of an array, the first entry contains
         # the condition.
         def substitute_distance_in_conditions(options, origin, units=default_units, formula=default_formula)
-          original_conditions = options[:conditions]
-          condition = original_conditions.is_a?(String) ? original_conditions : original_conditions.first
+          condition = options[:conditions].is_a?(String) ? options[:conditions] : options[:conditions].first
           pattern = Regexp.new("\\b#{distance_column_name}\\b")
-          condition = condition.gsub(pattern, distance_sql(origin, units, formula))
-          original_conditions = condition if original_conditions.is_a?(String)
-          original_conditions[0] = condition if original_conditions.is_a?(Array)
-          options[:conditions] = original_conditions
+          condition.gsub!(pattern, distance_sql(origin, units, formula))
         end
         
         # Returns the distance SQL using the spherical world formula (Haversine).  The SQL is tuned
