@@ -220,24 +220,28 @@ module Geokit
           units = extract_units_from_options(options)
           formula = extract_formula_from_options(options)
           bounds = extract_bounds_from_options(options)
-          # if no explicit bounds were given, try formulating them from the point and distance given
-          bounds = formulate_bounds_from_distance(options, origin, units) unless bounds
-          # Apply select adjustments based upon action.
-          add_distance_to_select(options, origin, units, formula) if origin && action == :find
-          # Apply the conditions for a bounding rectangle if applicable
-          apply_bounds_conditions(options,bounds) if bounds
-          # Apply distance scoping and perform substitutions.
-          apply_distance_scope(options)
-          substitute_distance_in_conditions(options, origin, units, formula) if origin && options.has_key?(:conditions)
-          # Order by scoping for find action.
-          apply_find_scope(args, options) if action == :find
-          # Handle :through
-          apply_include_for_through(options) if origin
-          # Unfortunatley, we need to do extra work if you use an :include. See the method for more info.
-          handle_order_with_include(options,origin,units,formula) if options.include?(:include) && options.include?(:order) && origin
-          # Restore options minus the extra options that we used for the
-          # Geokit API.
-          args.push(options)   
+          
+          # Only proceed if this is a geokit-related query
+          if origin || bounds
+            # if no explicit bounds were given, try formulating them from the point and distance given
+            bounds = formulate_bounds_from_distance(options, origin, units) unless bounds
+            # Apply select adjustments based upon action.
+            add_distance_to_select(options, origin, units, formula) if origin && action == :find
+            # Apply the conditions for a bounding rectangle if applicable
+            apply_bounds_conditions(options,bounds) if bounds
+            # Apply distance scoping and perform substitutions.
+            apply_distance_scope(options)
+            substitute_distance_in_conditions(options, origin, units, formula) if origin && options.has_key?(:conditions)
+            # Order by scoping for find action.
+            apply_find_scope(args, options) if action == :find
+            # Handle :through
+            apply_include_for_through(options)
+            # Unfortunatley, we need to do extra work if you use an :include. See the method for more info.
+            handle_order_with_include(options,origin,units,formula) if options.include?(:include) && options.include?(:order) && origin
+            # Restore options minus the extra options that we used for the
+            # Geokit API.
+            args.push(options)
+          end
         end
         
         def apply_include_for_through(options)
