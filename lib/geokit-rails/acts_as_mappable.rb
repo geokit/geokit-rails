@@ -238,10 +238,11 @@ module Geokit
             apply_include_for_through(options)
             # Unfortunatley, we need to do extra work if you use an :include. See the method for more info.
             handle_order_with_include(options,origin,units,formula) if options.include?(:include) && options.include?(:order) && origin
-            # Restore options minus the extra options that we used for the
-            # Geokit API.
-            args.push(options)
           end
+          
+          # Restore options minus the extra options that we used for the
+          # Geokit API.
+          args.push(options)
         end
         
         def apply_include_for_through(options)
