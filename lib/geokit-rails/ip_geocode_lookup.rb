@@ -26,24 +26,15 @@ module Geokit
     # get the value.
     def store_ip_location
       session[:geo_location] ||= retrieve_location_from_cookie_or_service
-      # cookies[:geo_location] = { :value => session[:geo_location].to_yaml, :expires => 0.days.from_now } if session[:geo_location]
-      # cookies[:geo_location] = { :value => session[:geo_location].to_yaml, :expires => 0.days.from_now } if session[:geo_location]
+      cookies[:geo_location] = { :value => session[:geo_location].to_yaml, :expires => 30.days.from_now } if session[:geo_location]
     end    
     
     # Uses the stored location value from the cookie if it exists.  If
     # no cookie exists, calls out to the web service to get the location. 
     def retrieve_location_from_cookie_or_service
       return YAML.load(cookies[:geo_location]) if cookies[:geo_location]
-      # location = Geocoders::IpGeocoder.geocode(get_ip_address)
-      # location = Geocoders::GeoPluginGeocoder.geocode(get_ip_address)
-      # location = Geocoders::MaxmindCityGeocoder.geocode(get_ip_address)
-      # location = Geocoders::MultiIpGeocoder.do_geocode(get_ip_address)
-      location = Geocoders::MultiGeocoder.do_geocode(get_ip_address, true)
-      # result = location.success ? location : GeoLoc.new
-      # result.all = nil
-      # return location.success ? location : GeoLoc.new
-      return location
-      # return result
+      location = Geocoders::IpGeocoder.geocode(get_ip_address)
+      return location.success ? location : nil
     end
     
     # Returns the real ip address, though this could be the localhost ip
