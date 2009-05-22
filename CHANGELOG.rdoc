@@ -1,4 +1,9 @@
-== 2009-04-11
+== 2009-05-22 / Version 1.1.1
+* Support for multiple ip geocoders (Thanks dreamcat4)
+* Now checks if either :origin OR :bounds is passed, and proceeds with geokit query if this is true (Thanks Glenn Powell)
+* Raises a helpful error if someone uses through but the association does not exists or was not defined yet (Thanks José Valim)
+
+== 2009-04-11 / Version 1.1.0
 * Fixed :through usages so that the through model is only included in the query if there 
 	is an :origin passed in (Only if it is a geokit search) (Thanks Glenn Powell)
 * Move library initialisation into lib/geokit-rails. init.rb uses lib/geokit-rails now (thanks Alban Peignier)
