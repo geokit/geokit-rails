@@ -369,7 +369,7 @@ module Geokit
        
         # Geocode IP address.
         def geocode_ip_address(origin)
-          geo_location = Geokit::Geocoders::MultiGeocoder.do_geocode(origin, true)
+          geo_location = Geokit::Geocoders::MultiGeocoder.geocode(origin)
           return geo_location if geo_location.success
           raise Geokit::Geocoders::GeocodeError
         end
