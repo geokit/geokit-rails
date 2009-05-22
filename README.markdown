@@ -33,9 +33,7 @@ Geokit provides key functionality for location-oriented Rails applications:
   city name and latitude/longitude in return
 - A before_filter helper to geocoder the user's location based on IP address, 
   and retain the location in a cookie.
-- Geocoding from multiple providers. It currently supports Google, Yahoo, 
-  Geocoder.us, and Geocoder.ca geocoders, and it provides a uniform response 
-  structure from all of them. It also provides a fail-over mechanism, in case 
+- Geocoding from multiple providers. It provides a fail-over mechanism, in case 
   your input fails to geocode in one service. Geocoding is provided buy the Geokit
   gem, which you must have installed
   
@@ -233,6 +231,13 @@ Rails application.  In other words, you need to ensure that the
 requesting IP address is forwarded by any front-end servers that
 are out in front of the Rails app.  Otherwise, the IP will always
 be that of the front-end server.
+
+A multi ip geocoder has also now been added. Its just called through the regular MultiGeocoder class but with the second parameter 'geocode_ip set to 'true':
+
+	location = Geocoders::MultiGeocoder.geocode('12.215.42.19', true)
+
+The MultiGeocoder class requires a configuration provider order which the order of IP geocoders.  Ordering is done through `Geokit::Geocoders::ip_provider_order`, found in `config/initializers/geokit_config.rb`. If you don't already have a `geokit_config.rb` file, the plugin creates one when it is first installed.
+
 
 ## IP GEOCODING HELPER
 
