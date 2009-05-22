@@ -232,11 +232,11 @@ requesting IP address is forwarded by any front-end servers that
 are out in front of the Rails app.  Otherwise, the IP will always
 be that of the front-end server.
 
-A multi ip geocoder has also now been added. Its just called through the regular MultiGeocoder class but with the second parameter 'geocode_ip set to 'true':
+Ip address support for the Multi-Geocoder has also now been added. Its just called through the regular MultiGeocoder class. Pass in an IP address for the parameter instead of a street address. Eg:
 
-	location = Geocoders::MultiGeocoder.geocode('12.215.42.19', true)
+	location = Geocoders::MultiGeocoder.geocode('12.215.42.19')
 
-The MultiGeocoder class requires a configuration provider order which the order of IP geocoders.  Ordering is done through `Geokit::Geocoders::ip_provider_order`, found in `config/initializers/geokit_config.rb`. If you don't already have a `geokit_config.rb` file, the plugin creates one when it is first installed.
+The MultiGeocoder class requires 2 configuration setting for the provider order. Ordering is done through `Geokit::Geocoders::provider_order` and `Geokit::Geocoders::ip_provider_order`, found in `config/initializers/geokit_config.rb`. If you don't already have a `geokit_config.rb` file, the plugin creates one when it is first installed.
 
 
 ## IP GEOCODING HELPER
