@@ -47,17 +47,19 @@ module Geokit
       # For anything more customized, we recommend you forgo the auto_geocode option
       # and create your own AR callback to handle geocoding.
       def acts_as_mappable(options = {})
-        # Mix in the module, but ensure to do so just once.
-        return if !defined?(Geokit::Mappable) || self.included_modules.include?(Geokit::ActsAsMappable::InstanceMethods)
+        metaclass = (class << self; self; end)
 
-        send :include, Geokit::ActsAsMappable::InstanceMethods
+        # Mix in the module, but ensure to do so just once.
+        return if !defined?(Geokit::Mappable) || metaclass.included_modules.include?(Geokit::ActsAsMappable::SingletonMethods)
+
+        send :extend, Geokit::ActsAsMappable::SingletonMethods
         send :include, Geokit::Mappable
 
         cattr_accessor :through
         self.through = options[:through]
 
         if reflection = Geokit::ActsAsMappable.end_of_reflection_chain(self.through, self)
-          (class << self; self; end).instance_eval do
+          metaclass.instance_eval do
             [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name ].each do |method_name|
               define_method method_name do
                 reflection.klass.send(method_name)
@@ -104,7 +106,6 @@ module Geokit
       geo.success
     end
 
-
     def self.end_of_reflection_chain(through, klass)
       while through
         reflection = nil
@@ -125,110 +126,104 @@ module Geokit
     end
 
     # Instance methods to mix into ActiveRecord.
-    module InstanceMethods #:nodoc:    
-      # Mix class methods into module.
-      def self.included(base) # :nodoc:
-        base.extend SingletonMethods
+    module SingletonMethods #:nodoc:
+
+      # Extends the existing find method in potentially two ways:
+      # - If a mappable instance exists in the options, adds a distance column.
+      # - If a mappable instance exists in the options and the distance column exists in the
+      #   conditions, substitutes the distance sql for the distance column -- this saves
+      #   having to write the gory SQL.
+      def find(*args)
+        prepare_for_find_or_count(:find, args)
+        super(*args)
       end
-      
-      # Class singleton methods to mix into ActiveRecord.
-      module SingletonMethods # :nodoc:
-        # Extends the existing find method in potentially two ways:
-        # - If a mappable instance exists in the options, adds a distance column.
-        # - If a mappable instance exists in the options and the distance column exists in the
-        #   conditions, substitutes the distance sql for the distance column -- this saves
-        #   having to write the gory SQL.
-        def find(*args)
-          prepare_for_find_or_count(:find, args)
-          super(*args)
-        end     
-        
-        # Extends the existing count method by:
-        # - If a mappable instance exists in the options and the distance column exists in the
-        #   conditions, substitutes the distance sql for the distance column -- this saves
-        #   having to write the gory SQL.
-        def count(*args)
-          prepare_for_find_or_count(:count, args)
-          super(*args)
-        end
-        
-        # Finds within a distance radius.
-        def find_within(distance, options={})
-          options[:within] = distance
-          find(:all, options)
-        end
-        alias find_inside find_within
-                
-        # Finds beyond a distance radius.
-        def find_beyond(distance, options={})
-          options[:beyond] = distance
-          find(:all, options)
-        end
-        alias find_outside find_beyond
-        
-        # Finds according to a range.  Accepts inclusive or exclusive ranges.
-        def find_by_range(range, options={})
-          options[:range] = range
-          find(:all, options)
-        end
-        
-        # Finds the closest to the origin.
-        def find_closest(options={})
-          find(:nearest, options)
-        end
-        alias find_nearest find_closest
-        
-        # Finds the farthest from the origin.
-        def find_farthest(options={})
-          find(:farthest, options)
-        end
 
-        # Finds within rectangular bounds (sw,ne).
-        def find_within_bounds(bounds, options={})
-          options[:bounds] = bounds
-          find(:all, options)
-        end
-        
-        # counts within a distance radius.
-        def count_within(distance, options={})
-          options[:within] = distance
-          count(options)
-        end
-        alias count_inside count_within
+      # Extends the existing count method by:
+      # - If a mappable instance exists in the options and the distance column exists in the
+      #   conditions, substitutes the distance sql for the distance column -- this saves
+      #   having to write the gory SQL.
+      def count(*args)
+        prepare_for_find_or_count(:count, args)
+        super(*args)
+      end
 
-        # Counts beyond a distance radius.
-        def count_beyond(distance, options={})
-          options[:beyond] = distance
-          count(options)
-        end
-        alias count_outside count_beyond
-        
-        # Counts according to a range.  Accepts inclusive or exclusive ranges.
-        def count_by_range(range, options={})
-          options[:range] = range
-          count(options)
-        end
+      # Finds within a distance radius.
+      def find_within(distance, options={})
+        options[:within] = distance
+        find(:all, options)
+      end
+      alias find_inside find_within
 
-        # Finds within rectangular bounds (sw,ne).
-        def count_within_bounds(bounds, options={})
-          options[:bounds] = bounds
-          count(options)
-        end
-                
-        # Returns the distance calculation to be used as a display column or a condition.  This
-        # is provide for anyone wanting access to the raw SQL.
-        def distance_sql(origin, units=default_units, formula=default_formula)
-          case formula
-          when :sphere
-            sql = sphere_distance_sql(origin, units)
-          when :flat
-            sql = flat_distance_sql(origin, units)
-          end
-          sql
-        end   
+      # Finds beyond a distance radius.
+      def find_beyond(distance, options={})
+        options[:beyond] = distance
+        find(:all, options)
+      end
+      alias find_outside find_beyond
 
-        private
-        
+      # Finds according to a range.  Accepts inclusive or exclusive ranges.
+      def find_by_range(range, options={})
+        options[:range] = range
+        find(:all, options)
+      end
+
+      # Finds the closest to the origin.
+      def find_closest(options={})
+        find(:nearest, options)
+      end
+      alias find_nearest find_closest
+
+      # Finds the farthest from the origin.
+      def find_farthest(options={})
+        find(:farthest, options)
+      end
+
+      # Finds within rectangular bounds (sw,ne).
+      def find_within_bounds(bounds, options={})
+        options[:bounds] = bounds
+        find(:all, options)
+      end
+
+      # counts within a distance radius.
+      def count_within(distance, options={})
+        options[:within] = distance
+        count(options)
+      end
+      alias count_inside count_within
+
+      # Counts beyond a distance radius.
+      def count_beyond(distance, options={})
+        options[:beyond] = distance
+        count(options)
+      end
+      alias count_outside count_beyond
+
+      # Counts according to a range.  Accepts inclusive or exclusive ranges.
+      def count_by_range(range, options={})
+        options[:range] = range
+        count(options)
+      end
+
+      # Finds within rectangular bounds (sw,ne).
+      def count_within_bounds(bounds, options={})
+        options[:bounds] = bounds
+        count(options)
+      end
+
+      # Returns the distance calculation to be used as a display column or a condition.  This
+      # is provide for anyone wanting access to the raw SQL.
+      def distance_sql(origin, units=default_units, formula=default_formula)
+        case formula
+        when :sphere
+          sql = sphere_distance_sql(origin, units)
+        when :flat
+          sql = flat_distance_sql(origin, units)
+        end
+        sql
+      end
+
+      private
+
         # Prepares either a find or a count action by parsing through the options and
         # conditionally adding to the select clause for finders.
         def prepare_for_find_or_count(action, args)
@@ -239,7 +234,7 @@ module Geokit
           units = extract_units_from_options(options)
           formula = extract_formula_from_options(options)
           bounds = extract_bounds_from_options(options)
-          
+
           # Only proceed if this is a geokit-related query
           if origin || bounds
             # if no explicit bounds were given, try formulating them from the point and distance given
@@ -258,12 +253,12 @@ module Geokit
             # Unfortunatley, we need to do extra work if you use an :include. See the method for more info.
             handle_order_with_include(options,origin,units,formula) if options.include?(:include) && options.include?(:order) && origin
           end
-          
+
           # Restore options minus the extra options that we used for the
           # Geokit API.
           args.push(options)
         end
-        
+
         def apply_include_for_through(options)
           if self.through
             case options[:include]
@@ -276,7 +271,7 @@ module Geokit
             end
           end
         end
-        
+
         # If we're here, it means that 1) an origin argument, 2) an :include, 3) an :order clause were supplied.
         # Now we have to sub some SQL into the :order clause. The reason is that when you do an :include,
         # ActiveRecord drops the psuedo-column (specificically, distance) which we supplied for :select. 
@@ -285,7 +280,7 @@ module Geokit
           # replace the distance_column_name with the distance sql in order clause
           options[:order].sub!(distance_column_name, distance_sql(origin, units, formula))
         end
-        
+
         # Looks for mapping-specific tokens and makes appropriate translations so that the 
         # original finder has its expected arguments.  Resets the the scope argument to 
         # :first and ensures the limit is set to one.
@@ -301,7 +296,7 @@ module Geokit
               options[:order] = "#{distance_column_name} DESC"
           end
         end
-        
+
         # If it's a :within query, add a bounding box to improve performance.
         # This only gets called if a :bounds argument is not otherwise supplied. 
         def formulate_bounds_from_distance(options, origin, units)
@@ -313,7 +308,7 @@ module Geokit
             nil
           end
         end
-        
+
         # Replace :within, :beyond and :range distance tokens with the appropriate distance 
         # where clauses.  Removes these tokens from the options hash.
         def apply_distance_scope(options)
@@ -357,7 +352,7 @@ module Geokit
           options.delete(:units)
           units
         end
-        
+
         # Extract the formula out of the options if it exists and returns it.  If
         # there is no :formula key, it uses the default.  The side effect of the 
         # method is to remove the :formula key from the options hash.
@@ -366,19 +361,18 @@ module Geokit
           options.delete(:formula)
           formula
         end
-        
+
         def extract_bounds_from_options(options)
           bounds = options.delete(:bounds)
           bounds = Geokit::Bounds.normalize(bounds) if bounds
         end
-       
+
         # Geocode IP address.
         def geocode_ip_address(origin)
           geo_location = Geokit::Geocoders::MultiGeocoder.geocode(origin)
           return geo_location if geo_location.success
           raise Geokit::Geocoders::GeocodeError
         end
-        
 
         # Given a point in a variety of (an address to geocode,
         # an array of [lat,lng], or an object with appropriate lat/lng methods, an IP addres)
@@ -387,7 +381,7 @@ module Geokit
         def normalize_point_to_lat_lng(point)
           res = geocode_ip_address(point) if point.is_a?(String) && /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})?$/.match(point)
           res = Geokit::LatLng.normalize(point) unless res
-          res       
+          res
         end
 
         # Augments the select with the distance SQL.
@@ -408,7 +402,7 @@ module Geokit
           pattern = Regexp.new("\\b#{distance_column_name}\\b")
           condition.gsub!(pattern, distance_sql(origin, units, formula))
         end
-        
+
         # Returns the distance SQL using the spherical world formula (Haversine).  The SQL is tuned
         # to the database in use.
         def sphere_distance_sql(origin, units)
@@ -453,20 +447,19 @@ module Geokit
             sql = "unhandled #{connection.adapter_name.downcase} adapter"
           end
         end
-      end
     end
   end
 end
 
 # Extend Array with a sort_by_distance method.
-# This method creates a "distance" attribute on each object, 
-# calculates the distance from the passed origin,
-# and finally sorts the array by the resulting distance.
 class Array
+  # This method creates a "distance" attribute on each object, calculates the
+  # distance from the passed origin, and finally sorts the array by the
+  # resulting distance.
   def sort_by_distance_from(origin, opts={})
-    distance_attribute_name = opts.delete(:distance_attribute_name) || 'distance'    
+    distance_attribute_name = opts.delete(:distance_attribute_name) || 'distance'
     self.each do |e|
-      e.class.send(:attr_accessor, distance_attribute_name) if !e.respond_to? "#{distance_attribute_name}="
+      e.class.send(:attr_accessor, distance_attribute_name) if !e.respond_to?("#{distance_attribute_name}=")
       e.send("#{distance_attribute_name}=", e.distance_to(origin,opts))
     end
     self.sort!{|a,b|a.send(distance_attribute_name) <=> b.send(distance_attribute_name)}
