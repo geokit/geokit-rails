@@ -43,4 +43,18 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :lat,         :decimal, :precision => 15, :scale => 10
     t.column :lng,         :decimal, :precision => 15, :scale => 10
   end
+
+  create_table :mock_houses, :force=> true do |t|
+    t.column :address,     :string
+    t.column :lat,         :decimal, :precision => 15, :scale => 10
+    t.column :lng,         :decimal, :precision => 15, :scale => 10
+  end
+
+  create_table :mock_families, :force => true do |t|
+    t.belongs_to :mock_house
+  end
+
+  create_table :mock_people, :force => true do |t|
+    t.belongs_to :mock_family
+  end
 end

@@ -52,7 +52,7 @@ If you want only distance calculation services, you need only mix in the Mappabl
 module like so:
 
     class Location
-    	include Geokit::Mappable
+      include Geokit::Mappable
     end
 
 After doing so, you can do things like:
@@ -72,7 +72,7 @@ The real power and utility of the plug-in is in its query support.  This is
 achieved through mixing into an ActiveRecord model object:
 
     class Location < ActiveRecord::Base
-    	acts_as_mappable
+      acts_as_mappable
     end
 
 The plug-in uses the above-mentioned defaults, but can be modified to use 
@@ -86,9 +86,9 @@ By default, these are known as "distance" but this can be changed through the
 So, an alternative invocation would look as below:
 
     class Location < ActiveRecord::Base
-       acts_as_mappable :default_units => :kms, 
-                        :default_formula => :flat, 
-                        :distance_field_name => :distance
+      acts_as_mappable :default_units => :kms, 
+                       :default_formula => :flat, 
+                       :distance_field_name => :distance
     end
 
 You can also define alternative column names for latitude and longitude using
@@ -198,17 +198,32 @@ to search for records.
 
     class Location < ActiveRecord::Base
       belongs_to :locatable, :polymorphic => true
-    	acts_as_mappable
+      acts_as_mappable
     end
 
     class Company < ActiveRecord::Base
       has_one :location, :as => :locatable  # also works for belongs_to associations
-    	acts_as_mappable :through => :location
+      acts_as_mappable :through => :location
     end
     
 Then you can still call:
     
     Company.find_within(distance, :origin => @somewhere)
+
+You can also give :through a hash if you location is nested deep. Imagine this setup:
+
+    class House
+      acts_as_mappable
+    end
+
+    class Family
+      belongs_to :house
+    end
+
+    class Person
+      belongs_to :family
+      acts_as_mappable :through => { :family => :house }
+    end
 
 Remember that the notes above about USING INCLUDES apply to the results from this find, since an include is automatically used.
 

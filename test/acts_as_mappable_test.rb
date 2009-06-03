@@ -2,7 +2,7 @@ require 'rubygems'
 require 'mocha'
 require File.join(File.dirname(__FILE__), 'test_helper')
 
-Geokit::Geocoders::provider_order=[:google,:us]
+Geokit::Geocoders::provider_order = [:google, :us]
 
 # Uses defaults
 class Company < ActiveRecord::Base #:nodoc: all
@@ -17,7 +17,7 @@ end
 
 # for auto_geocode
 class Store < ActiveRecord::Base
-  acts_as_mappable :auto_geocode=>true
+  acts_as_mappable :auto_geocode => true
 end
 
 # Uses deviations from conventions.
@@ -34,16 +34,30 @@ class CustomLocation < ActiveRecord::Base #:nodoc: all
   end
 end
 
+# Used by :through
+class MockAddress < ActiveRecord::Base #:nodoc: all
+  belongs_to :addressable, :polymorphic => true
+  acts_as_mappable
+end
+
 # Uses :through
 class MockOrganization < ActiveRecord::Base #:nodoc: all
   has_one :mock_address, :as => :addressable
   acts_as_mappable :through => :mock_address
 end
 
-# Used by :through
-class MockAddress < ActiveRecord::Base #:nodoc: all
-  belongs_to :addressable, :polymorphic => true
+# Uses :through => {}
+class MockHouse < ActiveRecord::Base
   acts_as_mappable
+end
+
+class MockFamily < ActiveRecord::Base
+  belongs_to :mock_house
+end
+
+class MockPerson < ActiveRecord::Base
+  belongs_to :mock_family
+  acts_as_mappable :through => { :mock_family => :mock_house }
 end
 
 class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
@@ -54,7 +68,7 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
   self.use_transactional_fixtures = true
   self.use_instantiated_fixtures  = false
   self.pre_loaded_fixtures = true
-  fixtures :companies, :locations, :custom_locations, :stores, :mock_organizations, :mock_addresses
+  fixtures :all
 
   def setup
     @location_a = GeoKit::GeoLoc.new
@@ -512,5 +526,12 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
     assert_equal 2, organizations.size
     organizations = MockOrganization.count(:origin => @location_a, :conditions => "distance < 3.97")
     assert_equal 1, organizations
+  end
+
+  def test_find_with_through_with_hash
+    people = MockPerson.find(:all, :origin => @location_a, :order => 'distance ASC')
+    assert_equal 2, people.size
+    people = MockPerson.count(:origin => @location_a, :conditions => "distance < 3.97")
+    assert_equal 2, people
   end 
 end

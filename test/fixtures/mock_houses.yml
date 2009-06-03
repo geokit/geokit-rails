@@ -1,0 +1,9 @@
+another_house:
+  address: 106 N Denton Tap Rd # 350
+  lat: 32.969527
+  lng: -96.990159
+
+my_house:
+  address: 5904 N Macarthur Blvd # 160
+  lat: 32.895155
+  lng: -96.958444

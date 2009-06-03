@@ -49,26 +49,24 @@ module Geokit
       def acts_as_mappable(options = {})
         # Mix in the module, but ensure to do so just once.
         return if !defined?(Geokit::Mappable) || self.included_modules.include?(Geokit::ActsAsMappable::InstanceMethods)
+
         send :include, Geokit::ActsAsMappable::InstanceMethods
-        # include the Mappable module.
         send :include, Geokit::Mappable
-        
-        # Handle class variables.
+
         cattr_accessor :through
-        if self.through = options[:through]
-          if reflection = self.reflect_on_association(self.through)
-            (class << self; self; end).instance_eval do
-              [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name ].each do |method_name|
-                define_method method_name do
-                  reflection.klass.send(method_name)
-                end
+        self.through = options[:through]
+
+        if reflection = Geokit::ActsAsMappable.end_of_reflection_chain(self.through, self)
+          (class << self; self; end).instance_eval do
+            [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name ].each do |method_name|
+              define_method method_name do
+                reflection.klass.send(method_name)
               end
             end
-          else
-            raise ArgumentError, "You gave :through as option, but I could not find #{self.through} association."
           end
         else
           cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
+
           self.distance_column_name = options[:distance_column_name]  || 'distance'
           self.default_units = options[:default_units] || Geokit::default_units
           self.default_formula = options[:default_formula] || Geokit::default_formula
@@ -76,35 +74,56 @@ module Geokit
           self.lng_column_name = options[:lng_column_name] || 'lng'
           self.qualified_lat_column_name = "#{table_name}.#{lat_column_name}"
           self.qualified_lng_column_name = "#{table_name}.#{lng_column_name}"
+
           if options.include?(:auto_geocode) && options[:auto_geocode]
             # if the form auto_geocode=>true is used, let the defaults take over by suppling an empty hash
             options[:auto_geocode] = {} if options[:auto_geocode] == true 
             cattr_accessor :auto_geocode_field, :auto_geocode_error_message
             self.auto_geocode_field = options[:auto_geocode][:field] || 'address'
             self.auto_geocode_error_message = options[:auto_geocode][:error_message] || 'could not locate address'
-          
+
             # set the actual callback here
-            before_validation_on_create :auto_geocode_address        
+            before_validation_on_create :auto_geocode_address
           end
         end
       end
     end
-    
+
     # this is the callback for auto_geocoding
     def auto_geocode_address
       address=self.send(auto_geocode_field).to_s
       geo=Geokit::Geocoders::MultiGeocoder.geocode(address)
-  
+
       if geo.success
         self.send("#{lat_column_name}=", geo.lat)
         self.send("#{lng_column_name}=", geo.lng)
       else
         errors.add(auto_geocode_field, auto_geocode_error_message) 
       end
-      
+
       geo.success
     end
-    
+
+
+    def self.end_of_reflection_chain(through, klass)
+      while through
+        reflection = nil
+        if through.is_a?(Hash)
+          association, through = through.to_a.first
+        else
+          association, through = through, nil
+        end
+
+        if reflection = klass.reflect_on_association(association)
+          klass = reflection.klass
+        else
+          raise ArgumentError, "You gave #{association} in :through, but I could not find it on #{klass}."
+        end
+      end
+
+      reflection
+    end
+
     # Instance methods to mix into ActiveRecord.
     module InstanceMethods #:nodoc:    
       # Mix class methods into module.
