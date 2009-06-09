@@ -1,3 +1,6 @@
+== 2009-06-08 / Version 1.1.2
+* Added support for hashes in :through. So you can do: acts_as_mappable :through => { :state => :country } (Thanks José Valim).
+
 == 2009-05-22 / Version 1.1.1
 * Support for multiple ip geocoders (Thanks dreamcat4)
 * Now checks if either :origin OR :bounds is passed, and proceeds with geokit query if this is true (Thanks Glenn Powell)

@@ -46,57 +46,41 @@ package.
 Throughout the code and API, latitude and longitude are referred to as lat 
 and lng.  We've found over the long term the abbreviation saves lots of typing time.
 
-## DISTANCE CALCULATIONS AND QUERIES
+## LOCATION QUERIES
 
-If you want only distance calculation services, you need only mix in the Mappable 
-module like so:
-
-    class Location
-      include Geokit::Mappable
-    end
-
-After doing so, you can do things like:
-
-    Location.distance_between(from, to) 
-
-with optional parameters :units and :formula.  Values for :units can be :miles, 
-:kms (kilometers), or :nms (nautical miles) with :miles as the default.  Values for :formula can be :sphere or :flat with
-:sphere as the default.  :sphere gives you Haversine calculations, while :flat 
-gives the Pythagoreum Theory.  These defaults persist through out the plug-in.
-
-You can also do:
-
-    location.distance_to(other)
-
-The real power and utility of the plug-in is in its query support.  This is 
-achieved through mixing into an ActiveRecord model object:
+To get started, just specify an ActiveRecord class as `acts_as_mappale`:
 
     class Location < ActiveRecord::Base
       acts_as_mappable
     end
 
-The plug-in uses the above-mentioned defaults, but can be modified to use 
-different units and a different formulae.  This is done through the `:default_units`
-and `:default_formula` keys which accept the same values as mentioned above.
-
-The plug-in creates a calculated column and potentially a calculated condition.  
-By default, these are known as "distance" but this can be changed through the
-`:distance_field_name` key.  
-
-So, an alternative invocation would look as below:
+There are some defaults you can override:
 
     class Location < ActiveRecord::Base
-      acts_as_mappable :default_units => :kms, 
-                       :default_formula => :flat, 
-                       :distance_field_name => :distance
+      acts_as_mappable :default_units => :miles, 
+                       :default_formula => :sphere, 
+                       :distance_field_name => :distance,
+                       :lat_column_name => :lat,
+                       :lng_column_name => :lng
     end
+
+
+The optional parameters are :units, :formula, and distance_field_name.  
+Values for :units can be :miles, :kms (kilometers), or :nms (nautical miles),
+with :miles as the default.  Values for :formula can be :sphere or :flat with
+:sphere as the default.  :sphere gives you Haversine calculations, while :flat 
+gives the Pythagoreum Theory.  These defaults persist through out the plug-in.
+
+The plug-in creates a calculated `distance` field on AR instances that have
+been retrieved throw a Geokit location query. By default, these fields are 
+known as "distance" but this can be changed through the `:distance_field_name` key.  
 
 You can also define alternative column names for latitude and longitude using
 the `:lat_column_name` and `:lng_column_name` keys.  The defaults are 'lat' and
 'lng' respectively.
 
-Thereafter, a set of finder methods are made available.  Below are the 
-different combinations:
+Once you've specified acts_as_mappable, a set of distance-based 
+finder methods are available:
 
 Origin as a two-element array of latititude/longitude:
 
@@ -192,9 +176,10 @@ condition alone in your SQL (there's no use calculating the distance twice):
     
 ## USING :through
 
-You can also specify a model as mappable "through" another associated model.  In other words, that associated model is the
-actual mappable model with "lat" and "lng" attributes, but this "through" model can still utilize all of the above find methods
-to search for records.
+You can also specify a model as mappable "through" another associated model.  
+In other words, that associated model is the actual mappable model with 
+"lat" and "lng" attributes, but this "through" model can still utilize
+all of the above find methods to search for records.
 
     class Location < ActiveRecord::Base
       belongs_to :locatable, :polymorphic => true
@@ -210,7 +195,7 @@ Then you can still call:
     
     Company.find_within(distance, :origin => @somewhere)
 
-You can also give :through a hash if you location is nested deep. Imagine this setup:
+You can also give :through a hash if you location is nested deep. For example, given:
 
     class House
       acts_as_mappable
@@ -225,7 +210,8 @@ You can also give :through a hash if you location is nested deep. Imagine this s
       acts_as_mappable :through => { :family => :house }
     end
 
-Remember that the notes above about USING INCLUDES apply to the results from this find, since an include is automatically used.
+Remember that the notes above about USING INCLUDES apply to the results from 
+this find, since an include is automatically used.
 
 ## IP GEOCODING
 
@@ -247,11 +233,17 @@ requesting IP address is forwarded by any front-end servers that
 are out in front of the Rails app.  Otherwise, the IP will always
 be that of the front-end server.
 
-Ip address support for the Multi-Geocoder has also now been added. Its just called through the regular MultiGeocoder class. Pass in an IP address for the parameter instead of a street address. Eg:
+The Multi-Geocoder will also geocode IP addresses and provide
+failover among multiple IP geocoders. Just pass in an IP address for the 
+parameter instead of a street address. Eg:
 
 	location = Geocoders::MultiGeocoder.geocode('12.215.42.19')
 
-The MultiGeocoder class requires 2 configuration setting for the provider order. Ordering is done through `Geokit::Geocoders::provider_order` and `Geokit::Geocoders::ip_provider_order`, found in `config/initializers/geokit_config.rb`. If you don't already have a `geokit_config.rb` file, the plugin creates one when it is first installed.
+The MultiGeocoder class requires 2 configuration setting for the provider order. 
+Ordering is done through `Geokit::Geocoders::provider_order` and 
+`Geokit::Geocoders::ip_provider_order`, found in 
+`config/initializers/geokit_config.rb`. If you don't already have a 
+`geokit_config.rb` file, the plugin creates one when it is first installed.
 
 
 ## IP GEOCODING HELPER
@@ -296,8 +288,8 @@ Geocoding is provided by the Geokit gem, which is required for this plugin.
 See the top of this file for instructions on installing the Geokit gem.
 
 Geokit can geocode addresses using multiple geocodeing web services.
-Currently, Geokit supports Google, Yahoo, and Geocoder.us geocoding 
-services. 
+Geokit supports services like Google, Yahoo, and Geocoder.us, and more --
+see the Geokit gem API for a complete list.
 
 These geocoder services are made available through the following classes: 
 GoogleGeocoder, YahooGeocoder, UsGeocoder, CaGeocoder, and GeonamesGeocoder.
@@ -314,10 +306,10 @@ instance is the result of the call.  This class has a "success"
 attribute which will be true if a successful geocoding occurred.  
 If successful, the lat and lng properties will be populated.
 
-Geocoders are named with the naming convention NameGeocoder.  This
+Geocoders are named with the convention NameGeocoder.  This
 naming convention enables Geocoder to auto-detect its sub-classes
 in order to create methods called `name_geocoder(address)` so that
-all geocoders are called through the base class.  This is done 
+all geocoders can be called through the base class.  This is done 
 purely for convenience; the individual geocoder classes are expected
 to be used independently.
 
@@ -345,7 +337,8 @@ The Geocoder.geocode method returns a GeoLoc object. Basic usage:
 
 ## REVERSE GEOCODING
 
-Currently, only the Google Geocoder supports reverse geocoding. Pass the lat/lng as a string, array or LatLng instance:
+Currently, only the Google Geocoder supports reverse geocoding. 
+Pass the lat/lng as a string, array or LatLng instance:
 
 		res=Geokit::Geocoders::GoogleGeocoder.reverse_geocode "37.791821,-122.394679"
 		=> #<Geokit::GeoLoc:0x558ed0 ...
