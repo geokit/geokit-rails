@@ -489,6 +489,26 @@ If you need to sort things post-query, you can do so:
 Obviously, each of the items in the array must have a latitude/longitude so
 they can be sorted by distance.
 
+## Database indexes
+
+MySQL can't create indexes on a calculated field such as those Geokit uses to
+calculate distance based on latitude/longitude values for a record.  However,
+indexing the lat and lng columns does improve Geokit distance calculation
+performance since the lat and lng columns are used in a straight comparison
+for distance calculation.  Assuming a Page model that is incorporating the
+Geokit plugin the migration would be as follows.
+
+    class AddIndexOPageLatAndLng < ActiveRecord::Migration
+
+      def self.up
+        add_index  :pages, [:lat, :lng]
+      end
+
+      def self.down
+        remove_index  :pages, [:lat, :lng]
+      end
+    end
+
 ## Database Compatability
 
 * Geokit works with MySQL (tested with version 5.0.41) or PostgreSQL (tested with version 8.2.6)
