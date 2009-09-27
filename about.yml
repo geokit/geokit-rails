@@ -4,6 +4,6 @@ author:
   name_2: Andre Lewis
   homepage_2: http://www.earthcode.com
 summary: Geo distance calculations, distance calculation query support, geocoding for physical and ip addresses.
-version: 1.1.2
+version: 1.1.3
 rails_version: 1.0+
 license: MIT
