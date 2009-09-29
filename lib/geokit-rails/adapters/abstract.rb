@@ -5,6 +5,10 @@ module Geokit
       
       cattr_accessor :loaded
       
+      class << self
+        def load(klass) ; end
+      end
+      
       def initialize(klass)
         @owner = klass
       end
