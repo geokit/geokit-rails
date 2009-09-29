@@ -20,7 +20,9 @@ module Geokit
   #
   # If raw SQL is desired, the distance_sql method can be used to obtain SQL appropriate
   # to use in a find_by_sql call.
-  module ActsAsMappable 
+  module ActsAsMappable
+    class UnsupportedAdapter < StandardError ; end
+    
     # Mix below class methods into ActiveRecord.
     def self.included(base) # :nodoc:
       base.extend ClassMethods
@@ -28,6 +30,7 @@ module Geokit
     
     # Class method to mix into active record.
     module ClassMethods # :nodoc:
+      
       # Class method to bring distance query support into ActiveRecord models.  By default
       # uses :miles for distance units and performs calculations based upon the Haversine
       # (sphere) formula.  These can be changed by setting Geokit::default_units and
@@ -127,7 +130,17 @@ module Geokit
 
     # Instance methods to mix into ActiveRecord.
     module SingletonMethods #:nodoc:
-
+      
+      # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
+      def adapter
+        @adapter ||= begin
+          require File.join(File.dirname(__FILE__), 'adapters', connection.adapter_name.downcase)
+          Adapters.const_get(connection.adapter_name.camelcase).new(self)
+        rescue LoadError
+          raise UnsupportedAdapter, "`#{connection.adapter_name.downcase}` is not a supported adapter."
+        end
+      end
+      
       # Extends the existing find method in potentially two ways:
       # - If a mappable instance exists in the options, adds a distance column.
       # - If a mappable instance exists in the options and the distance column exists in the
@@ -409,22 +422,8 @@ module Geokit
           lat = deg2rad(origin.lat)
           lng = deg2rad(origin.lng)
           multiplier = units_sphere_multiplier(units)
-          case connection.adapter_name.downcase
-          when "mysql"
-            sql=<<-SQL_END 
-                  (ACOS(least(1,COS(#{lat})*COS(#{lng})*COS(RADIANS(#{qualified_lat_column_name}))*COS(RADIANS(#{qualified_lng_column_name}))+
-                  COS(#{lat})*SIN(#{lng})*COS(RADIANS(#{qualified_lat_column_name}))*SIN(RADIANS(#{qualified_lng_column_name}))+
-                  SIN(#{lat})*SIN(RADIANS(#{qualified_lat_column_name}))))*#{multiplier})
-                  SQL_END
-          when "postgresql"
-            sql=<<-SQL_END 
-                  (ACOS(least(1,COS(#{lat})*COS(#{lng})*COS(RADIANS(#{qualified_lat_column_name}))*COS(RADIANS(#{qualified_lng_column_name}))+
-                  COS(#{lat})*SIN(#{lng})*COS(RADIANS(#{qualified_lat_column_name}))*SIN(RADIANS(#{qualified_lng_column_name}))+
-                  SIN(#{lat})*SIN(RADIANS(#{qualified_lat_column_name}))))*#{multiplier})
-                  SQL_END
-          else
-            sql = "unhandled #{connection.adapter_name.downcase} adapter"
-          end        
+
+          adapter.sphere_distance_sql(lat, lng, multiplier) if adapter
         end
         
         # Returns the distance SQL using the flat-world formula (Phythagorean Theory).  The SQL is tuned
@@ -432,20 +431,8 @@ module Geokit
         def flat_distance_sql(origin, units)
           lat_degree_units = units_per_latitude_degree(units)
           lng_degree_units = units_per_longitude_degree(origin.lat, units)
-          case connection.adapter_name.downcase
-          when "mysql"
-            sql=<<-SQL_END
-                  SQRT(POW(#{lat_degree_units}*(#{origin.lat}-#{qualified_lat_column_name}),2)+
-                  POW(#{lng_degree_units}*(#{origin.lng}-#{qualified_lng_column_name}),2))
-                  SQL_END
-          when "postgresql"
-            sql=<<-SQL_END
-                  SQRT(POW(#{lat_degree_units}*(#{origin.lat}-#{qualified_lat_column_name}),2)+
-                  POW(#{lng_degree_units}*(#{origin.lng}-#{qualified_lng_column_name}),2))
-                  SQL_END
-          else
-            sql = "unhandled #{connection.adapter_name.downcase} adapter"
-          end
+          
+          adapter.flat_distance_sql(origin, lat_degree_units, lng_degree_units)
         end
     end
   end

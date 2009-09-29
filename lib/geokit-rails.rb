@@ -7,6 +7,7 @@
 #
 if defined? Geokit
   require 'geokit-rails/defaults'
+  require 'geokit-rails/adapters/abstract'
   require 'geokit-rails/acts_as_mappable'
   require 'geokit-rails/ip_geocode_lookup'
   
