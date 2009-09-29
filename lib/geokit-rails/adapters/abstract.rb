@@ -3,6 +3,8 @@ module Geokit
     class Abstract
       class NotImplementedError < StandardError ; end
       
+      cattr_accessor :loaded
+      
       def initialize(klass)
         @owner = klass
       end

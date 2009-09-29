@@ -135,7 +135,9 @@ module Geokit
       def adapter
         @adapter ||= begin
           require File.join(File.dirname(__FILE__), 'adapters', connection.adapter_name.downcase)
-          Adapters.const_get(connection.adapter_name.camelcase).new(self)
+          klass = Adapters.const_get(connection.adapter_name.camelcase)
+          klass.load(self) unless klass.loaded
+          klass.new(self)
         rescue LoadError
           raise UnsupportedAdapter, "`#{connection.adapter_name.downcase}` is not a supported adapter."
         end

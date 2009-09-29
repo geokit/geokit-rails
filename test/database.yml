@@ -2,7 +2,7 @@ baes: &base
   host: localhost
   username: root
   password: 
-  
+
 mysql:
   adapter: mysql
   database: geokit_plugin_test
@@ -12,3 +12,9 @@ postgresql:
   adapter: postgresql
   database: geokit_plugin_test
   <<: *base
+
+sqlserver:
+  adapter: sqlserver
+  mode: ODBC
+  dsn: geokit_tests
+  username: ruby
