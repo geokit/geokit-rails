@@ -18,7 +18,7 @@ class EnvTestTask < Rake::TestTask
   
 end
 
-%w(sqlite mysql postgresql sqlserver).each do |configuration|
+%w(mysql postgresql sqlserver).each do |configuration|
   EnvTestTask.new("test_#{configuration}") do |t|
     t.pattern = 'test/**/*_test.rb'
     t.verbose = true
