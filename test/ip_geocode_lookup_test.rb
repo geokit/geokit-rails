@@ -10,15 +10,12 @@ class LocationAwareController < ActionController::Base #:nodoc: all
   def index
     render :nothing => true
   end
+  
+  def rescue_action(e) raise e end; 
 end
 
 class ActionController::TestRequest #:nodoc: all
   attr_accessor :remote_ip
-end
-
-# Re-raise errors caught by the controller.
-class LocationAwareController #:nodoc: all
-  def rescue_action(e) raise e end; 
 end
 
 class IpGeocodeLookupTest < ActionController::TestCase
@@ -49,7 +46,7 @@ class IpGeocodeLookupTest < ActionController::TestCase
   
   def test_location_in_cookie
     @request.remote_ip = "good ip"
-    @request.cookies['geo_location'] = CGI::Cookie.new('geo_location', @success.to_yaml)
+    @request.cookies['geo_location'] = @success.to_yaml
     get :index
     verify
   end
@@ -75,6 +72,6 @@ class IpGeocodeLookupTest < ActionController::TestCase
     assert_response :success    
     assert_equal @success, @request.session[:geo_location]
     assert_not_nil cookies['geo_location']
-    assert_equal @success, YAML.load(cookies['geo_location'].join)
+    assert_equal @success, YAML.load(cookies['geo_location'])
   end
 end
