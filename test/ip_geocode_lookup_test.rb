@@ -1,9 +1,8 @@
-require ENV['environment'] || File.join(File.dirname(__FILE__), '../../../../config/environment')
-require 'action_controller/test_process'
-require 'test/unit'
-require 'rubygems'
-require 'mocha'
+require 'test_helper'
 
+ActionController::Routing::Routes.draw do |map|
+  map.connect ':controller/:action/:id'
+end
 
 class LocationAwareController < ActionController::Base #:nodoc: all
   geocode_ip_address
@@ -22,7 +21,8 @@ class LocationAwareController #:nodoc: all
   def rescue_action(e) raise e end; 
 end
 
-class IpGeocodeLookupTest < Test::Unit::TestCase #:nodoc: all
+class IpGeocodeLookupTest < ActionController::TestCase
+  tests LocationAwareController
   
   def setup
     @success = GeoKit::GeoLoc.new
@@ -38,10 +38,6 @@ class IpGeocodeLookupTest < Test::Unit::TestCase #:nodoc: all
     @failure.provider = "hostip"
     @failure.city = "(Private Address)"
     @failure.success = false
-    
-    @controller = LocationAwareController.new
-    @request = ActionController::TestRequest.new
-    @response = ActionController::TestResponse.new
   end
 
   def test_no_location_in_cookie_or_session

@@ -2,15 +2,10 @@ require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
 
+load 'test/tasks.rake'
+
 desc 'Default: run unit tests.'
 task :default => :test
-
-desc 'Test the GeoKit plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
-end
 
 desc 'Generate documentation for the GeoKit plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|

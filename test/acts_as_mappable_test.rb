@@ -1,75 +1,12 @@
-require 'rubygems'
-require 'mocha'
-require File.join(File.dirname(__FILE__), 'test_helper')
+require 'test_helper'
+
 
 Geokit::Geocoders::provider_order = [:google, :us]
 
-# Uses defaults
-class Company < ActiveRecord::Base #:nodoc: all
-  has_many :locations
-end
-
-# Configures everything.
-class Location < ActiveRecord::Base #:nodoc: all
-  belongs_to :company
-  acts_as_mappable
-end
-
-# for auto_geocode
-class Store < ActiveRecord::Base
-  acts_as_mappable :auto_geocode => true
-end
-
-# Uses deviations from conventions.
-class CustomLocation < ActiveRecord::Base #:nodoc: all
-  belongs_to :company
-  acts_as_mappable :distance_column_name => 'dist', 
-                   :default_units => :kms, 
-                   :default_formula => :flat, 
-                   :lat_column_name => 'latitude', 
-                   :lng_column_name => 'longitude'
-                   
-  def to_s
-    "lat: #{latitude} lng: #{longitude} dist: #{dist}"
-  end
-end
-
-# Used by :through
-class MockAddress < ActiveRecord::Base #:nodoc: all
-  belongs_to :addressable, :polymorphic => true
-  acts_as_mappable
-end
-
-# Uses :through
-class MockOrganization < ActiveRecord::Base #:nodoc: all
-  has_one :mock_address, :as => :addressable
-  acts_as_mappable :through => :mock_address
-end
-
-# Uses :through => {}
-class MockHouse < ActiveRecord::Base
-  acts_as_mappable
-end
-
-class MockFamily < ActiveRecord::Base
-  belongs_to :mock_house
-end
-
-class MockPerson < ActiveRecord::Base
-  belongs_to :mock_family
-  acts_as_mappable :through => { :mock_family => :mock_house }
-end
-
-class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
-    
-  LOCATION_A_IP = "217.10.83.5"  
-    
-  self.fixture_path = File.dirname(__FILE__) + '/fixtures'  
-  self.use_transactional_fixtures = true
-  self.use_instantiated_fixtures  = false
-  self.pre_loaded_fixtures = true
-  fixtures :all
-
+class ActsAsMappableTest < GeokitTestCase
+  
+  LOCATION_A_IP = "217.10.83.5"
+  
   def setup
     @location_a = GeoKit::GeoLoc.new
     @location_a.lat = 32.918593
@@ -88,7 +25,7 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
     @custom_loc_a = custom_locations(:a)
     @loc_e = locations(:e)
     @custom_loc_e = custom_locations(:e)
-
+  
     @barnes_and_noble = mock_organizations(:barnes_and_noble)
     @address = mock_addresses(:address_barnes_and_noble)
   end
@@ -192,7 +129,7 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
     locations = Location.count(:origin => @loc_a, :conditions => ["distance < ? and city = ?", 5, 'Coppell'])
     assert_equal 2, locations
   end
-
+  
   def test_find_beyond
     locations = Location.find_beyond(3.95, :origin => @loc_a)
     assert_equal 1, locations.size    
@@ -227,7 +164,7 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
     locations = Location.count(:origin => @loc_a, :range => 0..10, :conditions => ["city = ?", 'Coppell'])
     assert_equal 2, locations
   end
-
+  
   def test_find_range_with_token_with_hash_conditions
     locations = Location.find(:all, :origin => @loc_a, :range => 0..10, :conditions => {:city => 'Coppell'})
     assert_equal 2, locations.size
@@ -463,17 +400,17 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
     locations = Location.count(:origin =>[@loc_a.lat,@loc_a.lng], :conditions => "distance < 3.97")
     assert_equal 5, locations
   end
-
-
+  
+  
   # Bounding box tests
-
+  
   def test_find_within_bounds
     locations = Location.find_within_bounds([@sw,@ne])
     assert_equal 2, locations.size
     locations = Location.count_within_bounds([@sw,@ne])
     assert_equal 2, locations
   end
-
+  
   def test_find_within_bounds_ordered_by_distance
     locations = Location.find_within_bounds([@sw,@ne], :origin=>@bounds_center, :order=>'distance asc')
     assert_equal locations[0], locations(:d)
@@ -486,22 +423,22 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
     locations = Location.count(:bounds=>[@sw,@ne])
     assert_equal 2, locations  
   end
-
+  
   def test_find_within_bounds_with_string_conditions
     locations = Location.find(:all, :bounds=>[@sw,@ne], :conditions=>"id !=#{locations(:a).id}")
     assert_equal 1, locations.size
   end
-
+  
   def test_find_within_bounds_with_array_conditions
     locations = Location.find(:all, :bounds=>[@sw,@ne], :conditions=>["id != ?", locations(:a).id])
     assert_equal 1, locations.size
   end
-
+  
   def test_find_within_bounds_with_hash_conditions
     locations = Location.find(:all, :bounds=>[@sw,@ne], :conditions=>{:id => locations(:a).id})
     assert_equal 1, locations.size
   end
-
+  
   def test_auto_geocode
     GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with("Irving, TX").returns(@location_a)
     store=Store.new(:address=>'Irving, TX')
@@ -510,7 +447,7 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
     assert_equal store.lng,@location_a.lng
     assert_equal 0, store.errors.size
   end
-
+  
   def test_auto_geocode_failure
     GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with("BOGUS").returns(GeoKit::GeoLoc.new)
     store=Store.new(:address=>'BOGUS')
@@ -527,7 +464,7 @@ class ActsAsMappableTest < ActiveSupport::TestCase #:nodoc: all
     organizations = MockOrganization.count(:origin => @location_a, :conditions => "distance < 3.97")
     assert_equal 1, organizations
   end
-
+  
   def test_find_with_through_with_hash
     people = MockPerson.find(:all, :origin => @location_a, :order => 'distance ASC')
     assert_equal 2, people.size

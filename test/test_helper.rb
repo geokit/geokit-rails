@@ -1,23 +1,23 @@
-ENV["RAILS_ENV"] = "test"
-require "test/unit"
-require "rubygems"
-#require File.dirname(__FILE__) + '/../init'
+require 'rubygems'
+require 'mocha'
+
+require 'boot'
+
 require 'geokit'
+require 'geokit-rails'
 
-plugin_test_dir = File.dirname(__FILE__)
 
-# Load the Rails environment
-require ENV['environment'] || File.join(plugin_test_dir, '../../../../config/environment')
-require 'test_help'
-#require 'active_record/fixtures'
-databases = YAML::load(IO.read(plugin_test_dir + '/database.yml'))
-ActiveRecord::Base.logger = Logger.new(plugin_test_dir + "/debug.log")
-
-# A specific database can be used by setting the DB environment variable
-ActiveRecord::Base.establish_connection(databases[ENV['DB'] || 'mysql'])
-
-# Load the test schema into the database
-load(File.join(plugin_test_dir, 'schema.rb'))
-
-# Load fixtures from the plugin
-#Test::Unit::TestCase.fixture_path = File.join(plugin_test_dir, 'fixtures/')
+class GeokitTestCase < ActiveSupport::TestCase
+  begin
+    include ActiveRecord::TestFixtures
+  rescue NameError
+    puts "You appear to be using a pre-2.3 version of Rails. No need to include ActiveRecord::TestFixtures."
+  end
+  
+  self.fixture_path = File.join(File.dirname(__FILE__), 'fixtures')
+  self.use_transactional_fixtures = true
+  self.use_instantiated_fixtures  = false
+  
+  fixtures :all
+  
+end

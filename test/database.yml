@@ -1,12 +1,14 @@
-mysql:
-  adapter: mysql
-  host: localhost
-  username: root
-  password:
-  database: geokit_plugin_test
-postgresql:
-  adapter: postgresql
+baes: &base
   host: localhost
   username: root
   password: 
+  
+mysql:
+  adapter: mysql
   database: geokit_plugin_test
+  <<: *base
+
+postgresql:
+  adapter: postgresql
+  database: geokit_plugin_test
+  <<: *base
