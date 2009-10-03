@@ -1,9 +1,13 @@
+== 2009-10-02 / Version 1.2.0
+* Overhaul the test suite to be independent of a Rails project
+* Added concept of database adapter. Ported mysql/postgresql conditional code to their own adapter.
+* Added SQL Server support. THANKS http://github.com/brennandunn for all the improvements in this release
+
 == 2009-09-26 / Version 1.1.3
 * documentation updates and updated to work with Geokit gem v1.5.0
 * IMPORTANT: in the Geokit gem, Geokit::Geocoders::timeout became Geokit::Geocoders::request_timeout for jruby compatibility.
 The plugin sets this in config/initializers/geokit_config.rb. So if you've upgraded the gem to 1.5.0, you need to
 make the change manually from Geokit::Geocoders::timeout to Geokit::Geocoders::request_timeout in config/initializers/geokit_config.rb
-
 
 == 2009-06-08 / Version 1.1.2
 * Added support for hashes in :through. So you can do: acts_as_mappable :through => { :state => :country } (Thanks José Valim).
