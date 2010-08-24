@@ -1,15 +1,12 @@
 require 'active_support'
 require 'active_support/test_case'
 
-require 'test/unit'
-require 'test/unit/testcase'
-require 'active_support/testing/setup_and_teardown'
-
 require 'active_record'
 require 'active_record/fixtures'
 
 require 'action_controller'
-require 'action_controller/test_process'
+require 'action_dispatch'
+require 'action_dispatch/testing/test_process'
 
 PLUGIN_ROOT = File.join(File.dirname(__FILE__), '..')
 ADAPTER = ENV['DB'] || 'mysql'
