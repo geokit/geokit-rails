@@ -559,3 +559,14 @@ config.gem "geokit"
 
 Try installing the gem manually (sudo gem install geokit), then adding a `require 'geokit'` to the top of 
 `vendor/plugins/geokit-rails/init.rb` and/or `config/geokit_config.rb`.
+
+## TEST SUITE
+
+To run the test suite, you need to have the following gems (ideally in a RVM Gemset) :
+- rails (~> 3)
+- mysql
+- mocha
+- geokit
+
+You also need a database named **geokit\_plugin\_test**. You can tweak the database configuration in _test/database.yml_.
+
