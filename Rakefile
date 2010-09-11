@@ -12,7 +12,7 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "geokit-rails"
+  gem.name = "geokit_rails"
   gem.summary = %Q{Use Geokit with Rails 3}
   gem.description = %Q{Integrate Geokit with Rails 3}
   gem.email = ["andre@earthcode.com", "bill_eisenhauer@yahoo.com"]
@@ -50,7 +50,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "geokit-rails #{version}"
+  rdoc.title = "geokit_rails #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
