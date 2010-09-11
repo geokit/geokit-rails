@@ -24,73 +24,64 @@ module Geokit
   # If raw SQL is desired, the distance_sql method can be used to obtain SQL appropriate
   # to use in a find_by_sql call.
   module ActsAsMappable
-    extend ActiveSupport::Concern
     
     class UnsupportedAdapter < StandardError ; end
+    
+    # Add the +acts_as_mappable+ method into ActiveRecord subclasses
+    module Glue # :nodoc:
+      extend ActiveSupport::Concern
+      
+      module ClassMethods # :nodoc:
+        def acts_as_mappable(options = {})
+          metaclass = (class << self; self; end)
+        
+          self.send :include, Geokit::ActsAsMappable
+          
+          cattr_accessor :through
+          self.through = options[:through]
+        
+          if reflection = Geokit::ActsAsMappable.end_of_reflection_chain(self.through, self)
+            metaclass.instance_eval do
+              [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name ].each do |method_name|
+                define_method method_name do
+                  reflection.klass.send(method_name)
+                end
+              end
+            end
+          else
+            cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
+        
+            self.distance_column_name = options[:distance_column_name]  || 'distance'
+            self.default_units = options[:default_units] || Geokit::default_units
+            self.default_formula = options[:default_formula] || Geokit::default_formula
+            self.lat_column_name = options[:lat_column_name] || 'lat'
+            self.lng_column_name = options[:lng_column_name] || 'lng'
+            self.qualified_lat_column_name = "#{table_name}.#{lat_column_name}"
+            self.qualified_lng_column_name = "#{table_name}.#{lng_column_name}"
+        
+            if options.include?(:auto_geocode) && options[:auto_geocode]
+              # if the form auto_geocode=>true is used, let the defaults take over by suppling an empty hash
+              options[:auto_geocode] = {} if options[:auto_geocode] == true 
+              cattr_accessor :auto_geocode_field, :auto_geocode_error_message
+              self.auto_geocode_field = options[:auto_geocode][:field] || 'address'
+              self.auto_geocode_error_message = options[:auto_geocode][:error_message] || 'could not locate address'
+        
+              # set the actual callback here
+              before_validation :auto_geocode_address, :on => :create
+            end
+          end
+        end
+      end
+    end # Glue
+    
+    extend ActiveSupport::Concern
     
     included do
       include Geokit::Mappable
     end
     
-    # Class method to mix into active record.
-    module ClassMethods # :nodoc:
-      
-      # Class method to bring distance query support into ActiveRecord models.  By default
-      # uses :miles for distance units and performs calculations based upon the Haversine
-      # (sphere) formula.  These can be changed by setting Geokit::default_units and
-      # Geokit::default_formula.  Also, by default, uses lat, lng, and distance for respective
-      # column names.  All of these can be overridden using the :default_units, :default_formula,
-      # :lat_column_name, :lng_column_name, and :distance_column_name hash keys.
-      # 
-      # Can also use to auto-geocode a specific column on create. Syntax;
-      #   
-      #   acts_as_mappable :auto_geocode=>true
-      # 
-      # By default, it tries to geocode the "address" field. Or, for more customized behavior:
-      #   
-      #   acts_as_mappable :auto_geocode=>{:field=>:address,:error_message=>'bad address'}
-      #   
-      # In both cases, it creates a before_validation_on_create callback to geocode the given column.
-      # For anything more customized, we recommend you forgo the auto_geocode option
-      # and create your own AR callback to handle geocoding.
-      def acts_as_mappable(options = {})
-        metaclass = (class << self; self; end)
-        
-        cattr_accessor :through
-        self.through = options[:through]
-        
-        if reflection = Geokit::ActsAsMappable.end_of_reflection_chain(self.through, self)
-          metaclass.instance_eval do
-            [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name ].each do |method_name|
-              define_method method_name do
-                reflection.klass.send(method_name)
-              end
-            end
-          end
-        else
-          cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
-        
-          self.distance_column_name = options[:distance_column_name]  || 'distance'
-          self.default_units = options[:default_units] || Geokit::default_units
-          self.default_formula = options[:default_formula] || Geokit::default_formula
-          self.lat_column_name = options[:lat_column_name] || 'lat'
-          self.lng_column_name = options[:lng_column_name] || 'lng'
-          self.qualified_lat_column_name = "#{table_name}.#{lat_column_name}"
-          self.qualified_lng_column_name = "#{table_name}.#{lng_column_name}"
-        
-          if options.include?(:auto_geocode) && options[:auto_geocode]
-            # if the form auto_geocode=>true is used, let the defaults take over by suppling an empty hash
-            options[:auto_geocode] = {} if options[:auto_geocode] == true 
-            cattr_accessor :auto_geocode_field, :auto_geocode_error_message
-            self.auto_geocode_field = options[:auto_geocode][:field] || 'address'
-            self.auto_geocode_error_message = options[:auto_geocode][:error_message] || 'could not locate address'
-        
-            # set the actual callback here
-            before_validation_on_create :auto_geocode_address
-          end
-        end
-        
-      end
+    # Class methods included in models when +acts_as_mappable+ is called
+    module ClassMethods
       
       # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
       def adapter
@@ -397,7 +388,7 @@ module Geokit
         
         adapter.flat_distance_sql(origin, lat_degree_units, lng_degree_units)
       end
-
+      
     end # ClassMethods
 
     # this is the callback for auto_geocoding
@@ -433,7 +424,7 @@ module Geokit
     
       reflection
     end
-
+    
   end # ActsAsMappable
 end # Geokit
 
