@@ -9,6 +9,11 @@ module Geokit
         ActiveRecord::Base.send(:include, Geokit::ActsAsMappable::Glue)
       end
     end
+    initializer 'geokit_rails.insert_into_action_controller' do
+      ActiveSupport.on_load :action_controller do
+        ActionController::Base.send(:include, Geokit::GeocoderControl)
+      end
+    end
   end
   
 end
