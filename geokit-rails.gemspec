@@ -9,23 +9,26 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andre Lewis", "Bill Eisenhauer", "Jeremy Lecour"]
-  s.date = %q{2010-09-10}
+  s.date = %q{2010-09-11}
   s.description = %q{Integrate Geokit with Rails 3}
   s.email = ["andre@earthcode.com", "bill_eisenhauer@yahoo.com"]
   s.extra_rdoc_files = [
     "README.markdown"
   ]
   s.files = [
-    ".DS_Store",
-    ".bundle/config",
     ".gitignore",
     "CHANGELOG.rdoc",
     "Gemfile",
+    "Gemfile.lock",
     "MIT-LICENSE",
     "README.markdown",
     "Rakefile",
     "VERSION",
-    "lib/geokit-rails.rb"
+    "geokit-rails.gemspec",
+    "lib/geokit-rails.rb",
+    "lib/geokit-rails/acts_as_mappable.rb",
+    "lib/geokit-rails/core_extensions.rb",
+    "lib/geokit-rails/railtie.rb"
   ]
   s.homepage = %q{http://github.com/andre/geokit-rails}
   s.require_paths = ["lib"]
