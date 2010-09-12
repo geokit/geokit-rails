@@ -547,9 +547,9 @@ Follow the Google Group for updates and discussion on Geokit: http://groups.goog
 
 ## IMPORTANT POST-INSTALLATION NOTES: 
 
-*1. The configuration file*: Geokit for Rails uses a configuration file in config/initializers. 
+*1. The configuration*: Geokit for Rails uses a Railtie with a configuration routine. 
 You *must* add your own keys for the various geocoding services if you want to use geocoding. 
-If you need to refer to the original template again, see the `assets/api_keys_template` file.
+Look at the CONGIG file for possible configuration key/values.
 
 *2. The gem dependency*: Geokit for Rails depends on the Geokit gem. Tell Rails about this 
 dependency in `config/environment.rb`, within the initializer block:
