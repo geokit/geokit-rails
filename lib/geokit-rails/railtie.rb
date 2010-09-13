@@ -1,4 +1,4 @@
-require 'geokit_rails'
+require 'geokit-rails'
 require 'rails'
 
 module Geokit
@@ -8,13 +8,13 @@ module Geokit
     config.geokit = ActiveSupport::OrderedOptions.new
     config.geokit.geocoders = ActiveSupport::OrderedOptions.new
     
-    initializer 'geokit_rails.insert_into_active_record' do
+    initializer 'geokit-rails.insert_into_active_record' do
       ActiveSupport.on_load :active_record do
         ActiveRecord::Base.send(:include, Geokit::ActsAsMappable::Glue)
       end
     end
     
-    initializer 'geokit_rails.insert_into_action_controller' do
+    initializer 'geokit-rails.insert_into_action_controller' do
       ActiveSupport.on_load :action_controller do
         ActionController::Base.send(:include, Geokit::GeocoderControl)
         ActionController::Base.send(:include, GeoKit::IpGeocodeLookup)
