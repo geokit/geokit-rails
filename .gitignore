@@ -1,4 +1,7 @@
+# Test log files
 test/*-debug.log
+
+# SVN
 .svn
 
 # RVM
