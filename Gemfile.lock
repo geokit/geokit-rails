@@ -45,6 +45,9 @@ GEM
       mime-types
       treetop (>= 1.4.5)
     mime-types (1.16)
+    mocha (0.9.8)
+      rake
+    mysql (2.8.1)
     polyglot (0.3.1)
     rack (1.2.1)
     rack-mount (0.6.13)
@@ -78,5 +81,7 @@ DEPENDENCIES
   bundler (~> 1.0.0)
   geokit (~> 1.5.0)
   jeweler (~> 1.5.0.pre3)
+  mocha (~> 0.9.8)
+  mysql (~> 2.8.1)
   rails (~> 3.0.0)
   rcov
