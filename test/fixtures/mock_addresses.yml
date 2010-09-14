@@ -1,0 +1,17 @@
+address_starbucks:
+  addressable: starbucks (MockOrganization)
+  street: 106 N Denton Tap Rd # 350
+  city: Coppell
+  state: TX
+  postal_code: 75019
+  lat: 32.969527
+  lng: -96.990159
+  
+address_barnes_and_noble:
+  addressable: barnes_and_noble (MockOrganization)
+  street: 5904 N Macarthur Blvd # 160
+  city: Irving
+  state: TX
+  postal_code: 75039
+  lat: 32.895155
+  lng: -96.958444

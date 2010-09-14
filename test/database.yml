@@ -1,0 +1,20 @@
+baes: &base
+  host: localhost
+  username: tests
+  password: 
+
+mysql:
+  adapter: mysql
+  database: geokit_rails_tests
+  <<: *base
+
+postgresql:
+  adapter: postgresql
+  database: geokit_rails_tests
+  <<: *base
+
+sqlserver:
+  adapter: sqlserver
+  mode: ODBC
+  dsn: geokit_rails_tests
+  username: tests
