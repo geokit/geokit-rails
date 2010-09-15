@@ -15,7 +15,8 @@ pwd = Pathname.new(File.dirname(__FILE__)).expand_path
 PLUGIN_ROOT = pwd + '..'
 ADAPTER = ENV['DB'] || 'mysql'
 
-$LOAD_PATH << (PLUGIN_ROOT + 'lib') << (PLUGIN_ROOT + 'test/models')
+$LOAD_PATH << (PLUGIN_ROOT + 'lib')
+$LOAD_PATH << (PLUGIN_ROOT + 'test/models')
 
 config_file = PLUGIN_ROOT + 'test/database.yml'
 db_config   = YAML::load(IO.read(config_file))
