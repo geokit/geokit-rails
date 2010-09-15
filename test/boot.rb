@@ -1,14 +1,15 @@
 require 'pathname'
 
-require 'active_support'
+require 'test/unit'
 require 'active_support/test_case'
 
 require 'active_record'
+require 'active_record/test_case'
 require 'active_record/fixtures'
 
-require 'action_controller'
-require 'action_dispatch'
-require 'action_dispatch/testing/test_process'
+# require 'action_controller'
+# require 'action_dispatch'
+# require 'action_dispatch/testing/test_process'
 
 pwd = Pathname.new(File.dirname(__FILE__)).expand_path
 PLUGIN_ROOT = pwd + '..'

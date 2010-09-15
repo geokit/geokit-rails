@@ -1,6 +1,5 @@
 require 'test_helper'
 
-
 Geokit::Geocoders::provider_order = [:google, :us]
 
 class ActsAsMappableTest < GeokitTestCase
