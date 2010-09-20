@@ -12,6 +12,7 @@ require 'active_record/fixtures'
 # require 'action_dispatch/testing/test_process'
 
 pwd = Pathname.new(File.dirname(__FILE__)).expand_path
+
 PLUGIN_ROOT = pwd + '..'
 ADAPTER = ENV['DB'] || 'mysql'
 
