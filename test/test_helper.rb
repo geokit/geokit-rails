@@ -6,6 +6,8 @@ require 'boot'
 require 'geokit'
 require 'geokit-rails'
 
+ActiveRecord::Base.send(:include, Geokit::ActsAsMappable::Glue)
+
 class GeokitTestCase < ActiveSupport::TestCase
   begin
     include ActiveRecord::TestFixtures
