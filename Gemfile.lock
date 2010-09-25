@@ -1,3 +1,10 @@
+PATH
+  remote: .
+  specs:
+    geokit-rails (0.0.2)
+      geokit (~> 1.5.0)
+      rails (~> 3.0.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -34,13 +41,8 @@ GEM
     erubis (2.6.6)
       abstract (>= 1.0.0)
     geokit (1.5.0)
-    git (1.2.5)
     i18n (0.4.1)
-    jeweler (1.5.0.pre3)
-      bundler (~> 1.0.0)
-      git (>= 1.2.5)
-      rake
-    mail (2.2.5)
+    mail (2.2.6.1)
       activesupport (>= 2.3.6)
       mime-types
       treetop (>= 1.4.5)
@@ -52,7 +54,7 @@ GEM
     rack (1.2.1)
     rack-mount (0.6.13)
       rack (>= 1.0.0)
-    rack-test (0.5.4)
+    rack-test (0.5.5)
       rack (>= 1.0)
     rails (3.0.0)
       actionmailer (= 3.0.0)
@@ -68,8 +70,8 @@ GEM
       rake (>= 0.8.4)
       thor (~> 0.14.0)
     rake (0.8.7)
-    rcov (0.9.8)
-    thor (0.14.0)
+    rcov (0.9.9)
+    thor (0.14.2)
     treetop (1.4.8)
       polyglot (>= 0.3.1)
     tzinfo (0.3.23)
@@ -78,9 +80,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.0.0)
+  bundler (>= 1.0.0)
   geokit (~> 1.5.0)
-  jeweler (~> 1.5.0.pre3)
+  geokit-rails!
   mocha (~> 0.9.8)
   mysql (~> 2.8.1)
   rails (~> 3.0.0)
