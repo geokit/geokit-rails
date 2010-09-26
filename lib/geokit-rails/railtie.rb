@@ -26,7 +26,6 @@ module Geokit
       geocoders_options = options.delete(:geocoders)
       
       options.each do |k,v|
-        g [k,v]
         Geokit::send("#{k}=", v)
       end
       geocoders_options.each do |k,v|
