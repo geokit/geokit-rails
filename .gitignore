@@ -7,6 +7,9 @@ test/*-debug.log
 # RVM
 .rvmrc
 
+# TextMate
+*.tmproj
+
 # rcov generated
 coverage
 
