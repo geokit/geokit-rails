@@ -17,12 +17,13 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'rails', '~> 3.0.0'
   s.add_runtime_dependency 'geokit', '~> 1.5.0'
 
-  s.add_development_dependency "bundler", ">= 1.0.0"
+  s.add_development_dependency "bundler", "~> 1.0.0"
   s.add_development_dependency "rcov", "~> 0.9.9"
   s.add_development_dependency "mocha", "~> 0.9.8"
   s.add_development_dependency "mysql", "~> 2.8.1"
 
-  s.files        = `git ls-files`.split("\n")
-  s.executables  = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
-  s.require_path = 'lib'
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.require_paths = ["lib"]
 end
