@@ -18,5 +18,4 @@ module Geokit
       end
     EOS
   end
-  Geokit::Geocoders.logger = Rails.logger
 end
