@@ -1,18 +1,18 @@
 ## INSTALLATION
   
-Geokit consists of a Gem ([geokit-gem](http://github.com/andre/geokit-gem/tree/master)) and a Rails plugin ([geokit-rails](http://github.com/andre/geokit-rails/tree/master)).
+Geokit consists of a Gem ([geokit-gem](http://github.com/andre/geokit-gem/tree/master)) and a Rails plugin ([geokit-rails3](http://github.com/andre/geokit-rails3/tree/master)).
 
 Make sure you use a version >= 3.0 of Rails.
 
-You just have to add the 'geokit-rails' gem to your Gemfile
+You just have to add the 'geokit-rails3' gem to your Gemfile
 
-    gem 'geokit-rails'
+    gem 'geokit-rails3'
 
 Then tell bundler to update the gems :
 
     $ bundle install
     
-If you want to use geokit-rails in a Rails 2 application, just use the good old plugin.
+If you want to use geokit-rails3 in a Rails 2 application, just use the good old plugin.
 
 
 ## FEATURE SUMMARY
@@ -551,4 +551,4 @@ config.gem "geokit"
 *If you're having trouble with dependencies ....*
 
 Try installing the gem manually (sudo gem install geokit), then adding a `require 'geokit'` to the top of 
-`vendor/plugins/geokit-rails/init.rb` and/or `config/geokit_config.rb`.
+`vendor/plugins/geokit-rails3/init.rb` and/or `config/geokit_config.rb`.

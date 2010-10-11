@@ -4,7 +4,7 @@ require 'pathname'
 require 'boot'
 
 require 'geokit'
-require 'geokit-rails'
+require 'geokit-rails3'
 
 ActiveRecord::Base.send(:include, Geokit::ActsAsMappable::Glue)
 
