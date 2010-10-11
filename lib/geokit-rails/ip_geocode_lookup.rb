@@ -1,4 +1,5 @@
 require 'yaml'
+require 'active_support/concern'
 
 module Geokit 
   # Contains a class method geocode_ip_address which can be used to enable automatic geocoding
@@ -6,10 +7,7 @@ module Geokit
   # session to minimize web service calls.  The point of the helper is to enable location-based
   # websites to have a best-guess for new visitors.
   module IpGeocodeLookup
-    # Mix below class methods into ActionController.
-    def self.included(base) # :nodoc:
-      base.extend ClassMethods
-    end
+    extend ActiveSupport::Concern
     
     # Class method to mix into active record.
     module ClassMethods # :nodoc:

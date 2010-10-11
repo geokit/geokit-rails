@@ -1,25 +1,32 @@
-require 'active_support'
-require 'active_support/test_case'
+require 'pathname'
 
 require 'test/unit'
-require 'test/unit/testcase'
-require 'active_support/testing/setup_and_teardown'
+require 'active_support/test_case'
 
 require 'active_record'
+require 'active_record/test_case'
 require 'active_record/fixtures'
 
-require 'action_controller'
-require 'action_controller/test_process'
+# require 'action_controller'
+# require 'action_dispatch'
+# require 'action_dispatch/testing/test_process'
 
-PLUGIN_ROOT = File.join(File.dirname(__FILE__), '..')
+pwd = Pathname.new(File.dirname(__FILE__)).expand_path
+
+PLUGIN_ROOT = pwd + '..'
 ADAPTER = ENV['DB'] || 'mysql'
 
-$LOAD_PATH << File.join(PLUGIN_ROOT, 'lib') << File.join(PLUGIN_ROOT, 'test', 'models')
+$LOAD_PATH << (PLUGIN_ROOT + 'lib')
+$LOAD_PATH << (PLUGIN_ROOT + 'test/models')
 
-FIXTURES_PATH = File.join(PLUGIN_ROOT, 'test', 'fixtures')
-ActiveRecord::Base.configurations = config = YAML::load(IO.read(File.join(PLUGIN_ROOT, 'test', 'database.yml')))
-ActiveRecord::Base.logger = Logger.new(File.join(PLUGIN_ROOT, 'test', "#{ADAPTER}-debug.log"))
-ActiveRecord::Base.establish_connection(config[ADAPTER])
+config_file = PLUGIN_ROOT + 'test/database.yml'
+db_config   = YAML::load(IO.read(config_file))
+logger_file = PLUGIN_ROOT + "test/#{ADAPTER}-debug.log"
+schema_file = PLUGIN_ROOT + 'test/schema.rb'
+
+ActiveRecord::Base.configurations = db_config
+ActiveRecord::Base.logger = Logger.new(logger_file)
+ActiveRecord::Base.establish_connection(db_config[ADAPTER])
 
 ActiveRecord::Migration.verbose = false
-load File.join(PLUGIN_ROOT, 'test', 'schema.rb')
+load schema_file

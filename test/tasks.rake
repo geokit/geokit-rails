@@ -1,12 +1,5 @@
 require 'rake/testtask'
 
-desc 'Test the GeoKit plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
-  t.libs << 'test'
-end
-
 class EnvTestTask < Rake::TestTask
   attr_accessor :env
   
@@ -16,6 +9,13 @@ class EnvTestTask < Rake::TestTask
     env.keys.each { |key| ENV.delete(key) } if env
   end
   
+end
+
+desc 'Test the GeoKit plugin.'
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/**/test_*.rb'
+  test.verbose = true
 end
 
 %w(mysql postgresql sqlserver).each do |configuration|
@@ -29,3 +29,10 @@ end
 
 desc 'Test available databases.'
 task :test_databases => %w(test_mysql test_postgresql test_sqlserver)
+
+require 'rcov/rcovtask'
+Rcov::RcovTask.new do |test|
+  test.libs << 'test'
+  test.pattern = 'test/**/test_*.rb'
+  test.verbose = true
+end

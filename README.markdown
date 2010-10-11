@@ -2,23 +2,18 @@
   
 Geokit consists of a Gem ([geokit-gem](http://github.com/andre/geokit-gem/tree/master)) and a Rails plugin ([geokit-rails](http://github.com/andre/geokit-rails/tree/master)).
 
-#### 1. Install the Rails plugin:
+Make sure you use a version >= 3.0 of Rails.
 
-    cd [YOUR_RAILS_APP_ROOT]
-    script/plugin install git://github.com/andre/geokit-rails.git
+You just have to add the 'geokit-rails' gem to your Gemfile
+
+    gem 'geokit-rails'
+
+Then tell bundler to update the gems :
+
+    $ bundle install
     
-#### 2. Add this line to your environment.rb 
-(inside the Rails::Initializer.run do |config| block)
+If you want to use geokit-rails in a Rails 2 application, just use the good old plugin.
 
-		config.gem "geokit"
-
-This informs Rails of the gem dependency.
-
-#### 3. Tell Rails to install the gem:
-
-		rake gems:install
-
-And you're good to go! If you're running an older verion of Rails, just install the gem manually: `sudo gem install rails`
 
 ## FEATURE SUMMARY
 
@@ -65,11 +60,11 @@ There are some defaults you can override:
     end
 
 
-The optional parameters are :units, :formula, and distance_field_name.  
-Values for :units can be :miles, :kms (kilometers), or :nms (nautical miles),
-with :miles as the default.  Values for :formula can be :sphere or :flat with
-:sphere as the default.  :sphere gives you Haversine calculations, while :flat 
-gives the Pythagoreum Theory.  These defaults persist through out the plug-in.
+The optional parameters are `units`, `formula`, and `distance_field_name`.  
+Values for **units** can be `:miles`, `:kms` (kilometers), or `:nms` (nautical miles),
+with `:miles` as the default.  Values for **formula** can be `:sphere` or `:flat` with
+`:sphere` as the default.  `:sphere` gives you Haversine calculations, while `:flat` 
+gives the Pythagoreum Theory.  These defaults persist through out the gem.
 
 The plug-in creates a calculated `distance` field on AR instances that have
 been retrieved throw a Geokit location query. By default, these fields are 
@@ -79,82 +74,80 @@ You can also define alternative column names for latitude and longitude using
 the `:lat_column_name` and `:lng_column_name` keys.  The defaults are 'lat' and
 'lng' respectively.
 
-Once you've specified acts_as_mappable, a set of distance-based 
-finder methods are available:
+Once you've specified `acts_as_mappable`, a set of distance-based 
+scopes are available:
 
 Origin as a two-element array of latititude/longitude:
 
-		find(:all, :origin => [37.792,-122.393])
+		Location.origin([37.792,-122.393])
 
 Origin as a geocodeable string:
 
-		find(:all, :origin => '100 Spear st, San Francisco, CA')
+		Location.origin('100 Spear st, San Francisco, CA')
 
 Origin as an object which responds to lat and lng methods, 
 or latitude and longitude methods, or whatever methods you have 
 specified for `lng_column_name` and `lat_column_name`:
 
-		find(:all, :origin=>my_store) # my_store.lat and my_store.lng methods exist
+		Location.origin(my_store) # my_store.lat and my_store.lng methods exist
 
 Often you will need to find within a certain distance. The prefered syntax is:
 
-    find(:all, :origin => @somewhere, :within => 5)
+    Location.origin(@somewhere).within(5)
     
 . . . however these syntaxes will also work:
 
-    find_within(5, :origin => @somewhere)
-    find(:all, :origin => @somewhere, :conditions => "distance < 5")
+    find.origin(@somewhere).where("distance < 5")
     
-Note however that the third form should be avoided. With either of the first two,
+Note however that the second form should be avoided. With the first,
 Geokit automatically adds a bounding box to speed up the radial query in the database.
-With the third form, it does not.
+With the second form, it does not.
 
 If you need to combine distance conditions with other conditions, you should do
 so like this:
 
-    find(:all, :origin => @somewhere, :within => 5, :conditions=>['state=?',state])
+    Location.origin(@somewhere).within(5).where(:state => state)
 
-If :origin is not provided in the finder call, the find method 
-works as normal.  Further, the key is removed
-from the :options hash prior to invoking the superclass behavior.
+If the _within_ scope is called without an _origin_ scope, it is simply ignored.
 
-Other convenience methods work intuitively and are as follows:
+Other convenience scopes work intuitively and are as follows:
 
-    find_within(distance, :origin => @somewhere)
-    find_beyond(distance, :origin => @somewhere)
-    find_closest(:origin => @somewhere)
-    find_farthest(:origin => @somewhere)
-
-where the options respect the defaults, but can be overridden if 
-desired.  
+    Location.origin(@somewhere).beyond(5)
+    Location.closest(@somewhere)
+    Location.farthest(@somewhere)
+    
+The `closest` and `farthest` scopes just add a `limit(1)` in the scopes chain.
 
 Lastly, if all that is desired is the raw SQL for distance 
 calculations, you can use the following:
 
-    distance_sql(origin, units=default_units, formula=default_formula)
+    Location.distance_sql(origin, units=default_units, formula=default_formula)
 
-Thereafter, you are free to use it in find_by_sql as you wish.
+Thereafter, you are free to use it in `find_by_sql` as you wish.
 
 There are methods available to enable you to get the count based upon
 the find condition that you have provided.  These all work similarly to
 the finders.  So for instance:
 
-    count(:origin, :conditions => "distance < 5")
-    count_within(distance, :origin => @somewhere)
-    count_beyond(distance, :origin => @somewhere)
+You can then chain these scope with any other or use a "calling" method like `first`, `all`, `count`, …
+
+    Location.origin(@somewhere).within(5).all
+    Location.origin([37.792,-122.393]).first
 
 ## FINDING WITHIN A BOUNDING BOX
  
 If you are displaying points on a map, you probably need to query for whatever falls within the rectangular bounds of the map:
 
-    Store.find :all, :bounds=>[sw_point,ne_point]
+    Store.bounds([sw_point,ne_point]).all
 
-The input to :bounds can be array with the two points or a Bounds object. However you provide them, the order should always be the southwest corner, northeast corner of the rectangle. Typically, you will be getting the sw_point and ne_point from a map that is displayed on a web page.
+The input to `bounds` can be array with the two points or a Bounds object. However you provide them, the order should always be the southwest corner, northeast corner of the rectangle. Typically, you will be getting the sw\_point and ne\_point from a map that is displayed on a web page.
 
 If you need to calculate the bounding box from a point and radius, you can do that:
 
     bounds=Bounds.from_point_and_radius(home,5)
-    Store.find :all, :bounds=>bounds
+    Store.bounds(bounds).all
+    
+<!-- End of the first batch of "updates" -->
 
 ## USING INCLUDES
 

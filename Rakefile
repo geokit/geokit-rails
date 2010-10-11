@@ -1,18 +1,17 @@
-require 'rake'
-require 'rake/testtask'
+require 'bundler'
+Bundler::GemHelper.install_tasks
+
 require 'rake/rdoctask'
+Rake::RDocTask.new do |rdoc|
+  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title = "geokit-rails #{version}"
+  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('lib/**/*.rb')
+end
 
 load 'test/tasks.rake'
 
 desc 'Default: run unit tests.'
 task :default => :test
-
-desc 'Generate documentation for the GeoKit plugin.'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'GeoKit'
-  rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
-
