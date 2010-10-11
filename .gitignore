@@ -23,8 +23,8 @@ doc
 # bundler
 .bundle
 
-# jeweler generated
-pkg
+# builds
+*.gem
 
 # For MacOS:
 .DS_Store
