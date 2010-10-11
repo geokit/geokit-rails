@@ -3,7 +3,7 @@ require File.expand_path("../lib/geokit-rails3/version", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "geokit-rails3"
-  s.version     = GeokitRails::VERSION
+  s.version     = GeokitRails3::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Andre Lewis", "Bill Eisenhauer", "Jeremy Lecour"]
   s.email       = ["andre@earthcode.com", "bill_eisenhauer@yahoo.com", "jeremy.lecour@gmail.com"]
