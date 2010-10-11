@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    geokit-rails (0.0.2)
+    geokit-rails3 (0.0.3)
       geokit (~> 1.5.0)
       rails (~> 3.0.0)
 
@@ -80,10 +80,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (>= 1.0.0)
+  bundler (~> 1.0.0)
   geokit (~> 1.5.0)
-  geokit-rails!
+  geokit-rails3!
   mocha (~> 0.9.8)
   mysql (~> 2.8.1)
   rails (~> 3.0.0)
-  rcov
+  rcov (~> 0.9.9)
