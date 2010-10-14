@@ -128,7 +128,9 @@ module Geokit
           end
         
           distance_conditions = distance_conditions(options)
-          arel = arel.where(distance_conditions) if distance_conditions        
+          arel = arel.where(distance_conditions) if distance_conditions
+          
+          arel = substitute_distance_in_where_values(arel, origin, units, formula)
         end
 
         arel
@@ -230,10 +232,17 @@ module Geokit
       # passed in and the distance column exists, we leave it to be flagged as bad SQL by the database.
       # Conditions are either a string or an array.  In the case of an array, the first entry contains
       # the condition.
-      def substitute_distance_in_conditions(options, origin, units=default_units, formula=default_formula)
-        condition = options[:conditions].is_a?(String) ? options[:conditions] : options[:conditions].first
+      def substitute_distance_in_where_values(arel, origin, units=default_units, formula=default_formula)
         pattern = Regexp.new("\\b#{distance_column_name}\\b")
-        condition.gsub!(pattern, distance_sql(origin, units, formula))
+        value   = distance_sql(origin, units, formula)
+        arel.where_values.map! do |where_value|
+          if where_value.is_a?(String)
+            where_value.gsub(pattern, value)
+          else
+            where_value
+          end
+        end
+        arel
       end
       
       # Returns the distance SQL using the spherical world formula (Haversine).  The SQL is tuned
