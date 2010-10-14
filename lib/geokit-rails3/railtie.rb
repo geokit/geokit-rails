@@ -3,7 +3,7 @@ require 'rails'
 
 module Geokit
 
-  class Railtie < Rails::Railtie
+  class Railtie < ::Rails::Railtie
 
     config.geokit = ActiveSupport::OrderedOptions.new
     config.geokit.geocoders = ActiveSupport::OrderedOptions.new
