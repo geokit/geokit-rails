@@ -3,22 +3,22 @@ require 'active_support/concern'
 
 module Geokit
   module ActsAsMappable
-    
+
     class UnsupportedAdapter < StandardError ; end
-    
+
     # Add the +acts_as_mappable+ method into ActiveRecord subclasses
     module Glue # :nodoc:
       extend ActiveSupport::Concern
-      
+
       module ClassMethods # :nodoc:
         def acts_as_mappable(options = {})
           metaclass = (class << self; self; end)
-        
+
           self.send :include, Geokit::ActsAsMappable
-          
+
           cattr_accessor :through
           self.through = options[:through]
-        
+
           if reflection = Geokit::ActsAsMappable.end_of_reflection_chain(self.through, self)
             metaclass.instance_eval do
               [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name ].each do |method_name|
@@ -29,7 +29,7 @@ module Geokit
             end
           else
             cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
-        
+
             self.distance_column_name = options[:distance_column_name]  || 'distance'
             self.default_units = options[:default_units] || Geokit::default_units
             self.default_formula = options[:default_formula] || Geokit::default_formula
@@ -37,14 +37,14 @@ module Geokit
             self.lng_column_name = options[:lng_column_name] || 'lng'
             self.qualified_lat_column_name = "#{table_name}.#{lat_column_name}"
             self.qualified_lng_column_name = "#{table_name}.#{lng_column_name}"
-        
+
             if options.include?(:auto_geocode) && options[:auto_geocode]
               # if the form auto_geocode=>true is used, let the defaults take over by suppling an empty hash
-              options[:auto_geocode] = {} if options[:auto_geocode] == true 
+              options[:auto_geocode] = {} if options[:auto_geocode] == true
               cattr_accessor :auto_geocode_field, :auto_geocode_error_message
               self.auto_geocode_field = options[:auto_geocode][:field] || 'address'
               self.auto_geocode_error_message = options[:auto_geocode][:error_message] || 'could not locate address'
-        
+
               # set the actual callback here
               before_validation :auto_geocode_address, :on => :create
             end
@@ -52,16 +52,16 @@ module Geokit
         end
       end
     end # Glue
-    
+
     extend ActiveSupport::Concern
-    
+
     included do
       include Geokit::Mappable
     end
-    
+
     # Class methods included in models when +acts_as_mappable+ is called
     module ClassMethods
-      
+
       # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
       def adapter
         @adapter ||= begin
@@ -79,18 +79,18 @@ module Geokit
         geo_scope(options)
       end
       alias inside within
-      
+
       def beyond(distance, options = {})
         options[:beyond] = distance
         geo_scope(options)
       end
       alias outside beyond
-      
+
       def in_range(range, options = {})
         options[:range] = range
         geo_scope(options)
       end
-      
+
       def in_bounds(bounds, options = {})
         options[:bounds] = bounds
         geo_scope(options)
@@ -107,29 +107,29 @@ module Geokit
 
       def geo_scope(options = {})
         arel = self.is_a?(ActiveRecord::Relation) ? self : self.scoped
-        
+
         origin  = extract_origin_from_options(options)
         units   = extract_units_from_options(options)
         formula = extract_formula_from_options(options)
         bounds  = extract_bounds_from_options(options)
-      
+
         if origin || bounds
           bounds = formulate_bounds_from_distance(options, origin, units) unless bounds
-        
+
           if origin
-            distance_formula = distance_sql(origin, units, formula)
+            @distance_formula = distance_sql(origin, units, formula)
             arel = arel.select('*') if arel.select_values.blank?
-            arel = arel.select("#{distance_formula} AS #{distance_column_name}")
+            arel = arel.select("#{@distance_formula} AS #{distance_column_name}")
           end
 
           if bounds
             bound_conditions = bound_conditions(bounds)
             arel = arel.where(bound_conditions) if bound_conditions
           end
-        
+
           distance_conditions = distance_conditions(options)
           arel = arel.where(distance_conditions) if distance_conditions
-          
+
           arel = substitute_distance_in_where_values(arel, origin, units, formula)
         end
 
@@ -147,17 +147,17 @@ module Geokit
         end
         sql
       end
-      
+
       private
-      
+
       # If it's a :within query, add a bounding box to improve performance.
-      # This only gets called if a :bounds argument is not otherwise supplied. 
+      # This only gets called if a :bounds argument is not otherwise supplied.
       def formulate_bounds_from_distance(options, origin, units)
         distance = options[:within] if options.has_key?(:within)
         distance = options[:range].last-(options[:range].exclude_end?? 1 : 0) if options.has_key?(:range)
         if distance
           res=Geokit::Bounds.from_point_and_radius(origin,distance,:units=>units)
-        else 
+        else
           nil
         end
       end
@@ -177,47 +177,47 @@ module Geokit
         lng_sql = bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
         "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
       end
-      
+
       # Extracts the origin instance out of the options if it exists and returns
-      # it.  If there is no origin, looks for latitude and longitude values to 
-      # create an origin.  The side-effect of the method is to remove these 
+      # it.  If there is no origin, looks for latitude and longitude values to
+      # create an origin.  The side-effect of the method is to remove these
       # option keys from the hash.
       def extract_origin_from_options(options)
         origin = options.delete(:origin)
         res = normalize_point_to_lat_lng(origin) if origin
         res
       end
-      
+
       # Extract the units out of the options if it exists and returns it.  If
-      # there is no :units key, it uses the default.  The side effect of the 
+      # there is no :units key, it uses the default.  The side effect of the
       # method is to remove the :units key from the options hash.
       def extract_units_from_options(options)
         units = options[:units] || default_units
         options.delete(:units)
         units
       end
-      
+
       # Extract the formula out of the options if it exists and returns it.  If
-      # there is no :formula key, it uses the default.  The side effect of the 
+      # there is no :formula key, it uses the default.  The side effect of the
       # method is to remove the :formula key from the options hash.
       def extract_formula_from_options(options)
         formula = options[:formula] || default_formula
         options.delete(:formula)
         formula
       end
-      
+
       def extract_bounds_from_options(options)
         bounds = options.delete(:bounds)
         bounds = Geokit::Bounds.normalize(bounds) if bounds
       end
-      
+
       # Geocode IP address.
       def geocode_ip_address(origin)
         geo_location = Geokit::Geocoders::MultiGeocoder.geocode(origin)
         return geo_location if geo_location.success
         raise Geokit::Geocoders::GeocodeError
       end
-      
+
       # Given a point in a variety of (an address to geocode,
       # an array of [lat,lng], or an object with appropriate lat/lng methods, an IP addres)
       # this method will normalize it into a Geokit::LatLng instance. The only thing this
@@ -227,8 +227,8 @@ module Geokit
         res = Geokit::LatLng.normalize(point) unless res
         res
       end
-      
-      # Looks for the distance column and replaces it with the distance sql. If an origin was not 
+
+      # Looks for the distance column and replaces it with the distance sql. If an origin was not
       # passed in and the distance column exists, we leave it to be flagged as bad SQL by the database.
       # Conditions are either a string or an array.  In the case of an array, the first entry contains
       # the condition.
@@ -244,43 +244,43 @@ module Geokit
         end
         arel
       end
-      
+
       # Returns the distance SQL using the spherical world formula (Haversine).  The SQL is tuned
       # to the database in use.
       def sphere_distance_sql(origin, units)
         lat = deg2rad(origin.lat)
         lng = deg2rad(origin.lng)
         multiplier = units_sphere_multiplier(units)
-      
+
         adapter.sphere_distance_sql(lat, lng, multiplier) if adapter
       end
-      
+
       # Returns the distance SQL using the flat-world formula (Phythagorean Theory).  The SQL is tuned
       # to the database in use.
       def flat_distance_sql(origin, units)
         lat_degree_units = units_per_latitude_degree(units)
         lng_degree_units = units_per_longitude_degree(origin.lat, units)
-        
+
         adapter.flat_distance_sql(origin, lat_degree_units, lng_degree_units)
       end
-      
+
     end # ClassMethods
 
     # this is the callback for auto_geocoding
     def auto_geocode_address
       address=self.send(auto_geocode_field).to_s
       geo=Geokit::Geocoders::MultiGeocoder.geocode(address)
-    
+
       if geo.success
         self.send("#{lat_column_name}=", geo.lat)
         self.send("#{lng_column_name}=", geo.lng)
       else
-        errors.add(auto_geocode_field, auto_geocode_error_message) 
+        errors.add(auto_geocode_field, auto_geocode_error_message)
       end
-    
+
       geo.success
     end
-    
+
     def self.end_of_reflection_chain(through, klass)
       while through
         reflection = nil
@@ -289,17 +289,17 @@ module Geokit
         else
           association, through = through, nil
         end
-    
+
         if reflection = klass.reflect_on_association(association)
           klass = reflection.klass
         else
           raise ArgumentError, "You gave #{association} in :through, but I could not find it on #{klass}."
         end
       end
-    
+
       reflection
     end
-    
+
   end # ActsAsMappable
 end # Geokit
 
