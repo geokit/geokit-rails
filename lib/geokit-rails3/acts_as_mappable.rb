@@ -73,21 +73,6 @@ module Geokit
           raise UnsupportedAdapter, "`#{connection.adapter_name.downcase}` is not a supported adapter."
         end
       end
-      
-      def where(clause)
-        g self
-        pattern = Regexp.new("\\b#{distance_column_name}\\b")
-        value   = @distance_formula
-
-        g new_clause = if clause.is_a?(String)
-          clause.gsub!(pattern, value)
-        elsif clause.is_a?(Array)
-          clause.first.gsub!(pattern, value)
-        else
-          clause
-        end
-        super(new_clause)
-      end
 
       def within(distance, options = {})
         options[:within] = distance
