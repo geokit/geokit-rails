@@ -1,6 +1,6 @@
 ## INSTALLATION
-  
-Geokit consists of a Gem ([geokit-gem](http://github.com/andre/geokit-gem/tree/master)) and a Rails plugin ([geokit-rails3](http://github.com/andre/geokit-rails3/tree/master)).
+
+Geokit for Rails consists of a gengeric Gem ([geokit-gem](http://github.com/andre/geokit-gem)) and a Rails plugin ([geokit-rails3](http://github.com/andre/geokit-rails3)).
 
 Make sure you use a version >= 3.0 of Rails.
 
@@ -11,8 +11,8 @@ You just have to add the 'geokit-rails3' gem to your Gemfile
 Then tell bundler to update the gems :
 
     $ bundle install
-    
-If you want to use geokit-rails3 in a Rails 2 application, just use the good old plugin.
+
+If you want to use geokit-rails in a Rails 2 application, just use the good old plugin ([geokit-rails](http://github.com/andre/geokit-rails)).
 
 
 ## FEATURE SUMMARY
@@ -38,8 +38,8 @@ package.
 
 ## A NOTE ON TERMINOLOGY
 
-Throughout the code and API, latitude and longitude are referred to as lat 
-and lng.  We've found over the long term the abbreviation saves lots of typing time.
+Throughout the code and API, _latitude_ and _longitude_ are referred to as _lat_
+and _lng_.  We've found over the long term the abbreviation saves lots of typing time.
 
 ## LOCATION QUERIES
 
@@ -93,12 +93,12 @@ specified for `lng_column_name` and `lat_column_name`:
 
 Often you will need to find within a certain distance. The prefered syntax is:
 
-    Location.origin(@somewhere).within(5)
+    Location.within(5, :origin => @somewhere)
     
 . . . however these syntaxes will also work:
 
-    find.origin(@somewhere).where("distance < 5")
-    
+    find.geo_scope(:origin => @somewhere).where("distance < 5")
+
 Note however that the second form should be avoided. With the first,
 Geokit automatically adds a bounding box to speed up the radial query in the database.
 With the second form, it does not.
@@ -106,19 +106,18 @@ With the second form, it does not.
 If you need to combine distance conditions with other conditions, you should do
 so like this:
 
-    Location.origin(@somewhere).within(5).where(:state => state)
-
-If the _within_ scope is called without an _origin_ scope, it is simply ignored.
+    Location.within(5, :origin => @somewhere).where(:state => state)
 
 Other convenience scopes work intuitively and are as follows:
 
-    Location.origin(@somewhere).beyond(5)
-    Location.closest(@somewhere)
-    Location.farthest(@somewhere)
-    
-The `closest` and `farthest` scopes just add a `limit(1)` in the scopes chain.
+    Location.beyond(5, :origin => @somewhere)
+    Location.in_range((5..10), :origin => @somewhere)
+    Location.closest(:origin => @somewhere)
+    Location.farthest(:origin => @somewhere)
 
-Lastly, if all that is desired is the raw SQL for distance 
+The `closest` and `farthest` methods just order by distance and add a `limit(1)` in the scopes chain.
+
+Lastly, if all that is desired is the raw SQL for distance
 calculations, you can use the following:
 
     Location.distance_sql(origin, units=default_units, formula=default_formula)
@@ -131,22 +130,22 @@ the finders.  So for instance:
 
 You can then chain these scope with any other or use a "calling" method like `first`, `all`, `count`, …
 
-    Location.origin(@somewhere).within(5).all
-    Location.origin([37.792,-122.393]).first
+    Location.within(5, :origin => @somewhere).all
+    Location.geo_scope(:origin => [37.792,-122.393]).first
 
 ## FINDING WITHIN A BOUNDING BOX
- 
+
 If you are displaying points on a map, you probably need to query for whatever falls within the rectangular bounds of the map:
 
-    Store.bounds([sw_point,ne_point]).all
+    Store.in_bounds([sw_point,ne_point]).all
 
 The input to `bounds` can be array with the two points or a Bounds object. However you provide them, the order should always be the southwest corner, northeast corner of the rectangle. Typically, you will be getting the sw\_point and ne\_point from a map that is displayed on a web page.
 
 If you need to calculate the bounding box from a point and radius, you can do that:
 
     bounds=Bounds.from_point_and_radius(home,5)
-    Store.bounds(bounds).all
-    
+    Store.in_bounds(bounds).all
+
 <!-- End of the first batch of "updates" -->
 
 ## USING INCLUDES
