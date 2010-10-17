@@ -118,8 +118,14 @@ module Geokit
 
           if origin
             @distance_formula = distance_sql(origin, units, formula)
-            arel = arel.select('*') if arel.select_values.blank?
-            arel = arel.select("#{@distance_formula} AS #{distance_column_name}")
+            
+            if arel.select_values.blank?
+              star_select = Arel::SqlLiteral.new(arel.quoted_table_name + '.*')
+              arel = arel.select(star_select)
+            end
+            
+            distance_select = Arel::SqlLiteral.new("#{@distance_formula} AS #{distance_column_name}")
+            arel = arel.select(distance_select)
           end
 
           if bounds
@@ -165,19 +171,21 @@ module Geokit
       end
 
       def distance_conditions(options)
-        if options.has_key?(:within)
+        res = if options.has_key?(:within)
           "#{distance_column_name} <= #{options[:within]}"
         elsif options.has_key?(:beyond)
           "#{distance_column_name} > #{options[:beyond]}"
         elsif options.has_key?(:range)
           "#{distance_column_name} >= #{options[:range].first} AND #{distance_column_name} <#{'=' unless options[:range].exclude_end?} #{options[:range].last}"
         end
+        Arel::SqlLiteral.new("(#{res})") if res.present?
       end
 
       def bound_conditions(bounds)
         sw,ne = bounds.sw, bounds.ne
         lng_sql = bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
-        "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
+        res = "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
+        Arel::SqlLiteral.new("(#{res})") if res.present?
       end
 
       # Extracts the origin instance out of the options if it exists and returns
