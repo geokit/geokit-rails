@@ -16,6 +16,7 @@ What has been done :
 What hasn't been done (yet) :
 
 * make it possible to use the `where` scope with a clause on the distance column
+* port the IpGeocodeLookup module (the test suite is disabled)
 * obviously, make the test suite pass for all the features that have not been ported yet
 * update this README to reflect other changes that could have appeared with Rails 3
 
