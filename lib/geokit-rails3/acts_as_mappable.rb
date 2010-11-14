@@ -14,7 +14,7 @@ module Geokit
         def acts_as_mappable(options = {})
           metaclass = (class << self; self; end)
 
-          self.send :include, Geokit::ActsAsMappable
+          include Geokit::ActsAsMappable
 
           cattr_accessor :through
           self.through = options[:through]
