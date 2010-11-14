@@ -7,7 +7,7 @@ require 'active_record'
 require 'active_record/test_case'
 require 'active_record/fixtures'
 
-# require 'action_controller'
+require 'action_controller'
 # require 'action_dispatch'
 # require 'action_dispatch/testing/test_process'
 
