@@ -1,6 +1,35 @@
+# WARNING
+
+This gem is an attempt to port [Andre Lewis' great **geokit-rails**](https://github.com/andre/geokit-gem) to Rails 3.
+
+It is not finished. Some parts of the original plugin remain absolutely untouched or untested.
+
+What has been done :
+
+* the Rails 2 plugin has been transformed to a Rails 3 plugin, in a gem
+* the Rails 3 conventions and APIs and best practices have been followed (hopefully)
+* the basic features have been ported to use the new ActiveRecord 3 query syntax
+* the test suite has been updated to use the new query methods
+* the test suite pass for all the features that have been ported
+* this README has been updated for what is working and tested
+
+What hasn't been done (yet) :
+
+* make it possible to use the `where` scope with a clause on the distance column
+* obviously, make the test suite pass for all the features that have not been ported yet
+* update this README to reflect other changes that could have appeared with Rails 3
+
+In short, this gem is not a drop-in replacement for the Andre's plugin :
+
+1. it is usable for the basic features. It there are some bugs on these features,
+I'll try the best I an to fix them.
+
+2. it is not yet a full replacement of the geokit-rails plugin ;
+some features have been ported, but the syntax has changed, and some have not been ported.
+
 ## INSTALLATION
 
-Geokit for Rails consists of a gengeric Gem ([geokit-gem](http://github.com/andre/geokit-gem)) and a Rails plugin ([geokit-rails3](http://github.com/andre/geokit-rails3)).
+Geokit for Rails consists of a generic Gem ([geokit-gem](https://github.com/andre/geokit-gem)) and a Rails plugin ([geokit-rails3](https://github.com/jlecour/geokit-rails3)).
 
 Make sure you use a version >= 3.0 of Rails.
 
@@ -12,7 +41,7 @@ Then tell bundler to update the gems :
 
     $ bundle install
 
-If you want to use geokit-rails in a Rails 2 application, just use the good old plugin ([geokit-rails](http://github.com/andre/geokit-rails)).
+If you want to use geokit-rails in a Rails 2 application, just use the good old plugin ([geokit-rails](https://github.com/andre/geokit-rails)).
 
 
 ## FEATURE SUMMARY
@@ -20,7 +49,7 @@ If you want to use geokit-rails in a Rails 2 application, just use the good old 
 Geokit provides key functionality for location-oriented Rails applications:
 
 - Distance calculations, for both flat and spherical environments. For example,
-  given the location of two points on the earth, you can calculate the miles/KM
+  given the location of two points on the earth, you can calculate the miles/Km
   between them.
 - ActiveRecord distance-based finders. For example, you can find all the points
   in your database within a 50-mile radius.
@@ -43,7 +72,9 @@ and _lng_.  We've found over the long term the abbreviation saves lots of typing
 
 ## LOCATION QUERIES
 
-To get started, just specify an ActiveRecord class as `acts_as_mappale`:
+### MAKING A MODEL MAPPABLE
+
+To get started, just specify an ActiveRecord class as `acts_as_mappable`:
 
     class Location < ActiveRecord::Base
       acts_as_mappable
@@ -62,78 +93,139 @@ There are some defaults you can override:
 
 The optional parameters are `units`, `formula`, and `distance_field_name`.
 Values for **units** can be `:miles`, `:kms` (kilometers), or `:nms` (nautical miles),
-with `:miles` as the default.  Values for **formula** can be `:sphere` or `:flat` with
-`:sphere` as the default.  `:sphere` gives you Haversine calculations, while `:flat`
-gives the Pythagoreum Theory.  These defaults persist through out the gem.
+with `:miles` as the default. 
+Values for **formula** can be `:sphere` or `:flat` with `:sphere` as the default.
+`:sphere` gives you Haversine calculations, while `:flat` gives the Pythagoreum Theory.
+These defaults persist through out the gem.
 
 The plug-in creates a calculated `distance` field on AR instances that have
 been retrieved throw a Geokit location query. By default, these fields are
 known as "distance" but this can be changed through the `:distance_field_name` key.
 
 You can also define alternative column names for latitude and longitude using
-the `:lat_column_name` and `:lng_column_name` keys.  The defaults are 'lat' and
-'lng' respectively.
+the `:lat_column_name` and `:lng_column_name` keys.  The defaults are `lat` and
+`lng` respectively.
 
-Once you've specified `acts_as_mappable`, a set of distance-based
-scopes are available:
+### NEW SCOPES TO USE
 
-Origin as a two-element array of latititude/longitude:
+Once you've specified `acts_as_mappable`, a few scopes are available :
 
-    Location.origin([37.792,-122.393])
+* `within` and `beyond` find records within or beyond a certain distance from the origin point.
+* `in_range` finds records within a certain distance range from the origin point.
+* `in_bounds` finds redords within a rectangle on the map
+* `closest` and `farthest` find the closest or farthest record from the origin point
 
-Origin as a geocodeable string:
+All these scopes are are the porcelain for a lower level scope named `geo_scope` that take a hash of options.
+Their first parameter is simply one of  the possible options, without the name
 
-    Location.origin('100 Spear st, San Francisco, CA')
-
-Origin as an object which responds to lat and lng methods,
-or latitude and longitude methods, or whatever methods you have
-specified for `lng_column_name` and `lat_column_name`:
-
-    Location.origin(my_store) # my_store.lat and my_store.lng methods exist
-
-Often you will need to find within a certain distance. The prefered syntax is:
+A few examples :
 
     Location.within(5, :origin => @somewhere)
+    # is the same as
+    Location.geo_scope(:within => 5, :origin => @somewhere)
 
-. . . however these syntaxes will also work:
+    Location.in_range(2..5, :origin => @somewhere)
+    # is the same as
+    Location.geo_scope(:range => 2..5, :origin => @somewhere)
 
-    find.geo_scope(:origin => @somewhere).where("distance < 5")
+    Location.in_bounds([@south_west_point, @north_east_point], :origin => @somewhere)
+    # is the same as
+    Location.geo_scope(:bounds => [@south_west_point, @north_east_point], :origin => @somewhere)
 
-Note however that the second form should be avoided. With the first,
-Geokit automatically adds a bounding box to speed up the radial query in the database.
-With the second form, it does not.
+The options can be :
 
-If you need to combine distance conditions with other conditions, you should do
-so like this:
+`:origin` as a two-element array of latitude/longitude:
 
-    Location.within(5, :origin => @somewhere).where(:state => state)
+    Location.geo_scope(:origin => [37.792,-122.393])
 
-Other convenience scopes work intuitively and are as follows:
+`:origin` as a geocodeable string:
 
-    Location.beyond(5, :origin => @somewhere)
-    Location.in_range((5..10), :origin => @somewhere)
-    Location.closest(:origin => @somewhere)
-    Location.farthest(:origin => @somewhere)
+    Location.geo_scope(:origin => '100 Spear st, San Francisco, CA')
 
-The `closest` and `farthest` methods just order by distance and add a `limit(1)` in the scopes chain.
+`:origin` as an object which responds to `lat` and `lng` methods,
+or `latitude` and `longitude` methods, or whatever methods you have
+specified for `lng_column_name` and `lat_column_name`:
 
-Lastly, if all that is desired is the raw SQL for distance
+    Location.geo_scope(:origin => my_store)
+    # my_store.lat and my_store.lng methods exist
+    
+`:units` or `:formula` can be used to override the default values in a specific query
+
+    Location.within(5, :units => :km, :origin => @somewhere)
+    # it will get the records within 5 kilometers instead of 5 miles
+
+`:range` as a native Ruby range
+
+`:bounds` as an array of two elements : the wouth/west point and the north/east point.
+
+    @sw = GeoKit::LatLng.new(32.91663,-96.982841)
+    @ne = GeoKit::LatLng.new(32.96302,-96.919495)
+    @somewhere = Locationd.find(123456)
+    Location.geo_scope(:bounds => [@sw, @ne], :origin => @somewhere)
+
+`:bounds` as a Geokit::Bounds object
+
+    @bounds = Geokit::Bounds.new([32.91663,-96.982841], [32.96302,-96.919495])
+    @somewhere = Locationd.find(123456)
+    Location.geo_scope(:bounds => [@sw, @ne], :origin => @somewhere)
+
+When using a point of reference or bounds, you leverage the power of Geokit
+to build this objects. Basicaly, if Geokit can make a Geokit::Point
+or a Geokit::Bounds with what you give to it, you're good to go.
+
+### FIND BY SQL
+
+Finaly, if all that is desired is the raw SQL for distance
 calculations, you can use the following:
 
-    Location.distance_sql(origin, units=default_units, formula=default_formula)
+    Location.distance_sql(origin, units = default_units, formula = default_formula)
 
 Thereafter, you are free to use it in `find_by_sql` as you wish.
 
-There are methods available to enable you to get the count based upon
-the find condition that you have provided.  These all work similarly to
-the finders.  So for instance:
+### CHAINABILITY
 
 You can then chain these scope with any other or use a "calling" method like `first`, `all`, `count`, …
 
     Location.within(5, :origin => @somewhere).all
+    Location.within(5, :origin => @somewhere).count
     Location.geo_scope(:origin => [37.792,-122.393]).first
 
-## FINDING WITHIN A BOUNDING BOX
+You can add `order` clauses in the chain as for any ActiveRecord query
+
+    Location.within(5, :origin => @somewhere).order('nbr_seats ASC')
+    
+You can even sort by distance (use the same name as specified in the model class)
+
+    Location.within(5, :origin => @somewhere).order('distance DESC, nbr_seats ASC')
+    
+Idem for the `limit` clause. In fact, `closest` and `farthest` are defined like this :
+
+    def closest(options = {})
+      geo_scope(options).order("#{distance_column_name} asc").limit(1)
+    end
+    def farthest(options = {})
+      geo_scope(options).order("#{distance_column_name} desc").limit(1)
+    end
+
+#### Important caveat
+
+In the current version of geokit-rails3, it is not possible to add a `where` clause
+using the _distance_ column. I've tried many different ways to do this and didn't get it woking.
+
+One would expect to build a query like this :
+
+    scoped  = Location.geo_scope(:origin => @somewhere)
+    scoped  = scoped.where('distance <= 5)
+    results = scoped.all
+
+This is not possible right now, it must be done in a single step like this :
+
+    scoped  = Location.within(5, :origin => @somewhere)
+    results = scoped.all
+
+Every good idea that would help achieve this is very much welcome.
+
+### FINDING WITHIN A BOUNDING BOX
 
 If you are displaying points on a map, you probably need to query for whatever falls within the rectangular bounds of the map:
 
@@ -143,16 +235,22 @@ The input to `bounds` can be array with the two points or a Bounds object. Howev
 
 If you need to calculate the bounding box from a point and radius, you can do that:
 
-    bounds=Bounds.from_point_and_radius(home,5)
+    bounds = Geokit::Bounds.from_point_and_radius(home,5)
     Store.in_bounds(bounds).all
 
-<!-- End of the first batch of "updates" -->
+----
+
+# What is following is from the previous _geokit-rails_ plugin.
+
+**It has not been tested with Rails 3 nor with this version of the gem.**
+**Most of it should work, but it is not sure**
+
 
 ## USING INCLUDES
 
 You can use includes along with your distance finders:
 
-    stores=Store.find :all, :origin=>home, :include=>[:reviews,:cities] :within=>5, :order=>'distance'
+    stores = Store.within(5, :origin=>home).includes([:reviews,:cities]).order('distance asc').all
 
 *However*, ActiveRecord drops the calculated distance column when you use include. So, if you need to
 use the distance column, you'll have to re-calculate it post-query in Ruby:
@@ -162,8 +260,8 @@ use the distance column, you'll have to re-calculate it post-query in Ruby:
 In this case, you may want to just use the bounding box
 condition alone in your SQL (there's no use calculating the distance twice):
 
-    bounds=Bounds.from_point_and_radius(home,5)
-    stores=Store.find :all, :include=>[:reviews,:cities] :bounds=>bounds
+    bounds=Geokit::Bounds.from_point_and_radius(home,5)
+    stores=Store.includes([:reviews,:cities]).in_bounds(bounds)
     stores.sort_by_distance_from(home)
 
 ## USING :through
@@ -185,7 +283,7 @@ all of the above find methods to search for records.
 
 Then you can still call:
 
-    Company.find_within(distance, :origin => @somewhere)
+    Company.within(distance, :origin => @somewhere)
 
 You can also give :through a hash if you location is nested deep. For example, given:
 
@@ -266,8 +364,8 @@ to a new visitor's location.
 Geocoding has been integrated with the finders enabling you to pass
 a physical address or an IP address.  This would look the following:
 
-    Location.find_farthest(:origin => '217.15.10.9')
-    Location.find_farthest(:origin => 'Irving, TX')
+    Location.farthest(:origin => '217.15.10.9')
+    Location.farthest(:origin => 'Irving, TX')
 
 where the IP or physical address would be geocoded to a location and
 then the resulting latitude and longitude coordinates would be used
@@ -332,10 +430,10 @@ The Geocoder.geocode method returns a GeoLoc object. Basic usage:
 Currently, only the Google Geocoder supports reverse geocoding.
 Pass the lat/lng as a string, array or LatLng instance:
 
-		res=Geokit::Geocoders::GoogleGeocoder.reverse_geocode "37.791821,-122.394679"
-		=> #<Geokit::GeoLoc:0x558ed0 ...
-		res.full_address
-		"101-115 Main St, San Francisco, CA 94105, USA"
+    res=Geokit::Geocoders::GoogleGeocoder.reverse_geocode "37.791821,-122.394679"
+    => #<Geokit::GeoLoc:0x558ed0 ...
+    res.full_address
+    "101-115 Main St, San Francisco, CA 94105, USA"
 
 The address will usually appear as a range, as it does in the above example.
 
@@ -375,7 +473,7 @@ It takes two optional params:
 
     class Store << ActiveRecord::Base
       acts_as_mappable
-      before_validation_on_create :geocode_address
+      before_validation :geocode_address, :on => :create
 
       private
       def geocode_address
@@ -391,14 +489,14 @@ If you need any more complicated geocoding behavior for your model, you should r
 
 ## Distances, headings, endpoints, and midpoints
 
-    distance=home.distance_from(work, :units=>:miles)
-    heading=home.heading_to(work) # result is in degrees, 0 is north
-    endpoint=home.endpoint(90,2)  # two miles due east
-    midpoing=home.midpoint_to(work)
+    distance = home.distance_from(work, :units=>:miles)
+    heading  = home.heading_to(work) # result is in degrees, 0 is north
+    endpoint = home.endpoint(90,2)  # two miles due east
+    midpoing = home.midpoint_to(work)
 
 ## Cool stuff you can do with bounds
 
-    bounds=Bounds.new(sw_point,ne_point)
+    bounds = Bounds.new(sw_point,ne_point)
     bounds.contains?(home)
     puts bounds.center
 
@@ -467,14 +565,15 @@ A few quick examples to get you started ....
 
 You now have access to a 'distance' column, and you can use it
 as you would any other column. For example:
-		Store.find(:all, :origin=>'94117', :order=>'distance')
+
+    Store.find(:all, :origin=>'94117', :order=>'distance')
 
 ## How to elements of an array according to distance from a common point
 
 Usually, you can do your sorting in the database as part of your find call.
 If you need to sort things post-query, you can do so:
 
-    stores=Store.find :all
+    stores = Store.all
     stores.sort_by_distance_from(home)
     puts stores.first.distance
 

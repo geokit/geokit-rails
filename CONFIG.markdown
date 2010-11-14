@@ -49,7 +49,7 @@ and [http://geocoder.ca/?register=1](http://geocoder.ca/?register=1)
 
     config.geokit.geocoders.geocoder_ca = false
 
-Uncomment to use a username with the Geonames geocoder
+Add this to use a username with the Geonames geocoder
 
     config.geokitgeocoders.geonames="REPLACE_WITH_YOUR_GEONAMES_USERNAME"
 
