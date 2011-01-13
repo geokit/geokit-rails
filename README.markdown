@@ -23,7 +23,7 @@ What hasn't been done (yet) :
 In short, this gem is not a drop-in replacement for the Andre's plugin :
 
 1. it is usable for the basic features. It there are some bugs on these features,
-I'll try the best I an to fix them.
+I'll try the best I can to fix them.
 
 2. it is not yet a full replacement of the geokit-rails plugin ;
 some features have been ported, but the syntax has changed, and some have not been ported.
