@@ -20,7 +20,7 @@ What hasn't been done (yet) :
 * obviously, make the test suite pass for all the features that have not been ported yet
 * update this README to reflect other changes that could have appeared with Rails 3
 
-In short, this gem is not a drop-in replacement for the Andre's plugin :
+In short, this gem is **not a drop-in replacement** for the Andre's plugin :
 
 1. it is usable for the basic features. It there are some bugs on these features,
 I'll try the best I an to fix them.
@@ -116,7 +116,7 @@ Once you've specified `acts_as_mappable`, a few scopes are available :
 * `in_bounds` finds redords within a rectangle on the map
 * `closest` and `farthest` find the closest or farthest record from the origin point
 
-All these scopes are are the porcelain for a lower level scope named `geo_scope` that take a hash of options.
+All these scopes are the porcelain for a lower level scope named `geo_scope` that take a hash of options.
 Their first parameter is simply one of  the possible options, without the name
 
 A few examples :
