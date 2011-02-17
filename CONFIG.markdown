@@ -1,4 +1,4 @@
-# You can configure Geokit in you environment files
+# You can configure Geokit in your environment files
 
 These defaults are used in `Geokit::Mappable.distance_to` and in `acts_as_mappable`
 
