@@ -26,8 +26,6 @@ module Geokit
           add_numeric('pow') { |n, m| n**m }
           add_numeric('radians') { |n| n * Math::PI / 180 }
           add_numeric('least') { |*args| args.min }
-          
-          self.loaded = true
         end
       end
       
