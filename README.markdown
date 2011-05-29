@@ -59,7 +59,7 @@ Geokit provides key functionality for location-oriented Rails applications:
 - A before_filter helper to geocoder the user's location based on IP address,
   and retain the location in a cookie.
 - Geocoding from multiple providers. It provides a fail-over mechanism, in case
-  your input fails to geocode in one service. Geocoding is provided buy the Geokit
+  your input fails to geocode in one service. Geocoding is provided by the Geokit
   gem, which you must have installed
 
 The goal of this plugin is to provide the common functionality for location-oriented
