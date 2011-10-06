@@ -14,15 +14,15 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   # s.rubyforge_project         = "test_gem"
 
-  s.add_runtime_dependency 'rails', '~> 3.0.4'
-  s.add_runtime_dependency 'geokit', '~> 1.5.0'
+  s.add_runtime_dependency 'rails', '~> 3.0'
+  s.add_runtime_dependency 'geokit', '~> 1.5'
 
-  s.add_development_dependency "bundler", "~> 1.0.0"
-  s.add_development_dependency "rcov", "~> 0.9.9"
-  s.add_development_dependency "mocha", "~> 0.9.8"
-  s.add_development_dependency "mysql", "~> 2.8.1"
-  s.add_development_dependency "mysql2", "~> 0.2.6"
-  s.add_development_dependency "pg", "~> 0.10.0"
+  s.add_development_dependency "bundler", "> 1.0"
+  s.add_development_dependency "rcov", "~> 0.9"
+  s.add_development_dependency "mocha", "~> 0.9"
+  s.add_development_dependency "mysql", "~> 2.8"
+  s.add_development_dependency "mysql2", "~> 0.2"
+  s.add_development_dependency "pg", "~> 0.10"
 
   s.files        = Dir.glob("lib/**/*.rb")
   s.test_files   = Dir.glob("test/**/*")
