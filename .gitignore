@@ -5,6 +5,9 @@ Gemfile.lock
 # Test log files
 test/*-debug.log
 
+# SQLite Test DB
+test/test.sqlite3
+
 # SVN
 .svn
 
