@@ -269,6 +269,9 @@ module Geokit
             handle_order_with_include(options,origin,units,formula) if options.include?(:include) && options.include?(:order) && origin
           end
 
+          #in rails 3 reload fails because it passes nil instead of a hash
+          #this removes the nil
+          args.pop if args.last.nil? && args.size == 2
           # Restore options minus the extra options that we used for the
           # Geokit API.
           args.push(options)
