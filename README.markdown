@@ -152,7 +152,7 @@ specified for `lng_column_name` and `lat_column_name`:
     
 `:units` or `:formula` can be used to override the default values in a specific query
 
-    Location.within(5, :units => :km, :origin => @somewhere)
+    Location.within(5, :units => :kms, :origin => @somewhere)
     # it will get the records within 5 kilometers instead of 5 miles
 
 `:range` as a native Ruby range
