@@ -1,7 +1,7 @@
-require 'mocha'
 require 'pathname'
 
 require 'boot'
+require 'mocha/setup'
 
 require 'geokit'
 require 'geokit-rails3'
