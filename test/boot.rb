@@ -14,7 +14,7 @@ require 'action_controller'
 pwd = Pathname.new(File.dirname(__FILE__)).expand_path
 
 PLUGIN_ROOT = pwd + '..'
-ADAPTER = ENV['DB'] || 'mysql'
+ADAPTER = ENV['DB'] || 'sqlite'
 
 $LOAD_PATH << (PLUGIN_ROOT + 'lib')
 $LOAD_PATH << (PLUGIN_ROOT + 'test/models')
