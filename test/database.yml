@@ -1,4 +1,4 @@
-baes: &base
+base: &base
   host: localhost
   username: tests
   password: 
