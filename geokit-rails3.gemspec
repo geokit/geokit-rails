@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "mysql", "~> 2.8"
   s.add_development_dependency "mysql2", "~> 0.2"
   s.add_development_dependency "pg", "~> 0.10"
+  s.add_development_dependency "sqlite3"
 
   s.files        = Dir.glob("lib/**/*.rb")
   s.test_files   = Dir.glob("test/**/*")
