@@ -257,14 +257,14 @@ You can use includes along with your distance finders:
 *However*, ActiveRecord drops the calculated distance column when you use include. So, if you need to
 use the distance column, you'll have to re-calculate it post-query in Ruby:
 
-    stores.sort_by_distance_from(home)
+    stores.sort_by{|s| s.distance_to(home)}
 
 In this case, you may want to just use the bounding box
 condition alone in your SQL (there's no use calculating the distance twice):
 
     bounds=Geokit::Bounds.from_point_and_radius(home,5)
     stores=Store.includes([:reviews,:cities]).in_bounds(bounds)
-    stores.sort_by_distance_from(home)
+    stores.sort_by{|s| s.distance_to(home)}
 
 ## USING :through
 
@@ -576,8 +576,7 @@ Usually, you can do your sorting in the database as part of your find call.
 If you need to sort things post-query, you can do so:
 
     stores = Store.all
-    stores.sort_by_distance_from(home)
-    puts stores.first.distance
+    stores.sort_by{|s| s.distance_to(home)}
 
 Obviously, each of the items in the array must have a latitude/longitude so
 they can be sorted by distance.
