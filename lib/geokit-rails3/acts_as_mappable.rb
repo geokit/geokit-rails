@@ -96,13 +96,17 @@ module Geokit
         geo_scope(options)
       end
 
+      def by_distance(options = {})
+        geo_scope(options).order("#{distance_column_name} asc")
+      end
+
       def closest(options = {})
-        geo_scope(options).order("#{distance_column_name} asc").limit(1)
+        by_distance(options).first(1)
       end
       alias nearest closest
 
       def farthest(options = {})
-        geo_scope(options).order("#{distance_column_name} desc").limit(1)
+        by_distance(options).last(1)
       end
 
       def geo_scope(options = {})

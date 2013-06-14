@@ -115,6 +115,7 @@ Once you've specified `acts_as_mappable`, a few scopes are available :
 * `in_range` finds records within a certain distance range from the origin point.
 * `in_bounds` finds redords within a rectangle on the map
 * `closest` and `farthest` find the closest or farthest record from the origin point
+* `by_distance` finds records ordered by distance from the origin point
 
 All these scopes are the porcelain for a lower level scope named `geo_scope` that take a hash of options.
 Their first parameter is simply one of  the possible options, without the name
