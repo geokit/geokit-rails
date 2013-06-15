@@ -53,6 +53,34 @@ module Geokit
       end
     end # Glue
 
+    class Relation < ActiveRecord::Relation
+      attr_accessor :distance_formula
+
+      def where(opts, *rest)
+        return self if opts.blank?
+        relation = clone
+        where_values = build_where(opts, rest)
+        relation.where_values += substitute_distance_in_values(where_values)
+        relation
+      end
+
+      def order(*args)
+        return self if args.blank?
+        relation = clone
+        order_values = args.flatten
+        relation.order_values += substitute_distance_in_values(order_values)
+        relation
+      end
+
+    private
+      def substitute_distance_in_values(values)
+        return values unless @distance_formula
+        # substitute distance with the actual distance equation
+        pattern = Regexp.new("\\b#{@klass.distance_column_name}\\b")
+        values.map {|value| value.is_a?(String) ? value.gsub(pattern, @distance_formula) : value }
+      end
+    end
+
     extend ActiveSupport::Concern
 
     included do
@@ -121,15 +149,12 @@ module Geokit
           bounds = formulate_bounds_from_distance(options, origin, units) unless bounds
 
           if origin
-            @distance_formula = distance_sql(origin, units, formula)
+            arel.distance_formula = distance_sql(origin, units, formula)
             
             if arel.select_values.blank?
               star_select = Arel::SqlLiteral.new(arel.quoted_table_name + '.*')
               arel = arel.select(star_select)
             end
-            
-            distance_select = Arel::SqlLiteral.new("#{@distance_formula} AS #{distance_column_name}")
-            arel = arel.select(distance_select)
           end
 
           if bounds
@@ -139,10 +164,6 @@ module Geokit
 
           distance_conditions = distance_conditions(options)
           arel = arel.where(distance_conditions) if distance_conditions
-
-          if origin
-            arel = substitute_distance_in_where_values(arel, origin, units, formula)
-          end
         end
 
         arel
@@ -161,6 +182,15 @@ module Geokit
       end
 
       private
+
+      # Override ActiveRecord::Base.relation to return an instance of Geokit::ActsAsMappable::Relation.
+      # TODO: Do we need to override JoinDependency#relation too?
+      def relation
+        # NOTE: This cannot be @relation as ActiveRecord already uses this to
+        # cache *its* Relation object
+        @_geokit_relation ||= Relation.new(self, arel_table)
+        finder_needs_type_condition? ? @_geokit_relation.where(type_condition) : @_geokit_relation
+      end
 
       # If it's a :within query, add a bounding box to improve performance.
       # This only gets called if a :bounds argument is not otherwise supplied.
