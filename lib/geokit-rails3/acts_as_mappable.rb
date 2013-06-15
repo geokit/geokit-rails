@@ -164,6 +164,10 @@ module Geokit
 
           distance_conditions = distance_conditions(options)
           arel = arel.where(distance_conditions) if distance_conditions
+
+          if self.through
+            arel = arel.includes(self.through)
+          end
         end
 
         arel
