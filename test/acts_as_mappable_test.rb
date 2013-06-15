@@ -232,7 +232,7 @@ class ActsAsMappableTest < GeokitTestCase
 
   def test_ip_geocoded_find_with_distance_condition
     GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
-    locations = Location.geo_scope(:origin => LOCATION_A_IP).where2("distance < 3.97")
+    locations = Location.geo_scope(:origin => LOCATION_A_IP).where("distance < 3.97")
     assert_equal 5, locations.all.size
     assert_equal 5, locations.count
   end
@@ -298,7 +298,6 @@ class ActsAsMappableTest < GeokitTestCase
   def test_find_with_custom_distance_condition_using_custom_origin
     locations = CustomLocation.geo_scope(:origin => @custom_loc_a).where("dist < 3.97")
     assert_equal 5, locations.all.size
-    locations = CustomLocation.count(:origin => @custom_loc_a).where("dist < 3.97")
     assert_equal 5, locations.count
   end
 
@@ -425,6 +424,6 @@ class ActsAsMappableTest < GeokitTestCase
   def test_find_with_through_with_hash
     people = MockPerson.geo_scope(:origin => @location_a).order('distance ASC')
     assert_equal 2, people.size
-    assert_equal 2, people
+    assert_equal 2, people.count
   end
 end
