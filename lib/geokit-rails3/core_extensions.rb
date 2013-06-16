@@ -5,6 +5,6 @@ class Array
   # resulting distance.
   def sort_by_distance_from(origin, opts={})
     warn "[DEPRECATION] `Array#sort_by_distance_from(origin, opts)` is deprecated. Please use Array#sort_by{|e| e.distance_to(origin, opts)} instead which is not destructive"
-    sort_by!{|e| e.distance_to(origin, opts)}
+    self[0..-1] = sort_by{|e| e.distance_to(origin, opts)}
   end
 end
