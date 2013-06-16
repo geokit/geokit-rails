@@ -30,9 +30,8 @@ end
 desc 'Test available databases.'
 task :test_databases => %w(test_mysql test_postgresql test_sqlserver test_sqlite)
 
-require 'rcov/rcovtask'
-Rcov::RcovTask.new do |test|
-  test.libs << 'test'
-  test.pattern = 'test/test_*.rb'
-  test.verbose = true
+desc "Generate SimpleCov test coverage and open in your browser"
+task :coverage do
+  ENV['COVERAGE'] = 'true'
+  Rake::Task['test'].invoke
 end

@@ -18,7 +18,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'geokit', '~> 1.5'
 
   s.add_development_dependency "bundler", "> 1.0"
-  s.add_development_dependency "rcov", "~> 0.9"
+  s.add_development_dependency "simplecov"
+  s.add_development_dependency "simplecov-rcov"
   s.add_development_dependency "mocha", "~> 0.9"
   s.add_development_dependency "mysql", "~> 2.8"
   s.add_development_dependency "mysql2", "~> 0.2"

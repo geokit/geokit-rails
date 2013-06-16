@@ -3,10 +3,31 @@ require 'pathname'
 require 'boot'
 require 'mocha/setup'
 
+if ENV['COVERAGE']
+  COVERAGE_THRESHOLD = 49
+  require 'simplecov'
+  require 'simplecov-rcov'
+  SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
+  SimpleCov.start do
+    add_filter '/test/'
+    add_group 'lib', 'lib'
+  end
+  SimpleCov.at_exit do
+    SimpleCov.result.format!
+    percent = SimpleCov.result.covered_percent
+    unless percent >= COVERAGE_THRESHOLD
+      puts "Coverage must be above #{COVERAGE_THRESHOLD}%. It is #{"%.2f" % percent}%"
+      Kernel.exit(1)
+    end
+  end
+end
+
 require 'geokit'
 require 'geokit-rails3'
 
 ActiveRecord::Base.send(:include, Geokit::ActsAsMappable::Glue)
+ActionController::Base.send(:include, Geokit::GeocoderControl)
+ActionController::Base.send(:include, GeoKit::IpGeocodeLookup)
 
 class GeokitTestCase < ActiveSupport::TestCase
   begin
