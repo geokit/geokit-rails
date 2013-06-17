@@ -1,3 +1,10 @@
+Geokit Rails 3
+==============
+
+[![Build Status](https://travis-ci.org/geokit/geokit-rails3.png?branch=master)](https://travis-ci.org/geokit/geokit-rails3)
+[![Build Status](https://gemnasium.com/geokit/geokit-rails3.png?travis)](https://gemnasium.com/geokit/geokit-rails3)
+[![Build Status](https://codeclimate.com/github/geokit/geokit-rails3.png)](https://codeclimate.com/github/geokit/geokit-rails3)
+
 # WARNING
 
 This gem is an attempt to port [Andre Lewis' great **geokit-rails**](https://github.com/andre/geokit-gem) to Rails 3.
