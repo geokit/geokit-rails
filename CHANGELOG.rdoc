@@ -1,3 +1,6 @@
+== 2013-06-19 / Version 2.0.0
+* Integrated geokit-rails3 into geokit-rails  (use 1.x for rails2 support)
+
 == 2009-10-02 / Version 1.2.0
 * Overhaul the test suite to be independent of a Rails project
 * Added concept of database adapter. Ported mysql/postgresql conditional code to their own adapter.

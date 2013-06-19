@@ -23,7 +23,7 @@ if ENV['COVERAGE']
 end
 
 require 'geokit'
-require 'geokit-rails3'
+require 'geokit-rails'
 
 ActiveRecord::Base.send(:include, Geokit::ActsAsMappable::Glue)
 ActionController::Base.send(:include, Geokit::GeocoderControl)

@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path("../lib/geokit-rails3/version", __FILE__)
+require File.expand_path("../lib/geokit-rails/version", __FILE__)
 
 Gem::Specification.new do |s|
-  s.name        = "geokit-rails3"
-  s.version     = GeokitRails3::VERSION
+  s.name        = "geokit-rails"
+  s.version     = GeokitRails::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Andre Lewis", "Bill Eisenhauer", "Jeremy Lecour"]
-  s.email       = ["andre@earthcode.com", "bill_eisenhauer@yahoo.com", "jeremy.lecour@gmail.com"]
-  s.homepage    = "http://github.com/jlecour/geokit-rails3"
-  s.summary     = "Integrate Geokit with Rails 3"
-  s.description = "Port of the Rails plugin \"geokit-rails\" to Rails 3, as a gem"
+  s.authors     = ["Michael Noack", "Andre Lewis", "Bill Eisenhauer", "Jeremy Lecour"]
+  s.email       = ["michael@noack.com.au", "andre@earthcode.com", "bill_eisenhauer@yahoo.com", "jeremy.lecour@gmail.com"]
+  s.homepage    = "http://github.com/geokit/geokit-rails"
+  s.summary     = "Integrate Geokit with Rails"
+  s.description = "Official Geokit plugin for Rails/ActiveRecord. Provides location-based goodness for your Rails app. Requires the Geokit gem."
 
   s.required_rubygems_version = ">= 1.3.6"
   # s.rubyforge_project         = "test_gem"

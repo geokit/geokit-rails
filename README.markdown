@@ -1,49 +1,19 @@
-Geokit Rails 3
-==============
+Geokit Rails
+============
 
-[![Build Status](https://travis-ci.org/geokit/geokit-rails3.png?branch=master)](https://travis-ci.org/geokit/geokit-rails3)
-[![Build Status](https://gemnasium.com/geokit/geokit-rails3.png?travis)](https://gemnasium.com/geokit/geokit-rails3)
-[![Build Status](https://codeclimate.com/github/geokit/geokit-rails3.png)](https://codeclimate.com/github/geokit/geokit-rails3)
-
-# WARNING
-
-This gem is an attempt to port [Andre Lewis' great **geokit-rails**](https://github.com/andre/geokit-gem) to Rails 3.
-
-It is not finished. Some parts of the original plugin remain absolutely untouched or untested.
-
-What has been done :
-
-* the Rails 2 plugin has been transformed to a Rails 3 plugin, in a gem
-* the Rails 3 conventions and APIs and best practices have been followed (hopefully)
-* the basic features have been ported to use the new ActiveRecord 3 query syntax
-* the test suite has been updated to use the new query methods
-* the test suite pass for all the features that have been ported
-* this README has been updated for what is working and tested
-
-What hasn't been done (yet) :
-
-* make it possible to use the `where` scope with a clause on the distance column
-* port the IpGeocodeLookup module (the test suite is disabled)
-* obviously, make the test suite pass for all the features that have not been ported yet
-* update this README to reflect other changes that could have appeared with Rails 3
-
-In short, this gem is **not a drop-in replacement** for the Andre's plugin :
-
-1. it is usable for the basic features. It there are some bugs on these features,
-I'll try the best I can to fix them.
-
-2. it is not yet a full replacement of the geokit-rails plugin ;
-some features have been ported, but the syntax has changed, and some have not been ported.
+[![Build Status](https://travis-ci.org/geokit/geokit-rails.png?branch=master)](https://travis-ci.org/geokit/geokit-rails)
+[![Build Status](https://gemnasium.com/geokit/geokit-rails.png?travis)](https://gemnasium.com/geokit/geokit-rails)
+[![Build Status](https://codeclimate.com/github/geokit/geokit-rails.png)](https://codeclimate.com/github/geokit/geokit-rails)
 
 ## INSTALLATION
 
-Geokit for Rails consists of a generic Gem ([geokit-gem](https://github.com/andre/geokit-gem)) and a Rails plugin ([geokit-rails3](https://github.com/jlecour/geokit-rails3)).
+Geokit for Rails consists of a generic Gem ([geokit](https://github.com/geokit/geokit)) and a Rails plugin ([geokit-rails](https://github.com/geokit/geokit-rails)).
 
 Make sure you use a version >= 3.0 of Rails.
 
-You just have to add the 'geokit-rails3' gem to your Gemfile
+You just have to add the 'geokit-rails' gem to your Gemfile
 
-    gem 'geokit-rails3'
+    gem 'geokit-rails'
 
 Then tell bundler to update the gems :
 
@@ -218,7 +188,7 @@ Idem for the `limit` clause. In fact, `closest` and `farthest` are defined like 
 
 #### Important caveat
 
-In the current version of geokit-rails3, it is not possible to add a `where` clause
+In the current version of geokit-rails, it is not possible to add a `where` clause
 using the _distance_ column. I've tried many different ways to do this and didn't get it woking.
 
 One would expect to build a query like this :
@@ -652,8 +622,3 @@ If you need to refer to the original template again, see the `assets/api_keys_te
 *2. The gem dependency*: Geokit for Rails depends on the Geokit gem. Tell Rails about this
 dependency in `config/environment.rb`, within the initializer block:
 config.gem "geokit"
-
-*If you're having trouble with dependencies ....*
-
-Try installing the gem manually (sudo gem install geokit), then adding a `require 'geokit'` to the top of
-`vendor/plugins/geokit-rails3/init.rb` and/or `config/geokit_config.rb`.
