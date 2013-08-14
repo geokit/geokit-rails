@@ -53,33 +53,33 @@ module Geokit
       end
     end # Glue
 
-    class Relation < ActiveRecord::Relation
-      attr_accessor :distance_formula
+    #class Relation < ActiveRecord::Relation
+    #  attr_accessor :distance_formula
 
-      def where(opts, *rest)
-        return self if opts.blank?
-        relation = clone
-        where_values = build_where(opts, rest)
-        relation.where_values += substitute_distance_in_values(where_values)
-        relation
-      end
+    #  def where(opts, *rest)
+    #    return self if opts.blank?
+    #    relation = clone
+    #    where_values = build_where(opts, rest)
+    #    relation.where_values += substitute_distance_in_values(where_values)
+    #    relation
+    #  end
 
-      def order(*args)
-        return self if args.blank?
-        relation = clone
-        order_values = args.flatten
-        relation.order_values += substitute_distance_in_values(order_values)
-        relation
-      end
+    #  def order(*args)
+    #    return self if args.blank?
+    #    relation = clone
+    #    order_values = args.flatten
+    #    relation.order_values += substitute_distance_in_values(order_values)
+    #    relation
+    #  end
 
-    private
-      def substitute_distance_in_values(values)
-        return values unless @distance_formula
-        # substitute distance with the actual distance equation
-        pattern = Regexp.new("\\b#{@klass.distance_column_name}\\b")
-        values.map {|value| value.is_a?(String) ? value.gsub(pattern, @distance_formula) : value }
-      end
-    end
+    #private
+    #  def substitute_distance_in_values(values)
+    #    return values unless @distance_formula
+    #    # substitute distance with the actual distance equation
+    #    pattern = Regexp.new("\\b#{@klass.distance_column_name}\\b")
+    #    values.map {|value| value.is_a?(String) ? value.gsub(pattern, @distance_formula) : value }
+    #  end
+    #end
 
     extend ActiveSupport::Concern
 
@@ -104,28 +104,40 @@ module Geokit
 
       def within(distance, options = {})
         options[:within] = distance
-        geo_scope(options)
+        #geo_scope(options)
+        where(distance_conditions(options))
       end
       alias inside within
 
       def beyond(distance, options = {})
         options[:beyond] = distance
-        geo_scope(options)
+        #geo_scope(options)
+        where(distance_conditions(options))
       end
       alias outside beyond
 
       def in_range(range, options = {})
         options[:range] = range
-        geo_scope(options)
+        #geo_scope(options)
+        where(distance_conditions(options))
       end
 
       def in_bounds(bounds, options = {})
         options[:bounds] = bounds
-        geo_scope(options)
+        #geo_scope(options)
+        #where(distance_conditions(options))
+        bounds  = extract_bounds_from_options(options)
+        where(bound_conditions(bounds))
       end
 
       def by_distance(options = {})
-        geo_scope(options).order("#{distance_column_name} asc")
+        origin  = extract_origin_from_options(options)
+        units   = extract_units_from_options(options)
+        formula = extract_formula_from_options(options)
+        bounds  = extract_bounds_from_options(options)
+        distance_column_name = distance_sql(origin, units, formula)
+        #geo_scope(options).order("#{distance_column_name} asc")
+        order("#{distance_column_name} asc")
       end
 
       def closest(options = {})
@@ -137,41 +149,41 @@ module Geokit
         by_distance(options).last(1)
       end
 
-      def geo_scope(options = {})
-        arel = self.is_a?(ActiveRecord::Relation) ? self : self.scoped
+      #def geo_scope(options = {})
+      #  arel = self.is_a?(ActiveRecord::Relation) ? self : self.scoped
 
-        origin  = extract_origin_from_options(options)
-        units   = extract_units_from_options(options)
-        formula = extract_formula_from_options(options)
-        bounds  = extract_bounds_from_options(options)
+      #  origin  = extract_origin_from_options(options)
+      #  units   = extract_units_from_options(options)
+      #  formula = extract_formula_from_options(options)
+      #  bounds  = extract_bounds_from_options(options)
 
-        if origin || bounds
-          bounds = formulate_bounds_from_distance(options, origin, units) unless bounds
+      #  if origin || bounds
+      #    bounds = formulate_bounds_from_distance(options, origin, units) unless bounds
 
-          if origin
-            arel.distance_formula = distance_sql(origin, units, formula)
-            
-            if arel.select_values.blank?
-              star_select = Arel::SqlLiteral.new(arel.quoted_table_name + '.*')
-              arel = arel.select(star_select)
-            end
-          end
+      #    if origin
+      #      arel.distance_formula = distance_sql(origin, units, formula)
+      #      
+      #      if arel.select_values.blank?
+      #        star_select = Arel::SqlLiteral.new(arel.quoted_table_name + '.*')
+      #        arel = arel.select(star_select)
+      #      end
+      #    end
 
-          if bounds
-            bound_conditions = bound_conditions(bounds)
-            arel = arel.where(bound_conditions) if bound_conditions
-          end
+      #    if bounds
+      #      bound_conditions = bound_conditions(bounds)
+      #      arel = arel.where(bound_conditions) if bound_conditions
+      #    end
 
-          distance_conditions = distance_conditions(options)
-          arel = arel.where(distance_conditions) if distance_conditions
+      #    distance_conditions = distance_conditions(options)
+      #    arel = arel.where(distance_conditions) if distance_conditions
 
-          if self.through
-            arel = arel.includes(self.through)
-          end
-        end
+      #    if self.through
+      #      arel = arel.includes(self.through)
+      #    end
+      #  end
 
-        arel
-      end
+      #  arel
+      #end
 
       # Returns the distance calculation to be used as a display column or a condition.  This
       # is provide for anyone wanting access to the raw SQL.
@@ -189,12 +201,12 @@ module Geokit
 
       # Override ActiveRecord::Base.relation to return an instance of Geokit::ActsAsMappable::Relation.
       # TODO: Do we need to override JoinDependency#relation too?
-      def relation
-        # NOTE: This cannot be @relation as ActiveRecord already uses this to
-        # cache *its* Relation object
-        @_geokit_relation ||= Relation.new(self, arel_table)
-        finder_needs_type_condition? ? @_geokit_relation.where(type_condition) : @_geokit_relation
-      end
+      #def relation
+      #  # NOTE: This cannot be @relation as ActiveRecord already uses this to
+      #  # cache *its* Relation object
+      #  @_geokit_relation ||= Relation.new(self, arel_table)
+      #  finder_needs_type_condition? ? @_geokit_relation.where(type_condition) : @_geokit_relation
+      #end
 
       # If it's a :within query, add a bounding box to improve performance.
       # This only gets called if a :bounds argument is not otherwise supplied.
@@ -209,6 +221,12 @@ module Geokit
       end
 
       def distance_conditions(options)
+        origin  = extract_origin_from_options(options)
+        units   = extract_units_from_options(options)
+        formula = extract_formula_from_options(options)
+        bounds  = extract_bounds_from_options(options)
+        distance_column_name = distance_sql(origin, units, formula)
+
         res = if options.has_key?(:within)
           "#{distance_column_name} <= #{options[:within]}"
         elsif options.has_key?(:beyond)
@@ -223,7 +241,8 @@ module Geokit
         sw,ne = bounds.sw, bounds.ne
         lng_sql = bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
         res = "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
-        Arel::SqlLiteral.new("(#{res})") if res.present?
+        #Arel::SqlLiteral.new("(#{res})") if res.present?
+        res if res.present?
       end
 
       # Extracts the origin instance out of the options if it exists and returns
