@@ -29,16 +29,6 @@ class ActsAsMappableTest < GeokitTestCase
     @address = mock_addresses(:address_barnes_and_noble)
   end
 
-  def test_sort_by_distance_from
-    locations = Location.all
-    unsorted = [locations(:a), locations(:b), locations(:c), locations(:d), locations(:e), locations(:f)]
-    sorted = [locations(:a), locations(:b), locations(:c), locations(:f), locations(:d), locations(:e)]
-    assert_equal unsorted, locations
-    assert_equal sorted, locations.sort_by{|l| l.distance_to(locations(:a))}
-    assert_equal sorted, locations.sort_by_distance_from(locations(:a))
-    assert_equal sorted, locations # last action desctructive
-  end
-
   def test_override_default_units_the_hard_way
     Location.default_units = :kms
     #locations = Location.geo_scope(:origin => @loc_a).where("distance < 3.97")
