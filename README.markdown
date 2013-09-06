@@ -77,7 +77,7 @@ Values for **formula** can be `:sphere` or `:flat` with `:sphere` as the default
 These defaults persist through out the gem.
 
 The plug-in creates a calculated `distance` field on AR instances that have
-been retrieved throw a Geokit location query. By default, these fields are
+been retrieved through a Geokit location query. By default, these fields are
 known as "distance" but this can be changed through the `:distance_field_name` key.
 
 You can also define alternative column names for latitude and longitude using
