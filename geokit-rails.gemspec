@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "mocha", "~> 0.9"
   s.add_development_dependency "mysql", "~> 2.8"
   s.add_development_dependency "mysql2", "~> 0.2"
+  s.add_development_dependency "activerecord-mysql2spatial-adapter"
   s.add_development_dependency "pg", "~> 0.10"
   s.add_development_dependency "sqlite3"
 

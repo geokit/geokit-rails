@@ -8,6 +8,10 @@ mysql:
   database: geokit_rails_tests
   <<: *base
 
+mysql2spatial:
+  adapter: mysql2spatial
+  database: geokit_rails_tests
+
 postgresql:
   adapter: postgresql
   database: geokit_rails_tests
