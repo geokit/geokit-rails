@@ -439,4 +439,16 @@ class ActsAsMappableTest < GeokitTestCase
     assert_equal 2, people.size
     assert_equal 2, people.count
   end
+
+  def test_sort_by_distance_from
+    locations = Location.all
+    unsorted = [locations(:a), locations(:b), locations(:c), locations(:d), locations(:e), locations(:f)]
+    sorted   = [locations(:a), locations(:b), locations(:c), locations(:f), locations(:d), locations(:e)]
+    assert_equal sorted, locations.sort_by{|l| l.distance_to(locations(:a))}
+
+    unsorted_collection = DistanceCollection.new(unsorted)
+    unsorted_collection.set_distance_from(locations(:a))
+    assert_equal sorted, unsorted_collection.sort_by(&:distance)
+  end
+
 end
