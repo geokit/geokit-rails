@@ -135,7 +135,7 @@ specified for `lng_column_name` and `lat_column_name`:
 
 `:range` as a native Ruby range
 
-`:bounds` as an array of two elements : the wouth/west point and the north/east point.
+`:bounds` as an array of two elements : the south/west point and the north/east point.
 
     @sw = GeoKit::LatLng.new(32.91663,-96.982841)
     @ne = GeoKit::LatLng.new(32.96302,-96.919495)
