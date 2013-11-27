@@ -18,7 +18,7 @@ module Geokit
     initializer 'geokit-rails.insert_into_action_controller' do
       ActiveSupport.on_load :action_controller do
         ActionController::Base.send(:include, Geokit::GeocoderControl)
-        ActionController::Base.send(:include, GeoKit::IpGeocodeLookup)
+        ActionController::Base.send(:include, Geokit::IpGeocodeLookup)
       end
     end
 

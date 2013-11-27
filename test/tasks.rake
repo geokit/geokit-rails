@@ -11,7 +11,7 @@ class EnvTestTask < Rake::TestTask
   
 end
 
-desc 'Test the GeoKit plugin.'
+desc 'Test the Geokit plugin.'
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/*_test.rb'

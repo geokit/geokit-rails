@@ -137,8 +137,8 @@ specified for `lng_column_name` and `lat_column_name`:
 
 `:bounds` as an array of two elements : the south/west point and the north/east point.
 
-    @sw = GeoKit::LatLng.new(32.91663,-96.982841)
-    @ne = GeoKit::LatLng.new(32.96302,-96.919495)
+    @sw = Geokit::LatLng.new(32.91663,-96.982841)
+    @ne = Geokit::LatLng.new(32.96302,-96.919495)
     @somewhere = Locationd.find(123456)
     Location.geo_scope(:bounds => [@sw, @ne], :origin => @somewhere)
 

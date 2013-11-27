@@ -7,7 +7,7 @@ class ActsAsMappableTest < GeokitTestCase
   LOCATION_A_IP = "217.10.83.5"
 
   def setup
-    @location_a = GeoKit::GeoLoc.new
+    @location_a = Geokit::GeoLoc.new
     @location_a.lat = 32.918593
     @location_a.lng = -96.958444
     @location_a.city = "Irving"
@@ -15,9 +15,9 @@ class ActsAsMappableTest < GeokitTestCase
     @location_a.country_code = "US"
     @location_a.success = true
 
-    @sw = GeoKit::LatLng.new(32.91663,-96.982841)
-    @ne = GeoKit::LatLng.new(32.96302,-96.919495)
-    @bounds_center=GeoKit::LatLng.new((@sw.lat+@ne.lat)/2,(@sw.lng+@ne.lng)/2)
+    @sw = Geokit::LatLng.new(32.91663,-96.982841)
+    @ne = Geokit::LatLng.new(32.96302,-96.919495)
+    @bounds_center=Geokit::LatLng.new((@sw.lat+@ne.lat)/2,(@sw.lng+@ne.lng)/2)
 
     @starbucks = companies(:starbucks)
     @loc_a = locations(:a)
@@ -47,19 +47,19 @@ class ActsAsMappableTest < GeokitTestCase
   end
 
   def test_distance_between_geocoded
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with("Irving, TX").returns(@location_a)
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with("San Francisco, CA").returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with("Irving, TX").returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with("San Francisco, CA").returns(@location_a)
     assert_equal 0, Location.distance_between("Irving, TX", "San Francisco, CA")
   end
 
   def test_distance_to_geocoded
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with("Irving, TX").returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with("Irving, TX").returns(@location_a)
     assert_equal 0, @custom_loc_a.distance_to("Irving, TX")
   end
 
   def test_distance_to_geocoded_error
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with("Irving, TX").returns(GeoKit::GeoLoc.new)
-    assert_raise(GeoKit::Geocoders::GeocodeError) { @custom_loc_a.distance_to("Irving, TX")  }
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with("Irving, TX").returns(Geokit::GeoLoc.new)
+    assert_raise(Geokit::Geocoders::GeocodeError) { @custom_loc_a.distance_to("Irving, TX")  }
   end
 
   def test_custom_attributes_distance_calculations
@@ -225,7 +225,7 @@ class ActsAsMappableTest < GeokitTestCase
   end
 
   def test_ip_geocoded_distance_column_in_select
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
     locations = Location.by_distance(:origin => LOCATION_A_IP)
     assert_equal 6, locations.to_a.size
     assert_equal 0, @loc_a.distance_to(locations.first)
@@ -233,59 +233,59 @@ class ActsAsMappableTest < GeokitTestCase
   end
 
   def test_ip_geocoded_find_with_distance_condition
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
     locations = Location.within(3.97, :origin => LOCATION_A_IP)
     assert_equal 5, locations.to_a.size
     assert_equal 5, locations.count
   end
 
   def test_ip_geocoded_find_within
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
     locations = Location.within(3.97, :origin => LOCATION_A_IP)
     assert_equal 5, locations.to_a.size
     assert_equal 5, locations.count
   end
 
   def test_ip_geocoded_find_with_compound_condition
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
     locations = Location.within(5, :origin => LOCATION_A_IP).where("city = 'Coppell'")
     assert_equal 2, locations.to_a.size
     assert_equal 2, locations.count
   end
 
   def test_ip_geocoded_find_with_secure_compound_condition
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
     locations = Location.within(5, :origin => LOCATION_A_IP).where(["city = ?", 'Coppell'])
     assert_equal 2, locations.to_a.size
     assert_equal 2, locations.count
   end
 
   def test_ip_geocoded_find_beyond
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
     locations = Location.beyond(3.95, :origin => LOCATION_A_IP)
     assert_equal 1, locations.to_a.size
     assert_equal 1, locations.count
   end
 
   def test_ip_geocoded_find_nearest
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
     assert_equal @loc_a, Location.nearest(:origin => LOCATION_A_IP).first
   end
 
   def test_ip_geocoded_find_farthest
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
     assert_equal @loc_e, Location.farthest(:origin => LOCATION_A_IP).first
   end
 
   def test_ip_geocoder_exception
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with('127.0.0.1').returns(GeoKit::GeoLoc.new)
-    assert_raises GeoKit::Geocoders::GeocodeError do
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with('127.0.0.1').returns(Geokit::GeoLoc.new)
+    assert_raises Geokit::Geocoders::GeocodeError do
       Location.farthest(:origin => '127.0.0.1').first
     end
   end
 
   def test_address_geocode
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with('Irving, TX').returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with('Irving, TX').returns(@location_a)
     #locations = Location.geo_scope(:origin => 'Irving, TX').where(["distance < ? and city = ?", 5, 'Coppell'])
     locations = Location.within(5, :origin => 'Irving, TX').where(["city = ?", 'Coppell'])
     assert_equal 2, locations.to_a.size
@@ -408,7 +408,7 @@ class ActsAsMappableTest < GeokitTestCase
   end
 
   def test_auto_geocode
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with("Irving, TX").returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with("Irving, TX").returns(@location_a)
     store=Store.new(:address=>'Irving, TX')
     store.save
     assert_equal store.lat,@location_a.lat
@@ -417,7 +417,7 @@ class ActsAsMappableTest < GeokitTestCase
   end
 
   def test_auto_geocode_failure
-    GeoKit::Geocoders::MultiGeocoder.expects(:geocode).with("BOGUS").returns(GeoKit::GeoLoc.new)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with("BOGUS").returns(Geokit::GeoLoc.new)
     store=Store.new(:address=>'BOGUS')
     store.save
     assert store.new_record?

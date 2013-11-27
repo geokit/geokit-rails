@@ -27,7 +27,7 @@ require 'geokit-rails'
 
 ActiveRecord::Base.send(:include, Geokit::ActsAsMappable::Glue)
 ActionController::Base.send(:include, Geokit::GeocoderControl)
-ActionController::Base.send(:include, GeoKit::IpGeocodeLookup)
+ActionController::Base.send(:include, Geokit::IpGeocodeLookup)
 
 class GeokitTestCase < ActiveSupport::TestCase
   begin
