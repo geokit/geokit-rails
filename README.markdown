@@ -1,9 +1,19 @@
 Geokit Rails
 ============
 
+[![Gem Version](https://badge.fury.io/rb/geokit-rails.png)](http://badge.fury.io/rb/geokit-rails)
 [![Build Status](https://travis-ci.org/geokit/geokit-rails.png?branch=master)](https://travis-ci.org/geokit/geokit-rails)
-[![Build Status](https://gemnasium.com/geokit/geokit-rails.png?travis)](https://gemnasium.com/geokit/geokit-rails)
-[![Build Status](https://codeclimate.com/github/geokit/geokit-rails.png)](https://codeclimate.com/github/geokit/geokit-rails)
+[![Coverage Status](https://coveralls.io/repos/geokit/geokit-rails/badge.png)](https://coveralls.io/r/geokit/geokit-rails)
+[![Dependency Status](https://gemnasium.com/geokit/geokit-rails.png?travis)](https://gemnasium.com/geokit/geokit-rails)
+[![Code Climate](https://codeclimate.com/github/geokit/geokit-rails.png)](https://codeclimate.com/github/geokit/geokit-rails)
+
+## COMMUNICATION
+
+* If you **need help**, use [Stack Overflow](http://stackoverflow.com/questions/tagged/geokit). (Tag 'geokit' and we'll be alerted)
+* If you **found a bug**, use GitHub issues.
+* If you **have an idea**, use GitHub issues.
+* If you'd like to **ask a general question**, use GitHub issues.
+* If you **want to contribute**, submit a pull request.
 
 ## INSTALLATION
 
@@ -608,10 +618,6 @@ GeoLoc represents an address or location which
 has been geocoded. You can get the city, zipcode, street address, etc.
 from a GeoLoc object. GeoLoc extends LatLng, so you also get lat/lng
 AND the Mappable modeule goodness for free.
-
-## GOOGLE GROUP
-
-Follow the Google Group for updates and discussion on Geokit: http://groups.google.com/group/geokit
 
 ## IMPORTANT POST-INSTALLATION NOTES:
 
