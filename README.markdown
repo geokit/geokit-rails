@@ -149,13 +149,13 @@ specified for `lng_column_name` and `lat_column_name`:
 
     @sw = Geokit::LatLng.new(32.91663,-96.982841)
     @ne = Geokit::LatLng.new(32.96302,-96.919495)
-    @somewhere = Locationd.find(123456)
+    @somewhere = Location.find(123456)
     Location.geo_scope(:bounds => [@sw, @ne], :origin => @somewhere)
 
 `:bounds` as a Geokit::Bounds object
 
     @bounds = Geokit::Bounds.new([32.91663,-96.982841], [32.96302,-96.919495])
-    @somewhere = Locationd.find(123456)
+    @somewhere = Location.find(123456)
     Location.geo_scope(:bounds => [@sw, @ne], :origin => @somewhere)
 
 When using a point of reference or bounds, you leverage the power of Geokit
