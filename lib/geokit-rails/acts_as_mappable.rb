@@ -29,7 +29,7 @@ module Geokit
             end
           else
             cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
-
+            
             self.distance_column_name = options[:distance_column_name]  || 'distance'
             self.default_units = options[:default_units] || Geokit::default_units
             self.default_formula = options[:default_formula] || Geokit::default_formula
@@ -93,7 +93,7 @@ module Geokit
       # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
       def adapter
         @adapter ||= begin
-          require File.join('geokit-rails', 'adapters', connection.adapter_name.downcase)
+          require File.join(File.dirname(__FILE__), 'adapters', connection.adapter_name.downcase)
           klass = Adapters.const_get(connection.adapter_name.camelcase)
           klass.load(self) unless klass.loaded
           klass.new(self)
@@ -147,6 +147,45 @@ module Geokit
 
       def farthest(options = {})
         by_distance(options).last(1)
+      end
+
+      def geo_scope(options = {})
+
+        arel = self.is_a?(ActiveRecord::Relation) ? self : self.scoped
+        #p "--opt--#{options}"
+        origin  = extract_origin_from_options(options)
+        units   = extract_units_from_options(options)
+        formula = extract_formula_from_options(options)
+        bounds  = extract_bounds_from_options(options)
+        
+        if origin || bounds
+          bounds = formulate_bounds_from_distance(options, origin, units) unless bounds
+          if origin
+            @distance_formula = distance_sql(origin, units, formula)
+
+            if arel.select_values.blank?
+              star_select = Arel::SqlLiteral.new(arel.quoted_table_name + '.*')
+              arel = arel.select(star_select)
+            end
+
+            distance_select = Arel::SqlLiteral.new("#{@distance_formula} AS #{distance_column_name}")
+            arel = arel.select(distance_select)
+          end
+
+          if bounds
+            bound_conditions = bound_conditions(bounds)
+            arel = arel.where(bound_conditions) if bound_conditions
+          end
+
+          # distance_conditions = distance_conditions(options)
+          # arel = arel.where(distance_conditions) if distance_conditions
+
+          if origin
+            arel = substitute_distance_in_where_values(arel, origin, units, formula)
+          end
+        end
+
+        arel
       end
 
       #def geo_scope(options = {})
