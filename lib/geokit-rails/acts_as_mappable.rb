@@ -150,8 +150,11 @@ module Geokit
       end
 
       def geo_scope(options = {})
-
-        arel = self.is_a?(ActiveRecord::Relation) ? self : self.scoped
+        
+        # Scope method replaced with .where(nil) method
+        # Check issue list https://github.com/rails/rails/issues/12756
+        
+        arel = self.is_a?(ActiveRecord::Relation) ? self : self.where(nil) # self.scoped
         #p "--opt--#{options}"
         origin  = extract_origin_from_options(options)
         units   = extract_units_from_options(options)
