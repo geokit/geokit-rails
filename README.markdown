@@ -28,6 +28,8 @@ You just have to add the 'geokit-rails' gem to your Gemfile
 Then tell bundler to update the gems :
 
     $ bundle install
+    
+Last, consult the `important post-installation notes` section at the end of this document.
 
 If you want to use geokit-rails in a Rails 2 application, just use the good old plugin ([geokit-rails](https://github.com/andre/geokit-rails)).
 
