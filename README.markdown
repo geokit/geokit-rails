@@ -166,7 +166,7 @@ or a Geokit::Bounds with what you give to it, you're good to go.
 
 ### FIND BY SQL
 
-Finaly, if all that is desired is the raw SQL for distance
+Finally, if all that is desired is the raw SQL for distance
 calculations, you can use the following:
 
     Location.distance_sql(origin, units = default_units, formula = default_formula)
@@ -201,7 +201,7 @@ Idem for the `limit` clause. In fact, `closest` and `farthest` are defined like 
 #### Important caveat
 
 In the current version of geokit-rails, it is not possible to add a `where` clause
-using the _distance_ column. I've tried many different ways to do this and didn't get it woking.
+using the _distance_ column. I've tried many different ways to do this and didn't get it working.
 
 One would expect to build a query like this :
 
@@ -222,7 +222,7 @@ If you are displaying points on a map, you probably need to query for whatever f
 
     Store.in_bounds([sw_point,ne_point]).all
 
-The input to `bounds` can be array with the two points or a Bounds object. However you provide them, the order should always be the southwest corner, northeast corner of the rectangle. Typically, you will be getting the sw\_point and ne\_point from a map that is displayed on a web page.
+The input to `bounds` can be an array with the two points or a Bounds object. However you provide them, the order should always be the southwest corner, northeast corner of the rectangle. Typically, you will be getting the sw\_point and ne\_point from a map that is displayed on a web page.
 
 If you need to calculate the bounding box from a point and radius, you can do that:
 
@@ -276,7 +276,7 @@ Then you can still call:
 
     Company.within(distance, :origin => @somewhere)
 
-You can also give :through a hash if you location is nested deep. For example, given:
+You can also give :through a hash if your location is nested deep. For example, given:
 
     class House
       acts_as_mappable
@@ -559,7 +559,7 @@ as you would any other column. For example:
 
     Store.find(:all, :origin=>'94117', :order=>'distance')
 
-## How to elements of an array according to distance from a common point
+## How to sort elements of an array according to distance from a common point
 
 Usually, you can do your sorting in the database as part of your find call.
 If you need to sort things post-query, you can do so:
@@ -579,7 +579,7 @@ performance since the lat and lng columns are used in a straight comparison
 for distance calculation.  Assuming a Page model that is incorporating the
 Geokit plugin the migration would be as follows.
 
-    class AddIndexOPageLatAndLng < ActiveRecord::Migration
+    class AddIndexToPageLatAndLng < ActiveRecord::Migration
 
       def self.up
         add_index  :pages, [:lat, :lng]
