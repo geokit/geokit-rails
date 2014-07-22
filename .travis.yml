@@ -13,6 +13,11 @@ matrix:
       gemfile: gemfiles/rails4.gemfile
     - rvm: 1.9.2
       gemfile: gemfiles/rails4.gemfile
+env:
+  - DB=sqlite
+  - DB=postgresql
+before_script:
+  - psql -c 'create database geokit_rails_tests;' -U postgres
 script: "bundle exec rake coverage"
 before_install:
   - gem install bundler

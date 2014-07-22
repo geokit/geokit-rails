@@ -16,6 +16,7 @@ postgresql:
   adapter: postgresql
   database: geokit_rails_tests
   <<: *base
+  username: postgres
 
 sqlserver:
   adapter: sqlserver
