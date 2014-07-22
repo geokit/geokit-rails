@@ -51,7 +51,7 @@ and [http://geocoder.ca/?register=1](http://geocoder.ca/?register=1)
 
 Add this to use a username with the Geonames geocoder
 
-    config.geokitgeocoders.geonames="REPLACE_WITH_YOUR_GEONAMES_USERNAME"
+    config.geokit.geocoders.geonames="REPLACE_WITH_YOUR_GEONAMES_USERNAME"
 
 This is the order in which the geocoders are called in a failover scenario. 
 If you only want to use a single geocoder, put a single symbol in the array. 
@@ -63,5 +63,5 @@ Be aware that there are **Terms of Use** restrictions on how you can use the var
 The IP provider order. Valid symbols are `:ip`, `:geo_plugin`. 
 As before, make sure you read up on relevant **Terms of Use** for each
 
-    config.geokitgeocoders.ip_provider_order = [:geo_plugin,:ip]
+    config.geokit.geocoders.ip_provider_order = [:geo_plugin,:ip]
 
