@@ -27,12 +27,6 @@ SQRT(
 )
          }
       end
-
-      private
-
-      def rad2deg(value)
-        (value / Math::PI) * 180
-      end
     end
   end
 end
