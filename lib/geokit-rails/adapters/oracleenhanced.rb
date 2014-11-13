@@ -1,33 +1,21 @@
 module Geokit
   module Adapters
     class OracleEnhanced < Abstract
+      TO_DEGREES = Math::PI / 180
       def sphere_distance_sql(lat, lng, multiplier)
-        lat = rad2deg(lat)
-        lng = rad2deg(lng)
-
         %{
-(2 * (#{multiplier} * ATAN2(
-  SQRT(
-    POWER(
-      SIN((0.017453293 * (#{lat} - #{qualified_lat_column_name} ) ) / 2 ),
-      2) +
-    COS(0.017453293 * (#{qualified_lat_column_name})) *
-    COS(0.017453293 * (#{lat})) *
-    POWER(
-      SIN((0.017453293 * (#{lng} - #{qualified_lng_column_name} ) ) / 2 ),
-      2 )
-  ),
-  SQRT(1-(
-    POWER(
-      SIN((0.017453293 * (#{lat} - #{qualified_lat_column_name} ) ) / 2 ),
-      2 ) +
-    COS(0.017453293 * (#{qualified_lat_column_name})) *
-    COS(0.017453293 * (#{lat})) *
-    POWER(
-      SIN((0.017453293 * (#{lng} - #{qualified_lng_column_name} ) ) / 2 ),
-      2 )
-  ))
-)))
+(
+  ACOS(
+    COS(#{lat}) * COS(#{lng}) *
+    COS(#{TO_DEGREES} * #{qualified_lat_column_name}) *
+    COS(#{TO_DEGREES} * #{qualified_lng_column_name}) +
+    COS(#{lat}) * SIN(#{lng}) *
+    COS(#{TO_DEGREES} * #{qualified_lat_column_name}) *
+    SIN(#{TO_DEGREES} * #{qualified_lng_column_name}) +
+    SIN(#{lat}) *
+    SIN(#{TO_DEGREES} * #{qualified_lat_column_name})
+  ) *
+  #{multiplier})
 }
       end
 
