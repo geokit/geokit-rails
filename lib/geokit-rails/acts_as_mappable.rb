@@ -162,9 +162,9 @@ module Geokit
 
       #    if origin
       #      arel.distance_formula = distance_sql(origin, units, formula)
-      #      
+      #
       #      if arel.select_values.blank?
-      #        star_select = Arel::SqlLiteral.new(arel.quoted_table_name + '.*')
+      #        star_select = Arel::Nodes::SqlLiteral.new(arel.quoted_table_name + '.*')
       #        arel = arel.select(star_select)
       #      end
       #    end
@@ -234,14 +234,14 @@ module Geokit
         elsif options.has_key?(:range)
           "#{distance_column_name} >= #{options[:range].first} AND #{distance_column_name} <#{'=' unless options[:range].exclude_end?} #{options[:range].last}"
         end
-        Arel::SqlLiteral.new("(#{res})") if res.present?
+        Arel::Nodes::SqlLiteral.new("(#{res})") if res.present?
       end
 
       def bound_conditions(bounds)
         sw,ne = bounds.sw, bounds.ne
         lng_sql = bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
         res = "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
-        #Arel::SqlLiteral.new("(#{res})") if res.present?
+        #Arel::Nodes::SqlLiteral.new("(#{res})") if res.present?
         res if res.present?
       end
 
