@@ -61,7 +61,7 @@ package.
 
 ## A NOTE ON TERMINOLOGY
 
-Throughout the code and API,  _latitude_ and _longitude_ are referred to as _lat_
+Throughout the code and API, _latitude_ and _longitude_ are referred to as _lat_
 and _lng_.  We've found over the long term the abbreviation saves lots of typing time.
 
 ## LOCATION QUERIES
