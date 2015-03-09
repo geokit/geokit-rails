@@ -315,8 +315,11 @@ module Geokit
       # Returns the distance SQL using the spherical world formula (Haversine).  The SQL is tuned
       # to the database in use.
       def sphere_distance_sql(origin, units)
-        lat = deg2rad(origin.lat)
-        lng = deg2rad(origin.lng)
+	# "origin" can be a Geokit::LatLng (with :lat and :lng methos), e.g. when using geo_scope
+	# or it can be an ActsAsMappable with customized latitude and longitude methods, e.g. when using distance_sql.
+	lat = deg2rad(origin.respond_to?(:lat) ? origin.lat : origin.send(:"#{lat_column_name}"))
+	lng = deg2rad(origin.respond_to?(:lng) ? origin.lng : origin.send(:"#{lng_column_name}"))
+
         multiplier = units_sphere_multiplier(units)
 
         adapter.sphere_distance_sql(lat, lng, multiplier) if adapter
@@ -326,7 +329,7 @@ module Geokit
       # to the database in use.
       def flat_distance_sql(origin, units)
         lat_degree_units = units_per_latitude_degree(units)
-        lng_degree_units = units_per_longitude_degree(origin.lat, units)
+        lng_degree_units = units_per_longitude_degree(origin.respond_to?(:lat) ? origin.lat : origin.send(:"#{lat_column_name}"), units)
 
         adapter.flat_distance_sql(origin, lat_degree_units, lng_degree_units)
       end
@@ -339,8 +342,8 @@ module Geokit
       geo=Geokit::Geocoders::MultiGeocoder.geocode(address)
 
       if geo.success
-        self.send("#{lat_column_name}=", geo.lat)
-        self.send("#{lng_column_name}=", geo.lng)
+        self.send("#{lat_column_name}=", geo.send(:"#{lat_column_name}"))
+        self.send("#{lng_column_name}=", geo.send(:"#{lng_column_name}"))
       else
         errors.add(auto_geocode_field, auto_geocode_error_message)
       end
