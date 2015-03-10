@@ -315,13 +315,12 @@ module Geokit
       # Returns the distance SQL using the spherical world formula (Haversine).  The SQL is tuned
       # to the database in use.
       def sphere_distance_sql(origin, units)
-	# "origin" can be a Geokit::LatLng (with :lat and :lng methos), e.g. when using geo_scope
-	# or it can be an ActsAsMappable with customized latitude and longitude methods, e.g. when using distance_sql.
-	lat = deg2rad(origin.respond_to?(:lat) ? origin.lat : origin.send(:"#{lat_column_name}"))
-	lng = deg2rad(origin.respond_to?(:lng) ? origin.lng : origin.send(:"#{lng_column_name}"))
-
+        # "origin" can be a Geokit::LatLng (with :lat and :lng methos), e.g. 
+        # when using geo_scope or it can be an ActsAsMappable with customized 
+        # latitude and longitude methods, e.g. when using distance_sql.
+        lat = deg2rad(get_lat(origin))
+        lng = deg2rad(get_lng(origin))
         multiplier = units_sphere_multiplier(units)
-
         adapter.sphere_distance_sql(lat, lng, multiplier) if adapter
       end
 
@@ -329,9 +328,16 @@ module Geokit
       # to the database in use.
       def flat_distance_sql(origin, units)
         lat_degree_units = units_per_latitude_degree(units)
-        lng_degree_units = units_per_longitude_degree(origin.respond_to?(:lat) ? origin.lat : origin.send(:"#{lat_column_name}"), units)
-
+        lng_degree_units = units_per_longitude_degree(get_lat(origin), units)
         adapter.flat_distance_sql(origin, lat_degree_units, lng_degree_units)
+      end
+
+      def get_lat(origin)
+        origin.respond_to?(:lat) ? origin.lat : origin.send(:"#{lat_column_name}")
+      end
+
+      def get_lng(origin)
+        origin.respond_to?(:lng) ? origin.lng : origin.send(:"#{lng_column_name}")
       end
 
     end # ClassMethods
