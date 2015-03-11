@@ -1,18 +1,18 @@
 language: ruby
 rvm:
-  - 1.8.7
-  - 1.9.2
-  - 1.9.3
-  - 2.0.0
+  - 1.9
+  - 2.0
+  - 2.1
+  - 2.2
 gemfile:
   - gemfiles/rails3.gemfile
   - gemfiles/rails4.gemfile
 matrix:
   exclude:
-    - rvm: 1.8.7
+    - rvm: 1.9
       gemfile: gemfiles/rails4.gemfile
-    - rvm: 1.9.2
-      gemfile: gemfiles/rails4.gemfile
+    - rvm: 2.2
+      gemfile: gemfiles/rails3.gemfile
 script: "bundle exec rake coverage"
 before_install:
   - gem install bundler
