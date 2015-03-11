@@ -137,16 +137,16 @@ module Geokit
         bounds  = extract_bounds_from_options(options)
         distance_column_name = distance_sql(origin, units, formula)
         #geo_scope(options).order("#{distance_column_name} asc")
-        order("#{distance_column_name} asc")
+        order("#{distance_column_name} #{options[:reverse] ? 'DESC' : 'ASC'}")
       end
 
       def closest(options = {})
-        by_distance(options).first(1)
+        by_distance(options).limit(1)
       end
       alias nearest closest
 
       def farthest(options = {})
-        by_distance(options).last(1)
+        by_distance({:reverse => true}.merge(options)).limit(1)
       end
 
       #def geo_scope(options = {})

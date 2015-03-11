@@ -175,12 +175,20 @@ class ActsAsMappableTest < GeokitTestCase
     assert_equal @loc_a, Location.nearest(:origin =>[@loc_a.lat, @loc_a.lng]).first
   end
 
+  def test_find_nearest_is_scope
+    assert Location.nearest(:origin => @loc_a).respond_to? :where
+  end
+
   def test_find_farthest
     assert_equal @loc_e, Location.farthest(:origin => @loc_a).first
   end
 
   def test_find_farthest_with_coordinates
     assert_equal @loc_e, Location.farthest(:origin =>[@loc_a.lat, @loc_a.lng]).first
+  end
+
+  def test_find_farthest_is_scope
+    assert Location.farthest(:origin => @loc_a).respond_to? :where
   end
 
   def test_scoped_distance_column_in_select
