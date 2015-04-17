@@ -90,7 +90,7 @@ end
 
 The optional parameters are `units`, `formula`, and `distance_field_name`.
 Values for **units** can be `:miles`, `:kms` (kilometers), or `:nms` (nautical miles),
-with `:miles` as the default. 
+with `:miles` as the default.
 Values for **formula** can be `:sphere` or `:flat` with `:sphere` as the default.
 `:sphere` gives you Haversine calculations, while `:flat` gives the Pythagoreum Theory.
 These defaults persist through out the gem.
@@ -122,13 +122,13 @@ A few examples :
 Location.within(5, :origin => @somewhere)
 # is the same as
 Location.geo_scope(:within => 5, :origin => @somewhere)
-```    
+```
 
 ```ruby
 Location.in_range(2..5, :origin => @somewhere)
 # is the same as
 Location.geo_scope(:range => 2..5, :origin => @somewhere)
-```    
+```
 
 ```ruby
 Location.in_bounds([@south_west_point, @north_east_point], :origin => @somewhere)
@@ -585,20 +585,20 @@ A few quick examples to get you started ....
    datatypes to store your latitude/longitude
 
 2. use `acts_as_mappable` on your store model:
-3. 
+3.
   ```ruby
   class Store < ActiveRecord::Base
      acts_as_mappable
      ...
   end
   ```
-  
+
 3. finders now have extra capabilities:
-  
+
   ```ruby
   Store.find(:all, :origin =>[32.951613,-96.958444], :within=>10)
   ```
-  
+
 ## How to geocode an address
 
 1. configure your geocoder key(s) in `config/initializers/geokit_config.rb`
@@ -610,7 +610,7 @@ A few quick examples to get you started ....
   ```ruby
   Geokit::Geocoders::provider_order=[:google]
   ```
-  
+
 3. Test it out in script/console
 
   ```ruby
@@ -620,7 +620,7 @@ A few quick examples to get you started ....
   puts res.lng
   puts res.full_address
   ```
-  
+
     ... etc. The return type is GeoLoc, see the API for
     all the methods you can call on it.
 
@@ -636,13 +636,13 @@ A few quick examples to get you started ....
   ```ruby
   Store.find(:all, :origin=>'100 Spear st, San Francisco, CA', :within=>10)
   ```
-  
+
 4. you can also use a zipcode, or anything else that's geocodable:
 
   ```ruby
   Store.find(:all, :origin=>'94117', :conditions=>'distance<10')
   ```
-  
+
 ## How to sort a query by distance from an origin
 
 You now have access to a 'distance' column, and you can use it
@@ -721,5 +721,7 @@ AND the Mappable module goodness for free.
 ## IMPORTANT POST-INSTALLATION NOTES:
 
 *1. The configuration file*: Geokit for Rails uses a configuration file in config/initializers.
-You *must* add your own keys for the various geocoding services if you want to use geocoding.
-If you need to refer to the original template again, see the `assets/api_keys_template` file.
+You *must* add your own keys for the various geocoding services if you want to use geocoding. You can generate a sample initializer file by run:
+```sh
+$ rails g geokit_rails:install
+```
