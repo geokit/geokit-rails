@@ -17,3 +17,6 @@ script: "bundle exec rake coverage"
 before_install:
   - gem install bundler
 
+cache: bundler
+install:
+  - "travis_retry bundle install"
