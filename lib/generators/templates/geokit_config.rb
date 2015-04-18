@@ -1,4 +1,4 @@
-# These defaults are used in Geokit::Mappable.distance_to and in acts_as_mappable
+# These defaults are used in Geokit::Mappable.distance_to and acts_as_mappable
 Geokit::default_units = :miles # others :kms, :nms, :meters
 Geokit::default_formula = :sphere
 
@@ -30,11 +30,16 @@ Geokit::Geocoders::request_timeout = 3
 # See https://developers.google.com/maps/documentation/geocoding/#api_key
 # Geokit::Geocoders::GoogleGeocoder.api_key = ''
 
-# You can also set multiple API KEYS for different domains that may be directed to this same application.
-# The domain from which the current user is being directed will automatically be updated for Geokit via
-# the GeocoderControl class, which gets it's begin filter mixed into the ActionController.
+# You can also set multiple API KEYS for different domains that may be directed
+# to this same application.
+# The domain from which the current user is being directed will automatically
+# be updated for Geokit via
+# the GeocoderControl class, which gets it's begin filter mixed
+# into the ActionController.
 # You define these keys with a Hash as follows:
-#Geokit::Geocoders::google = { 'rubyonrails.org' => 'RUBY_ON_RAILS_API_KEY', 'ruby-docs.org' => 'RUBY_DOCS_API_KEY' }
+# Geokit::Geocoders::google = {
+# 'rubyonrails.org' => 'RUBY_ON_RAILS_API_KEY',
+# ' ruby-docs.org' => 'RUBY_DOCS_API_KEY' }
 
 # This is your username and password for geocoder.us.
 # To use the free service, the value can be set to nil or false.  For

@@ -8,7 +8,6 @@ module GeokitRails
       def copy_initializer
         copy_file "geokit_config.rb", "config/initializers/geokit_config.rb"
       end
-
     end
   end
 end
