@@ -1,10 +1,7 @@
 source 'https://rubygems.org'
-gemspec :path => "../"
 
 group :development, :test do
-  gem 'rake'
-  gem 'simplecov'
-  gem 'simplecov-rcov'
-  gem 'sqlite3'
   gem 'activerecord', '~> 3.2.0'
 end
+
+gemspec :path => "../"
