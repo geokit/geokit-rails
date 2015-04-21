@@ -3,7 +3,6 @@ gemspec :path => "../"
 
 group :development, :test do
   gem 'rake'
-  gem 'rspec'
   gem 'simplecov'
   gem 'simplecov-rcov'
   gem 'sqlite3'
