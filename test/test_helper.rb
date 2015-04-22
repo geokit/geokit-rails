@@ -3,11 +3,17 @@ require 'pathname'
 require 'boot'
 require 'mocha/setup'
 
-if ENV['COVERAGE']
+unless ENV['COVERAGE'] == 'off'
   COVERAGE_THRESHOLD = 49
   require 'simplecov'
   require 'simplecov-rcov'
-  SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
+  require 'coveralls'
+  Coveralls.wear!
+
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+    SimpleCov::Formatter::RcovFormatter,
+    Coveralls::SimpleCov::Formatter
+  ]
   SimpleCov.start do
     add_filter '/test/'
     add_group 'lib', 'lib'
