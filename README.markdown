@@ -3,7 +3,7 @@ Geokit Rails
 
 [![Gem Version](https://badge.fury.io/rb/geokit-rails.png)](http://badge.fury.io/rb/geokit-rails)
 [![Build Status](https://travis-ci.org/geokit/geokit-rails.png?branch=master)](https://travis-ci.org/geokit/geokit-rails)
-[![Coverage Status](https://coveralls.io/repos/geokit/geokit-rails/badge.png)](https://coveralls.io/r/geokit/geokit-rails)
+[![Coverage Status](https://coveralls.io/repos/geokit/geokit-rails/badge.png?branch=master)](https://coveralls.io/r/geokit/geokit-rails)
 [![Dependency Status](https://gemnasium.com/geokit/geokit-rails.png?travis)](https://gemnasium.com/geokit/geokit-rails)
 [![Code Climate](https://codeclimate.com/github/geokit/geokit-rails.png)](https://codeclimate.com/github/geokit/geokit-rails)
 
