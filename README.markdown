@@ -242,7 +242,7 @@ One would expect to build a query like this :
 
 ```ruby
 scoped  = Location.geo_scope(:origin => @somewhere)
-scoped  = scoped.where('distance <= 5)
+scoped  = scoped.where('distance <= 5')
 results = scoped.all
 ```
 
