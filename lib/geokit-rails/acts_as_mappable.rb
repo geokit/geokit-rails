@@ -29,7 +29,7 @@ module Geokit
             end
           else
             cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
-            
+
             self.distance_column_name = options[:distance_column_name]  || 'distance'
             self.default_units = options[:default_units] || Geokit::default_units
             self.default_formula = options[:default_formula] || Geokit::default_formula
@@ -93,7 +93,7 @@ module Geokit
       # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
       def adapter
         @adapter ||= begin
-          require File.join(File.dirname(__FILE__), 'adapters', connection.adapter_name.downcase)
+          require File.join(File.dirname(__FILE__), "adapters", connection.adapter_name.downcase)
           klass = Adapters.const_get(connection.adapter_name.camelcase)
           klass.load(self) unless klass.loaded
           klass.new(self)
@@ -150,28 +150,28 @@ module Geokit
       end
 
       def geo_scope(options = {})
-        
         # Scope method replaced with .where(nil) method
         # Check issue list https://github.com/rails/rails/issues/12756
-        
-        arel = self.is_a?(ActiveRecord::Relation) ? self : self.where(nil) # self.scoped
-        #p "--opt--#{options}"
-        origin  = extract_origin_from_options(options)
-        units   = extract_units_from_options(options)
+
+        # self.scoped replaced with self.where(nil)
+        obj = self
+        arel = obj.is_a?(ActiveRecord::Relation) ? obj : obj.where(nil)
+        origin = extract_origin_from_options(options)
+        units = extract_units_from_options(options)
         formula = extract_formula_from_options(options)
-        bounds  = extract_bounds_from_options(options)
-        
+        bounds = extract_bounds_from_options(options)
+
         if origin || bounds
           bounds = formulate_bounds_from_distance(options, origin, units) unless bounds
           if origin
             @distance_formula = distance_sql(origin, units, formula)
 
             if arel.select_values.blank?
-              star_select = Arel::SqlLiteral.new(arel.quoted_table_name + '.*')
+              star_select = Arel::SqlLiteral.new(arel.quoted_table_name + ".*")
               arel = arel.select(star_select)
             end
-
-            distance_select = Arel::SqlLiteral.new("#{@distance_formula} AS #{distance_column_name}")
+            distance_column = "#{@distance_formula} AS #{distance_column_name}"
+            distance_select = Arel::SqlLiteral.new(distance_column)
             arel = arel.select(distance_select)
           end
 
@@ -204,7 +204,7 @@ module Geokit
 
       #    if origin
       #      arel.distance_formula = distance_sql(origin, units, formula)
-      #      
+      #
       #      if arel.select_values.blank?
       #        star_select = Arel::SqlLiteral.new(arel.quoted_table_name + '.*')
       #        arel = arel.select(star_select)
