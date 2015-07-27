@@ -95,7 +95,7 @@ module Geokit
         @adapter ||= begin
           unless Adapters.const_defined?(connection.adapter_name.camelcase)
             filename = connection.adapter_name.downcase
-            require File.join('geokit-rails', 'adapters', filename)
+            require File.join("geokit-rails", "adapters", filename)
           end
           klass = Adapters.const_get(connection.adapter_name.camelcase)
           klass.load(self) unless klass.loaded
