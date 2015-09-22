@@ -690,7 +690,7 @@ end
 ## Database Compatability
 
 * Geokit works with MySQL (tested with version 5.0.41), PostgreSQL (tested with version 8.2.6) and Microsoft SQL Server (tested with 2000).
-* Geokit is known to *not* work with Postgres versions under 8.1 -- it uses the least() funciton.
+* Geokit is known to *not* work with Postgres versions under 8.1 -- it uses the least() function.
 
 
 ## HIGH-LEVEL NOTES ON WHAT'S WHERE
