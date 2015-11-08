@@ -4,7 +4,7 @@ require 'boot'
 require 'mocha/setup'
 
 unless ENV['COVERAGE'] == 'off'
-  COVERAGE_THRESHOLD = 49
+  COVERAGE_THRESHOLD = 38
   require 'simplecov'
   require 'simplecov-rcov'
   require 'coveralls'
