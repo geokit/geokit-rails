@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 group :development, :test do
-  gem 'activerecord', '~> 4.0.0'
+  gem 'activerecord', '~> 4.0'
   gem 'test-unit'
 end
 
