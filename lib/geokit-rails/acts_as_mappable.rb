@@ -107,10 +107,13 @@ module Geokit
 
       def within(distance, options = {})
         options[:within] = distance
-	# Add bounding box to speed up SQL request.
-        bounds = formulate_bounds_from_distance(options, 
-          normalize_point_to_lat_lng(options[:origin]), options[:units] || default_units)
-        with_latlng.where(bound_conditions(bounds)).where(distance_conditions(options))
+        # Add bounding box to speed up SQL request.
+        bounds = formulate_bounds_from_distance(
+          options,
+          normalize_point_to_lat_lng(options[:origin]), 
+          options[:units] || default_units)
+        with_latlng.where(bound_conditions(bounds)).
+          where(distance_conditions(options))
       end
       alias inside within
 
