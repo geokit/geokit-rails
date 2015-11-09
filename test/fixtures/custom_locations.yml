@@ -52,3 +52,10 @@ f:
   postal_code: 75039
   latitude: 32.895155
   longitude: -96.958444
+g:
+  id: 7
+  company_id: 2
+  street: 4711 N Macarthur Blvd # 160
+  city: Nowhere
+  state: TX
+  postal_code: 12345

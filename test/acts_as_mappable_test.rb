@@ -449,7 +449,7 @@ class ActsAsMappableTest < GeokitTestCase
   end
 
   def test_sort_by_distance_from
-    locations = Location.all
+    locations = Location.with_latlng.all
     unsorted = [locations(:a), locations(:b), locations(:c), locations(:d), locations(:e), locations(:f)]
     sorted   = [locations(:a), locations(:b), locations(:c), locations(:f), locations(:d), locations(:e)]
     assert_equal sorted, locations.sort_by{|l| l.distance_to(locations(:a))}
