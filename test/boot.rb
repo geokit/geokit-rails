@@ -4,7 +4,6 @@ require 'test/unit'
 require 'active_support/test_case'
 
 require 'active_record'
-require 'active_record/test_case'
 require 'active_record/fixtures'
 
 require 'action_controller'
