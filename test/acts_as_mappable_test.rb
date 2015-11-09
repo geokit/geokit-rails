@@ -241,28 +241,28 @@ class ActsAsMappableTest < GeokitTestCase
   end
 
   def test_ip_geocoded_find_with_distance_condition
-    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).twice.returns(@location_a)
     locations = Location.within(3.97, :origin => LOCATION_A_IP)
     assert_equal 5, locations.to_a.size
     assert_equal 5, locations.count
   end
 
   def test_ip_geocoded_find_within
-    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).twice.returns(@location_a)
     locations = Location.within(3.97, :origin => LOCATION_A_IP)
     assert_equal 5, locations.to_a.size
     assert_equal 5, locations.count
   end
 
   def test_ip_geocoded_find_with_compound_condition
-    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).twice.returns(@location_a)
     locations = Location.within(5, :origin => LOCATION_A_IP).where("city = 'Coppell'")
     assert_equal 2, locations.to_a.size
     assert_equal 2, locations.count
   end
 
   def test_ip_geocoded_find_with_secure_compound_condition
-    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with(LOCATION_A_IP).twice.returns(@location_a)
     locations = Location.within(5, :origin => LOCATION_A_IP).where(["city = ?", 'Coppell'])
     assert_equal 2, locations.to_a.size
     assert_equal 2, locations.count
@@ -293,7 +293,7 @@ class ActsAsMappableTest < GeokitTestCase
   end
 
   def test_address_geocode
-    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with('Irving, TX').returns(@location_a)
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with('Irving, TX').twice.returns(@location_a)
     #locations = Location.geo_scope(:origin => 'Irving, TX').where(["distance < ? and city = ?", 5, 'Coppell'])
     locations = Location.within(5, :origin => 'Irving, TX').where(["city = ?", 'Coppell'])
     assert_equal 2, locations.to_a.size
