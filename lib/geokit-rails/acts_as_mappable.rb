@@ -98,6 +98,13 @@ module Geokit
             require File.join("geokit-rails", "adapters", filename)
           end
           klass = Adapters.const_get(connection.adapter_name.camelcase)
+          if klass.class == Module
+            # For some reason Mysql2 adapter was defined in Adapters.constants but was Module instead of a Class
+            filename = connection.adapter_name.downcase
+            require File.join("geokit-rails", "adapters", filename)
+            # Re-init the klass after require
+            klass = Adapters.const_get(connection.adapter_name.camelcase)
+          end
           klass.load(self) unless klass.loaded
           klass.new(self)
         rescue LoadError
