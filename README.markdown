@@ -24,7 +24,7 @@ Make sure you use a version >= 3.0 of Rails.
 You just have to add the 'geokit-rails' gem to your Gemfile
 
 ```ruby
-gem 'geokit-rails'
+gem 'geokit-rails', github: 'geokit/geokit-rails'
 ```
 
 Then tell bundler to update the gems :
