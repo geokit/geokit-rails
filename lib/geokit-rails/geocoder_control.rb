@@ -5,7 +5,9 @@ module Geokit
     extend ActiveSupport::Concern
   
     included do
-      if self.respond_to? :before_filter
+      if self.respond_to? :before_action
+        self.send :before_action, :set_geokit_domain
+      elsif self.respond_to? :before_filter
         self.send :before_filter, :set_geokit_domain
       end
     end

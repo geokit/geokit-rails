@@ -49,7 +49,7 @@ Geokit provides key functionality for location-oriented Rails applications:
   in your database within a 50-mile radius.
 - IP-based location lookup utilizing hostip.info. Provide an IP address, and get
   city name and latitude/longitude in return
-- A before_filter helper to geocoder the user's location based on IP address,
+- A before_action helper to geocoder the user's location based on IP address,
   and retain the location in a cookie.
 - Geocoding from multiple providers. It provides a fail-over mechanism, in case
   your input fails to geocode in one service. Geocoding is provided by the Geokit
@@ -390,7 +390,7 @@ Ordering is done through `Geokit::Geocoders::provider_order` and
 ## IP GEOCODING HELPER
 
 A class method called geocode_ip_address has been mixed into the
-ActionController::Base.  This enables before_filter style lookup of
+ActionController::Base.  This enables before_action style lookup of
 the IP address.  Since it is a filter, it can accept any of the
 available filter options.
 
@@ -699,7 +699,7 @@ end
 module which gets mixed into your models to provide the
 location-based finder goodness.
 
-`ip_geocode_lookup.rb` contains the before_filter helper method which
+`ip_geocode_lookup.rb` contains the before_action helper method which
 enables auto lookup of the requesting IP address.
 
 ### The Geokit gem provides the building blocks of distance-based operations:
