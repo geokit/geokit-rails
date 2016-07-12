@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+group :development, :test do
+  gem 'activerecord', '~> 5.0'
+  gem 'test-unit'
+end
+
+gemspec :path => "../"
