@@ -1,4 +1,3 @@
-require 'geokit-rails'
 require 'rails'
 
 module Geokit

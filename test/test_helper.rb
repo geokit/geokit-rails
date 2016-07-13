@@ -10,7 +10,7 @@ unless ENV['COVERAGE'] == 'off'
   require 'coveralls'
   Coveralls.wear!
 
-  SimpleCov.formatters = [
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
     SimpleCov::Formatter::RcovFormatter,
     Coveralls::SimpleCov::Formatter
   ]
