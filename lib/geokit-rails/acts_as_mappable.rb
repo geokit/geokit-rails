@@ -231,7 +231,7 @@ module Geokit
         distance = options[:within] if options.has_key?(:within)
         distance = options[:range].last-(options[:range].exclude_end?? 1 : 0) if options.has_key?(:range)
         if distance
-          res=Geokit::Bounds.from_point_and_radius(origin,distance,:units=>units)
+          Geokit::Bounds.from_point_and_radius(origin,distance,:units=>units)
         else
           nil
         end
@@ -241,7 +241,6 @@ module Geokit
         origin  = extract_origin_from_options(options)
         units   = extract_units_from_options(options)
         formula = extract_formula_from_options(options)
-        bounds  = extract_bounds_from_options(options)
         distance_column_name = distance_sql(origin, units, formula)
 
         res = if options.has_key?(:within)
