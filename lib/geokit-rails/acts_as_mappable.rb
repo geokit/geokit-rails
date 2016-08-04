@@ -11,6 +11,8 @@ module Geokit
       extend ActiveSupport::Concern
 
       module ClassMethods # :nodoc:
+        OPTION_SYMBOLS = [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name, :skip_loading ]
+
         def acts_as_mappable(options = {})
           metaclass = (class << self; self; end)
 
@@ -21,20 +23,21 @@ module Geokit
 
           if reflection = Geokit::ActsAsMappable.end_of_reflection_chain(self.through, self)
             metaclass.instance_eval do
-              [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name ].each do |method_name|
+              OPTION_SYMBOLS.each do |method_name|
                 define_method method_name do
                   reflection.klass.send(method_name)
                 end
               end
             end
           else
-            cattr_accessor :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name
+            cattr_accessor *OPTION_SYMBOLS
 
             self.distance_column_name = options[:distance_column_name]  || 'distance'
             self.default_units = options[:default_units] || Geokit::default_units
             self.default_formula = options[:default_formula] || Geokit::default_formula
             self.lat_column_name = options[:lat_column_name] || 'lat'
             self.lng_column_name = options[:lng_column_name] || 'lng'
+            self.skip_loading = options[:skip_loading]
             self.qualified_lat_column_name = "#{table_name}.#{lat_column_name}"
             self.qualified_lng_column_name = "#{table_name}.#{lng_column_name}"
 
@@ -105,7 +108,7 @@ module Geokit
             # Re-init the klass after require
             klass = Adapters.const_get(connection.adapter_name.camelcase)
           end
-          klass.load(self) unless klass.loaded
+          klass.load(self) unless klass.loaded || skip_loading
           klass.new(self)
         rescue LoadError
           raise UnsupportedAdapter, "`#{connection.adapter_name.downcase}` is not a supported adapter."
@@ -117,7 +120,7 @@ module Geokit
         # Add bounding box to speed up SQL request.
         bounds = formulate_bounds_from_distance(
           options,
-          normalize_point_to_lat_lng(options[:origin]), 
+          normalize_point_to_lat_lng(options[:origin]),
           options[:units] || default_units)
         with_latlng.where(bound_conditions(bounds)).
           where(distance_conditions(options))
