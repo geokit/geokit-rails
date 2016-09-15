@@ -113,27 +113,21 @@ Once you've specified `acts_as_mappable`, a few scopes are available :
 * `closest` and `farthest` find the closest or farthest record from the origin point
 * `by_distance` finds records ordered by distance from the origin point
 
-All these scopes are the porcelain for a lower level scope named `geo_scope` that take a hash of options.
-Their first parameter is simply one of  the possible options, without the name
+All of these scopes take a hash of options where the first parameter is simply
+one of  the possible options, without the name.
 
 A few examples :
 
 ```ruby
 Location.within(5, :origin => @somewhere)
-# is the same as
-Location.geo_scope(:within => 5, :origin => @somewhere)
 ```
 
 ```ruby
 Location.in_range(2..5, :origin => @somewhere)
-# is the same as
-Location.geo_scope(:range => 2..5, :origin => @somewhere)
 ```
 
 ```ruby
 Location.in_bounds([@south_west_point, @north_east_point], :origin => @somewhere)
-# is the same as
-Location.geo_scope(:bounds => [@south_west_point, @north_east_point], :origin => @somewhere)
 ```
 
 The options can be :
@@ -141,13 +135,13 @@ The options can be :
 `:origin` as a two-element array of latitude/longitude:
 
 ```ruby
-Location.geo_scope(:origin => [37.792,-122.393])
+Location.by_distance(:origin => [37.792,-122.393])
 ```
 
 `:origin` as a geocodeable string:
 
 ```ruby
-Location.geo_scope(:origin => '100 Spear st, San Francisco, CA')
+Location.by_distance(:origin => '100 Spear st, San Francisco, CA')
 ```
 
 `:origin` as an object which responds to `lat` and `lng` methods,
@@ -174,7 +168,7 @@ Location.within(5, :units => :kms, :origin => @somewhere)
 @sw = Geokit::LatLng.new(32.91663,-96.982841)
 @ne = Geokit::LatLng.new(32.96302,-96.919495)
 @somewhere = Location.find(123456)
-Location.geo_scope(:bounds => [@sw, @ne], :origin => @somewhere)
+Location.within(:bounds => [@sw, @ne], :origin => @somewhere)
 ```
 
 `:bounds` as a Geokit::Bounds object
@@ -182,7 +176,7 @@ Location.geo_scope(:bounds => [@sw, @ne], :origin => @somewhere)
 ```ruby
 @bounds = Geokit::Bounds.new([32.91663,-96.982841], [32.96302,-96.919495])
 @somewhere = Location.find(123456)
-Location.geo_scope(:bounds => [@sw, @ne], :origin => @somewhere)
+Location.within(:bounds => [@sw, @ne], :origin => @somewhere)
 ```
 
 When using a point of reference or bounds, you leverage the power of Geokit
@@ -207,7 +201,7 @@ You can then chain these scope with any other or use a "calling" method like `fi
 ```ruby
 Location.within(5, :origin => @somewhere).all
 Location.within(5, :origin => @somewhere).count
-Location.geo_scope(:origin => [37.792,-122.393]).first
+Location.by_distance(:origin => [37.792,-122.393]).first
 ```
 
 You can add `order` clauses in the chain as for any ActiveRecord query
@@ -226,10 +220,10 @@ Idem for the `limit` clause. In fact, `closest` and `farthest` are defined like 
 
 ```ruby
 def closest(options = {})
-  geo_scope(options).order("#{distance_column_name} asc").limit(1)
+  by_distance(options).limit(1)
 end
 def farthest(options = {})
-  geo_scope(options).order("#{distance_column_name} desc").limit(1)
+  by_distance({:reverse => true}.merge(options)).limit(1)
 end
 ```
 
@@ -241,7 +235,7 @@ using the _distance_ column. I've tried many different ways to do this and didn'
 One would expect to build a query like this :
 
 ```ruby
-scoped  = Location.geo_scope(:origin => @somewhere)
+scoped  = Location.by_distance(:origin => @somewhere)
 scoped  = scoped.where('distance <= 5')
 results = scoped.all
 ```
