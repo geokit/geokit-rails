@@ -1,3 +1,21 @@
+## 2.2.0
+
+* Add rails config aenerator
+* Add NOT NULL checks for latitude and longitude, otherwise nonsense
+  values are being returned for distance calculations involving such
+  objects.
+* Fix inconsistent case where retrieve_location_from_cookie_or_services
+  returned a Hash instead of a GeoLoc
+* Speed up SQL with bounding box
+* Tests against rails 4 & 5
+
+## 2.1.0
+
+* Add OracleEnhanced adapter
+* Fix bug with custom latitude/longitude names
+* BREAKING: Nearest and fathest return scopes not arrays
+* Drop support for ruby 1.8/1.9
+
 ## 2.0.1
 
 * Fix GeoKit naming compatibility
