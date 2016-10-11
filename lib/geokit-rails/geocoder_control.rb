@@ -14,7 +14,6 @@ module Geokit
     
     def set_geokit_domain
       Geokit::Geocoders::domain = request.domain
-      logger.debug("Geokit is using the domain: #{Geokit::Geocoders::domain}")
     end
   end
 end
