@@ -32,8 +32,15 @@ Then tell bundler to update the gems :
 ```sh
 $ bundle install
 ```
+Generate the configuration initializer:
 
-Last, consult the `important post-installation notes` section at the end of this document.
+```sh
+$ rails g geokit_rails:install
+```
+
+Now, if you wish to use the various geocoding services, you can add your keys to the new initializer.
+
+
 
 If you want to use geokit-rails in a Rails 2 application, just use the good old plugin ([geokit-rails](https://github.com/andre/geokit-rails)).
 
@@ -711,11 +718,3 @@ GeoLoc represents an address or location which
 has been geocoded. You can get the city, zipcode, street address, etc.
 from a GeoLoc object. GeoLoc extends LatLng, so you also get lat/lng
 AND the Mappable module goodness for free.
-
-## IMPORTANT POST-INSTALLATION NOTES:
-
-*1. The configuration file*: Geokit for Rails uses a configuration file in config/initializers.
-You *must* add your own keys for the various geocoding services if you want to use geocoding. You can generate a sample initializer file by run:
-```sh
-$ rails g geokit_rails:install
-```
