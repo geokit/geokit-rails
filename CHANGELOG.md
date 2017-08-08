@@ -1,3 +1,9 @@
+## 2.3.0
+
+* Drop ruby 1.9 and add 2.3 support
+* Add an option to skip loading
+* Remove excessive debug statement
+
 ## 2.2.0
 
 * Add rails config aenerator
