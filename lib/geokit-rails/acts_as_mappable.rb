@@ -152,8 +152,12 @@ module Geokit
         origin  = extract_origin_from_options(options)
         units   = extract_units_from_options(options)
         formula = extract_formula_from_options(options)
-        distance_column_name = distance_sql(origin, units, formula)
-        with_latlng.order("#{distance_column_name} #{options[:reverse] ? 'DESC' : 'ASC'}")
+
+        arel = self.is_a?(ActiveRecord::Relation) ? self : self.all
+
+        distance_formula = distance_sql(origin, units, formula).gsub(/\s+/, '')
+        with_latlng.select("#{arel.quoted_table_name}.*", "#{distance_formula} AS #{distance_column_name}")
+                   .order("#{distance_column_name} #{options[:reverse] ? 'DESC' : 'ASC'}")
       end
 
       def with_latlng
