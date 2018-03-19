@@ -157,8 +157,6 @@ module Geokit
       end
 
       def with_latlng
-        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.nil?
-        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.nil?
         where("#{qualified_lat_column_name} IS NOT NULL AND #{qualified_lng_column_name} IS NOT NULL")
       end
 
@@ -260,10 +258,8 @@ module Geokit
 
       def bound_conditions(bounds)
         sw,ne = bounds.sw, bounds.ne
-        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.nil?
-        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.nil?
-        lng_sql = bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
-        res = "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
+        lng_sql = bounds.crosses_meridian? ? "(CAST(#{qualified_lng_column_name} AS FLOAT)<#{ne.lng} OR CAST(#{qualified_lng_column_name} AS FLOAT)>#{sw.lng})" : "CAST(#{qualified_lng_column_name} AS FLOAT)>#{sw.lng} AND CAST(#{qualified_lng_column_name} AS FLOAT)<#{ne.lng}"
+        res = "CAST(#{qualified_lat_column_name} AS FLOAT)>#{sw.lat} AND CAST(#{qualified_lat_column_name} AS FLOAT)<#{ne.lat} AND #{lng_sql}"
         #Arel::Nodes::SqlLiteral.new("(#{res})") if res.present?
         res if res.present?
       end
