@@ -157,8 +157,8 @@ module Geokit
       end
 
       def with_latlng
-        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.empty?
-        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.empty?
+        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.nil?
+        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.nil?
         where("#{qualified_lat_column_name} IS NOT NULL AND #{qualified_lng_column_name} IS NOT NULL")
       end
 
