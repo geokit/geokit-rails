@@ -260,8 +260,8 @@ module Geokit
 
       def bound_conditions(bounds)
         sw,ne = bounds.sw, bounds.ne
-        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.empty?
-        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.empty?
+        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.nil?
+        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.nil?
         lng_sql = bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
         res = "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
         #Arel::Nodes::SqlLiteral.new("(#{res})") if res.present?
