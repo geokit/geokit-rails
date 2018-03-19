@@ -5,8 +5,8 @@ module Geokit
       def sphere_distance_sql(lat, lng, multiplier)
         lat = "CAST(#{lat} AS FLOAT)"
         lng = "CAST(#{lng} AS FLOAT)"
-        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.empty? else qualified_lat_column_name = lat end
-        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.empty? else qualified_lng_column_name = lng end
+        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.empty? end
+        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.empty? end
 
         %|
           (ACOS(least(1,COS(#{lat})*COS(#{lng})*COS(RADIANS(#{qualified_lat_column_name}))*COS(RADIANS(#{qualified_lng_column_name}))+
@@ -18,8 +18,8 @@ module Geokit
       def flat_distance_sql(origin, lat_degree_units, lng_degree_units)
         lat_degree_units = "CAST(#{lat_degree_units} AS FLOAT)"
         lng_degree_units = "CAST(#{lng_degree_units} AS FLOAT)"
-        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.empty? else qualified_lat_column_name = lat end
-        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.empty? else qualified_lng_column_name = lng end
+        qualified_lat_column_name = "CAST(#{qualified_lat_column_name} AS FLOAT)" unless qualified_lat_column_name.empty? end
+        qualified_lng_column_name = "CAST(#{qualified_lng_column_name} AS FLOAT)" unless qualified_lng_column_name.empty? end
         %|
           SQRT(POW(#{lat_degree_units}*(#{origin.lat}-#{qualified_lat_column_name}),2)+
           POW(#{lng_degree_units}*(#{origin.lng}-#{qualified_lng_column_name}),2))
