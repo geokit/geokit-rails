@@ -11,7 +11,7 @@ module Geokit
       extend ActiveSupport::Concern
 
       module ClassMethods # :nodoc:
-        OPTION_SYMBOLS = [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name, :skip_loading ]
+        OPTION_SYMBOLS = [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name, :skip_loading]
 
         def acts_as_mappable(options = {})
           metaclass = (class << self; self; end)
@@ -352,13 +352,13 @@ module Geokit
       end
 
       def get_lat(origin)
-        origin.respond_to?(:lat) ? origin.lat \
-                                 : origin.send(:"#{lat_column_name}")
+        origin.respond_to?(:lat) ? origin.lat.to_f \
+                                 : origin.send(:"#{lat_column_name}").to_f
       end
 
       def get_lng(origin)
         origin.respond_to?(:lng) ? origin.lng \
-                                 : origin.send(:"#{lng_column_name}")
+                                 : origin.send(:"#{lng_column_name}").to_f
       end
 
     end # ClassMethods
