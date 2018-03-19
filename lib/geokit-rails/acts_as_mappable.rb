@@ -357,7 +357,7 @@ module Geokit
       end
 
       def get_lng(origin)
-        origin.respond_to?(:lng) ? origin.lng \
+        origin.respond_to?(:lng) ? origin.lng.to_f \
                                  : origin.send(:"#{lng_column_name}").to_f
       end
 
