@@ -1,8 +1,8 @@
 require 'pathname'
 
-require 'active_support/version'
+require "active_support/version"
 require 'active_support/test_case'
-require 'active_support/testing/autorun' if ActiveSupport::VERSION::MAJOR >= 4
+require "active_support/testing/autorun" if ActiveSupport::VERSION::MAJOR >= 4
 
 require 'active_record'
 require 'active_record/fixtures'
