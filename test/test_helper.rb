@@ -43,7 +43,11 @@ class GeokitTestCase < ActiveSupport::TestCase
   end
   
   self.fixture_path = (PLUGIN_ROOT + 'test/fixtures').to_s
-  self.use_transactional_fixtures = true
+  if Rails::VERSION::MAJOR >= 5
+    self.use_transactional_tests = true
+  else
+    self.use_transactional_fixtures = true
+  end
   self.use_instantiated_fixtures  = false
   
   fixtures :all 
