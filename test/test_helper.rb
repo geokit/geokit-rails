@@ -34,6 +34,8 @@ require 'geokit-rails'
 ActiveRecord::Base.send(:include, Geokit::ActsAsMappable::Glue)
 ActionController::Base.send(:include, Geokit::GeocoderControl)
 ActionController::Base.send(:include, Geokit::IpGeocodeLookup)
+# Rails >= 4 requires models classes to be loaded before fixtures are created
+Dir[PLUGIN_ROOT + "test/models/*.rb"].each { |file| require file }
 
 class GeokitTestCase < ActiveSupport::TestCase
   begin
@@ -43,7 +45,11 @@ class GeokitTestCase < ActiveSupport::TestCase
   end
   
   self.fixture_path = (PLUGIN_ROOT + 'test/fixtures').to_s
-  self.use_transactional_fixtures = true
+  if Rails::VERSION::MAJOR >= 5
+    self.use_transactional_tests = true
+  else
+    self.use_transactional_fixtures = true
+  end
   self.use_instantiated_fixtures  = false
   
   fixtures :all 
