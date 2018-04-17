@@ -34,6 +34,8 @@ require 'geokit-rails'
 ActiveRecord::Base.send(:include, Geokit::ActsAsMappable::Glue)
 ActionController::Base.send(:include, Geokit::GeocoderControl)
 ActionController::Base.send(:include, Geokit::IpGeocodeLookup)
+# Rails >= 4 requires models classes to be loaded before fixtures are created
+Dir[PLUGIN_ROOT + "test/models/*.rb"].each { |file| require file }
 
 class GeokitTestCase < ActiveSupport::TestCase
   begin
