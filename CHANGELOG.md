@@ -1,3 +1,7 @@
+## 2.3.1
+
+* Fix Rails 5.2 deprecation warning
+
 ## 2.3.0
 
 * Drop ruby 1.9 and add 2.3 support
