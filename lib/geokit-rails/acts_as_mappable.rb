@@ -11,7 +11,7 @@ module Geokit
       extend ActiveSupport::Concern
 
       module ClassMethods # :nodoc:
-        OPTION_SYMBOLS = [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name, :skip_loading ]
+        OPTION_SYMBOLS = [ :distance_column_name, :default_units, :default_formula, :lat_column_name, :lng_column_name, :qualified_lat_column_name, :qualified_lng_column_name, :skip_loading]
 
         def acts_as_mappable(options = {})
           metaclass = (class << self; self; end)
@@ -38,8 +38,8 @@ module Geokit
             self.lat_column_name = options[:lat_column_name] || 'lat'
             self.lng_column_name = options[:lng_column_name] || 'lng'
             self.skip_loading = options[:skip_loading]
-            self.qualified_lat_column_name = "#{table_name}.#{lat_column_name}"
-            self.qualified_lng_column_name = "#{table_name}.#{lng_column_name}"
+            self.qualified_lat_column_name = "#{table_name}.#{lat_column_name}" || lat_column_name
+            self.qualified_lng_column_name = "#{table_name}.#{lng_column_name}" || lng_column_name
 
             if options.include?(:auto_geocode) && options[:auto_geocode]
               # if the form auto_geocode=>true is used, let the defaults take over by suppling an empty hash
@@ -260,8 +260,8 @@ module Geokit
 
       def bound_conditions(bounds)
         sw,ne = bounds.sw, bounds.ne
-        lng_sql = bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
-        res = "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
+        lng_sql = bounds.crosses_meridian? ? "(CAST(#{qualified_lng_column_name} AS FLOAT)<#{ne.lng} OR CAST(#{qualified_lng_column_name} AS FLOAT)>#{sw.lng})" : "CAST(#{qualified_lng_column_name} AS FLOAT)>#{sw.lng} AND CAST(#{qualified_lng_column_name} AS FLOAT)<#{ne.lng}"
+        res = "CAST(#{qualified_lat_column_name} AS FLOAT)>#{sw.lat} AND CAST(#{qualified_lat_column_name} AS FLOAT)<#{ne.lat} AND #{lng_sql}"
         #Arel::Nodes::SqlLiteral.new("(#{res})") if res.present?
         res if res.present?
       end
@@ -354,13 +354,13 @@ module Geokit
       end
 
       def get_lat(origin)
-        origin.respond_to?(:lat) ? origin.lat \
-                                 : origin.send(:"#{lat_column_name}")
+        origin.respond_to?(:lat) ? origin.lat.to_f \
+                                 : origin.send(:"#{lat_column_name}").to_f
       end
 
       def get_lng(origin)
-        origin.respond_to?(:lng) ? origin.lng \
-                                 : origin.send(:"#{lng_column_name}")
+        origin.respond_to?(:lng) ? origin.lng.to_f \
+                                 : origin.send(:"#{lng_column_name}").to_f
       end
 
     end # ClassMethods
