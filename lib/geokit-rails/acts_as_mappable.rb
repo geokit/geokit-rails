@@ -159,10 +159,7 @@ module Geokit
       end
 
       def with_latlng
-        where(
-          Arel.sql(qualified_lat_column_name).not_eq(nil)
-          .and(Arel.sql(qualified_lng_column_name).not_eq(nil))
-        )
+        where("#{qualified_lat_column_name} IS NOT NULL AND #{qualified_lng_column_name} IS NOT NULL")
       end
 
       def closest(options = {})
