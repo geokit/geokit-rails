@@ -108,6 +108,12 @@ class ActsAsMappableTest < GeokitTestCase
     assert_equal 5, locations.count
   end
 
+  def test_find_within_with_column_as_distance
+    locations = Location.joins(:company).within(Company.arel_table[:max_distance], origin: @loc_a)
+    assert_equal 4, locations.to_a.size
+    assert_equal 4, locations.count
+  end
+
   def test_find_with_compound_condition
     #locations = Location.geo_scope(:origin => @loc_a).where("distance < 5 and city = 'Coppell'")
     locations = Location.within(5, :origin => @loc_a).where("city = 'Coppell'")

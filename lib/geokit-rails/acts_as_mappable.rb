@@ -153,9 +153,9 @@ module Geokit
         units   = extract_units_from_options(options)
         formula = extract_formula_from_options(options)
         distance_column_name = distance_sql(origin, units, formula)
-        with_latlng.order(Arel.sql(
-          "#{distance_column_name} #{options[:reverse] ? 'DESC' : 'ASC'}"
-        ))
+        with_latlng.order(
+          Arel.sql(distance_column_name).send(options[:reverse] ? 'desc' : 'asc')
+        )
       end
 
       def with_latlng
@@ -233,7 +233,7 @@ module Geokit
       # If it's a :within query, add a bounding box to improve performance.
       # This only gets called if a :bounds argument is not otherwise supplied.
       def formulate_bounds_from_distance(options, origin, units)
-        distance = options[:within] if options.has_key?(:within)
+        distance = options[:within] if options.has_key?(:within) && options[:within].is_a?(Numeric)
         distance = options[:range].last-(options[:range].exclude_end?? 1 : 0) if options.has_key?(:range)
         if distance
           Geokit::Bounds.from_point_and_radius(origin,distance,:units=>units)
@@ -248,22 +248,32 @@ module Geokit
         formula = extract_formula_from_options(options)
         distance_column_name = distance_sql(origin, units, formula)
 
-        res = if options.has_key?(:within)
-          "#{distance_column_name} <= #{options[:within]}"
+        if options.has_key?(:within)
+          Arel.sql(distance_column_name).lteq(options[:within])
         elsif options.has_key?(:beyond)
-          "#{distance_column_name} > #{options[:beyond]}"
+          Arel.sql(distance_column_name).gt(options[:beyond])
         elsif options.has_key?(:range)
-          "#{distance_column_name} >= #{options[:range].first} AND #{distance_column_name} <#{'=' unless options[:range].exclude_end?} #{options[:range].last}"
+          min_condition = Arel.sql(distance_column_name).gteq(options[:range].begin)
+          max_condition = if options[:range].exclude_end?
+                            Arel.sql(distance_column_name).lt(options[:range].end)
+                          else
+                            Arel.sql(distance_column_name).lteq(options[:range].end)
+                          end
+          min_condition.and(max_condition)
         end
-        Arel::Nodes::SqlLiteral.new("(#{res})") if res.present?
       end
 
       def bound_conditions(bounds)
+        return nil unless bounds
         sw,ne = bounds.sw, bounds.ne
-        lng_sql = bounds.crosses_meridian? ? "(#{qualified_lng_column_name}<#{ne.lng} OR #{qualified_lng_column_name}>#{sw.lng})" : "#{qualified_lng_column_name}>#{sw.lng} AND #{qualified_lng_column_name}<#{ne.lng}"
-        res = "#{qualified_lat_column_name}>#{sw.lat} AND #{qualified_lat_column_name}<#{ne.lat} AND #{lng_sql}"
-        #Arel::Nodes::SqlLiteral.new("(#{res})") if res.present?
-        res if res.present?
+        lat, lng = Arel.sql(qualified_lat_column_name), Arel.sql(qualified_lng_column_name)
+        lat.gt(sw.lat).and(lat.lt(ne.lat)).and(
+          if bounds.crosses_meridian?
+            lng.lt(ne.lng).or(lng.gt(sw.lng))
+          else
+            lng.gt(sw.lng).and(lng.lt(ne.lng))
+          end
+        )
       end
 
       # Extracts the origin instance out of the options if it exists and returns
