@@ -264,6 +264,12 @@ If you are displaying points on a map, you probably need to query for whatever f
 Store.in_bounds([sw_point,ne_point]).all
 ```
 
+If you want the query to return things that are located on the rectangular bounds, specify the `inclusive` option set to true:
+
+```ruby
+Store.in_bounds([sw_point,ne_point], :inclusive => true).all
+```
+
 The input to `bounds` can be an array with the two points or a Bounds object. However you provide them, the order should always be the southwest corner, northeast corner of the rectangle. Typically, you will be getting the sw\_point and ne\_point from a map that is displayed on a web page.
 
 If you need to calculate the bounding box from a point and radius, you can do that:

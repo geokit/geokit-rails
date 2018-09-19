@@ -389,6 +389,16 @@ class ActsAsMappableTest < GeokitTestCase
     assert_equal 2, locations.count
   end
 
+  def test_find_within_bounds_with_inclusive
+    sw = Geokit::LatLng.new(@loc_a.lat,@loc_a.lng)
+    ne = sw
+    bounds = [sw,ne]
+    locations = Location.in_bounds(bounds, :inclusive => false)
+    assert_equal 0, locations.count
+    locations = Location.in_bounds(bounds, :inclusive => true)
+    assert_equal 1, locations.count
+  end
+
   def test_find_within_bounds_ordered_by_distance
     #locations = Location.in_bounds([@sw,@ne], :origin=>@bounds_center).order('distance asc')
     locations = Location.in_bounds([@sw,@ne]).by_distance(:origin => @bounds_center)

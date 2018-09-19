@@ -141,11 +141,12 @@ module Geokit
       end
 
       def in_bounds(bounds, options = {})
+        inclusive = options.delete(:inclusive) || false
         options[:bounds] = bounds
         #geo_scope(options)
         #where(distance_conditions(options))
         bounds  = extract_bounds_from_options(options)
-        where(bound_conditions(bounds))
+        where(bound_conditions(bounds, inclusive))
       end
 
       def by_distance(options = {})
@@ -263,15 +264,22 @@ module Geokit
         end
       end
 
-      def bound_conditions(bounds)
+      def bound_conditions(bounds, inclusive = false)
         return nil unless bounds
+        if inclusive
+          lt_operator = :lteq
+          gt_operator = :gteq
+        else
+          lt_operator = :lt
+          gt_operator = :gt
+        end
         sw,ne = bounds.sw, bounds.ne
         lat, lng = Arel.sql(qualified_lat_column_name), Arel.sql(qualified_lng_column_name)
-        lat.gt(sw.lat).and(lat.lt(ne.lat)).and(
+        lat.send(gt_operator, sw.lat).and(lat.send(lt_operator, ne.lat)).and(
           if bounds.crosses_meridian?
-            lng.lt(ne.lng).or(lng.gt(sw.lng))
+            lng.send(lt_operator, ne.lng).or(lng.send(gt_operator, sw.lng))
           else
-            lng.gt(sw.lng).and(lng.lt(ne.lng))
+            lng.send(gt_operator, sw.lng).and(lng.send(lt_operator, ne.lng))
           end
         )
       end
