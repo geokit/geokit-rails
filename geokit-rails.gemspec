@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'test-unit'
   spec.add_development_dependency "mocha", "~> 0.9"
   spec.add_development_dependency 'coveralls'
+  spec.add_development_dependency 'activerecord5-redshift-adapter', '~> 1.0'
   spec.add_development_dependency "mysql2", "~> 0.2"
   spec.add_development_dependency "activerecord-mysql2spatial-adapter"
   spec.add_development_dependency "pg", "~> 0.10"
