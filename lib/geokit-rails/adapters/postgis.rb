@@ -1,6 +1,6 @@
 module Geokit
   module Adapters
-    class Postgis < Abstract
+    class PostGIS < Abstract
       
       def sphere_distance_sql(lat, lng, multiplier)
         %|
