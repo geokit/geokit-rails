@@ -3,11 +3,11 @@ module Geokit
     class SQLite < Abstract
       
       def self.add_numeric(name) 
-        @@connection.create_function
+        @@connection.create_function(
           name,
           1,
           SQLite3::Constants::TextRep::ANY
-        do |func, *args|
+        ) do |func, *args|
           func.result = yield(*args)
         end
       end
