@@ -511,7 +511,7 @@ Just has you can pass an IP address directly into an ActiveRecord finder
 as the origin, you can also pass a physical address as the origin:
 
 ```ruby
-Location.find_closest(:origin => '100 Spear st, San Francisco, CA')
+Location.closest(:origin => '100 Spear st, San Francisco, CA')
 ```
 
 where the physical address would be geocoded to a location and then the
