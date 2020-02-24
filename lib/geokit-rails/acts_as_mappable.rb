@@ -154,7 +154,7 @@ module Geokit
         units   = extract_units_from_options(options)
         formula = extract_formula_from_options(options)
         distance_column_name = distance_sql(origin, units, formula)
-        with_latlng.order(
+        with_latlng.reorder(nil).order(
           Arel.sql(distance_column_name).send(options[:reverse] ? 'desc' : 'asc')
         )
       end
