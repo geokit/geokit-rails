@@ -1,3 +1,7 @@
+## 2.3.2
+
+* Fix sqlite3 adapter error
+
 ## 2.3.1
 
 * Fix Rails 5.2 deprecation warning
