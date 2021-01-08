@@ -5,10 +5,15 @@ rvm:
   - 2.2
   - 2.3
   - 2.4
+  - 2.5
+  - 2.6
+  - ruby-head
 gemfile:
   - gemfiles/rails3.gemfile
   - gemfiles/rails4.gemfile
   - gemfiles/rails5.gemfile
+  - gemfiles/rails6.0.gemfile
+  - gemfiles/rails6.1.gemfile
 matrix:
   exclude:
     - rvm: 2.2
@@ -21,6 +26,30 @@ matrix:
       gemfile: gemfiles/rails5.gemfile
     - rvm: 2.1
       gemfile: gemfiles/rails5.gemfile
+    - rvm: 2.6
+      gemfile: gemfiles/rails5.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/rails5.gemfile
+    - rvm: 2.0
+      gemfile: gemfiles/rails6.0.gemfile
+    - rvm: 2.0
+      gemfile: gemfiles/rails6.1.gemfile
+    - rvm: 2.1
+      gemfile: gemfiles/rails6.0.gemfile
+    - rvm: 2.1
+      gemfile: gemfiles/rails6.1.gemfile
+    - rvm: 2.2
+      gemfile: gemfiles/rails6.0.gemfile
+    - rvm: 2.2
+      gemfile: gemfiles/rails6.1.gemfile
+    - rvm: 2.3
+      gemfile: gemfiles/rails6.0.gemfile
+    - rvm: 2.3
+      gemfile: gemfiles/rails6.1.gemfile
+    - rvm: 2.4
+      gemfile: gemfiles/rails6.0.gemfile
+    - rvm: 2.4
+      gemfile: gemfiles/rails6.1.gemfile
 script: "bundle exec rake coverage"
 before_install:
   - gem install bundler
