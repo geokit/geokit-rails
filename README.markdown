@@ -497,8 +497,9 @@ Pass the lat/lng as a string, array or LatLng instance:
 
 ```ruby
 res=Geokit::Geocoders::GoogleGeocoder.reverse_geocode "37.791821,-122.394679"
-=> #<Geokit::GeoLoc:0x558ed0 ...
-res.full_address "101-115 Main St, San Francisco, CA 94105, USA"
+# => #<Geokit::GeoLoc:0x558ed0 ...
+res.full_address
+# => "101-115 Main St, San Francisco, CA 94105, USA"
 ```
 
 The address will usually appear as a range, as it does in the above example.
