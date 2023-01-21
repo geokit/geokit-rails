@@ -5,11 +5,9 @@ module TestApp
   end
 end
 
-TestApp::Application.routes.draw do
-  match ':controller(/:action(/:id(.:format)))'
+class ApplicationController < ActionController::Base
 end
-
-class LocationAwareController < ActionController::Base #:nodoc: all
+class LocationawareController < ApplicationController #:nodoc: all
   geocode_ip_address
   
   def index
@@ -19,9 +17,14 @@ class LocationAwareController < ActionController::Base #:nodoc: all
   def rescue_action(e) raise e end; 
 end
 
-class ActionController::TestRequest #:nodoc: all
-  attr_accessor :remote_ip
+TestApp::Application.routes.draw do
+  get "/", controller: :Locationaware, action: :index
+  match ':controller(/:action(/:id(.:format)))', via: [:get, :post]
 end
+
+# class ActionController::TestRequest #:nodoc: all
+#   attr_accessor :remote_ip
+# end
 
 class IpGeocodeLookupTest < ActionController::TestCase
   tests LocationAwareController

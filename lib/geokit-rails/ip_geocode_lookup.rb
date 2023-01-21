@@ -28,13 +28,14 @@ module Geokit
     # get the value.
     def store_ip_location
       session[:geo_location] ||= retrieve_location_from_cookie_or_service
-      cookies[:geo_location] = { :value => session[:geo_location].to_yaml, :expires => 30.days.from_now } if session[:geo_location]
+      cookies[:geo_location] = { :value => session[:geo_location].to_json, :expires => 30.days.from_now } if session[:geo_location]
     end
 
     # Uses the stored location value from the cookie if it exists.  If
     # no cookie exists, calls out to the web service to get the location.
     def retrieve_location_from_cookie_or_service
-      return GeoLoc.new(YAML.load(cookies[:geo_location])) if cookies[:geo_location]
+      # return GeoLoc.new(YAML.load(cookies[:geo_location])) if cookies[:geo_location]
+      return GeoLoc.new(JSON.parse(cookies[:geo_location])) if cookies[:geo_location]
       location = Geocoders::MultiGeocoder.geocode(get_ip_address)
       return location.success ? location : nil
     end
