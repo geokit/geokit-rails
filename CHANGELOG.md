@@ -1,3 +1,8 @@
+## 2.5.0
+
+* Fixed dangerous YAML loading vulnerability
+* Rebuilt integration tests
+
 ## 2.3.2
 
 * Fix sqlite3 adapter error
