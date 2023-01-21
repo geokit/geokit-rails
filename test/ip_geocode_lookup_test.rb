@@ -1,32 +1,6 @@
 require 'test_helper'
 
-module TestApp
-  class Application < Rails::Application
-  end
-end
-
-class ApplicationController < ActionController::Base
-end
-class LocationawareController < ApplicationController #:nodoc: all
-  geocode_ip_address
-  
-  def index
-    render :nothing => true
-  end
-  
-  def rescue_action(e) raise e end; 
-end
-
-TestApp::Application.routes.draw do
-  get "/", controller: :Locationaware, action: :index
-  match ':controller(/:action(/:id(.:format)))', via: [:get, :post]
-end
-
-# class ActionController::TestRequest #:nodoc: all
-#   attr_accessor :remote_ip
-# end
-
-class IpGeocodeLookupTest < ActionController::TestCase
+class IpGeocodeLookupTest < ActiveSupport::TestCase
   tests LocationAwareController
   
   def setup

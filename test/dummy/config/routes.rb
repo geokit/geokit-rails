@@ -3,4 +3,6 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "articles#index"
+  # get "/", controller: :LocationAware, action: :index
+  match ':controller(/:action(/:id(.:format)))', via: [:get, :post]
 end
