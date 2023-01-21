@@ -71,7 +71,7 @@ module Geokit
       end
 
       def with_latlng
-        where("#{qualified_lat_column_name} IS NOT NULL AND #{qualified_lng_column_name} IS NOT NULL")
+        where("?.? IS NOT NULL AND ?.? IS NOT NULL", table_name, lat_column_name, table_name, lng_column_name)
       end
 
       def closest(options = {})
