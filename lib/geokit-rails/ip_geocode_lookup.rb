@@ -12,11 +12,7 @@ module Geokit
     # Class method to mix into active record.
     module ClassMethods # :nodoc:
       def geocode_ip_address(filter_options = {})
-        if respond_to? :before_action
-          before_action :store_ip_location, filter_options
-        else
-          before_filter :store_ip_location, filter_options
-        end
+        before_action :store_ip_location, filter_options
       end
     end
 

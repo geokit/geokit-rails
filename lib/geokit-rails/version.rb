@@ -1,3 +1,3 @@
 module GeokitRails
-  VERSION = "2.4.0.pre"
+  VERSION = "2.5.0"
 end
