@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov-rcov"
   spec.add_development_dependency 'net-http'
   spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rexml'
   spec.add_development_dependency 'test-unit'
   spec.add_development_dependency "mocha", "~> 0.9"
   spec.add_development_dependency 'coveralls_reborn'

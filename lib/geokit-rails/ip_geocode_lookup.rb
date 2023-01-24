@@ -1,4 +1,3 @@
-require 'yaml'
 require 'active_support/concern'
 
 module Geokit
