@@ -27,14 +27,23 @@ module Geokit
       end
 
       def within(distance, options = {})
+        origin  = extract_origin_from_options(options)
+        units   = extract_units_from_options(options)
+        formula = extract_formula_from_options(options)
+
         options[:within] = distance
         # Add bounding box to speed up SQL request.
         bounds = formulate_bounds_from_distance(
           options,
           normalize_point_to_lat_lng(options[:origin]),
           options[:units] || default_units)
-        with_latlng.where(bound_conditions(bounds)).
-          where(distance_conditions(options))
+
+        distance_column_name = distance_sql(origin, units, formula)
+
+        with_latlng
+          .select("#{distance_column_name} AS #{self.distance_column_name}, #{table_name}.*")
+          .where(bound_conditions(bounds))
+          .where(distance_conditions(options))
       end
       alias inside within
 
@@ -65,9 +74,9 @@ module Geokit
         units   = extract_units_from_options(options)
         formula = extract_formula_from_options(options)
         distance_column_name = distance_sql(origin, units, formula)
-        with_latlng.order(
-          Arel.sql(distance_column_name).send(options[:reverse] ? 'desc' : 'asc')
-        )
+        with_latlng
+          .select("#{distance_column_name} AS #{self.distance_column_name}, #{table_name}.*")
+          .order(Arel.sql(distance_column_name).send(options[:reverse] ? 'desc' : 'asc'))
       end
 
       def with_latlng
