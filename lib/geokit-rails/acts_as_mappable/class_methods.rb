@@ -7,7 +7,7 @@ module Geokit
       # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
       def geokit_finder_adapter
         @geokit_finder_adapter ||= begin
-                                     unless Adapters.const_defined?(connection.adapter_name.camelcase)
+                                     unless Adapters.const_defined?(connection.adapter_name.camelcase, false)
                                        filename = connection.adapter_name.downcase
                                        require File.join("geokit-rails", "adapters", filename)
                                      end
