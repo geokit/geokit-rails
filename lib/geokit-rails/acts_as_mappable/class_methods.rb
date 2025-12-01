@@ -7,17 +7,18 @@ module Geokit
       # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
       def geokit_finder_adapter
         @geokit_finder_adapter ||= begin
-                                     unless Adapters.const_defined?(connection.adapter_name.camelcase)
+                                     adapter_name = connection.adapter_name.camelcase
+                                     unless Adapters.const_defined?(adapter_name, false)
                                        filename = connection.adapter_name.downcase
                                        require File.join("geokit-rails", "adapters", filename)
                                      end
-                                     klass = Adapters.const_get(connection.adapter_name.camelcase)
+                                     klass = Adapters.const_get(adapter_name, false)
                                      if klass.class == Module
                                        # For some reason Mysql2 adapter was defined in Adapters.constants but was Module instead of a Class
                                        filename = connection.adapter_name.downcase
                                        require File.join("geokit-rails", "adapters", filename)
                                        # Re-init the klass after require
-                                       klass = Adapters.const_get(connection.adapter_name.camelcase)
+                                       klass = Adapters.const_get(adapter_name, false)
                                      end
                                      klass.load(self) unless klass.loaded || skip_loading
                                      klass.new(self)
