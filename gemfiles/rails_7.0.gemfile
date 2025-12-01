@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+group :development, :test do
+  gem 'activerecord', '~> 7.0'
+  gem 'sqlite3', '~> 1.4'
+end
+
+gemspec :path => "../"

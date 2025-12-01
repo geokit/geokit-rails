@@ -19,11 +19,15 @@ ADAPTER = ENV['DB'] || 'sqlite'
 $LOAD_PATH << (PLUGIN_ROOT + 'lib')
 $LOAD_PATH << (PLUGIN_ROOT + 'test/models')
 
+require 'erb'
+
 config_file = PLUGIN_ROOT + 'test/database.yml'
+config_content = ERB.new(IO.read(config_file)).result
 if defined?(YAML.safe_load)
-  db_config   = YAML.safe_load(IO.read(config_file), aliases: true)
+  db_config = YAML.safe_load(config_content, aliases: true)
 else
-  db_config   = YAML::load(IO.read(config_file))
+  # Fallback for older Ruby versions that don't support YAML.safe_load
+  db_config = YAML.load(config_content) # rubocop:disable Security/YAMLLoad
 end
 logger_file = PLUGIN_ROOT + "test/#{ADAPTER}-debug.log"
 schema_file = PLUGIN_ROOT + 'test/schema.rb'

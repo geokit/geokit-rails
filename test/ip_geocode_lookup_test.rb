@@ -30,12 +30,16 @@ class IpGeocodeLookupTest < ActionDispatch::IntegrationTest#ActiveSupport::TestC
   end
   
   def test_location_in_cookie
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with('good ip')
+                                    .returns(@success)
     get '/cookietest'
     assert_not_nil cookies[:geo_location]
     assert_equal @success.to_json, cookies[:geo_location]
   end
 
   def test_location_in_session
+    Geokit::Geocoders::MultiGeocoder.expects(:geocode).with('good ip')
+                                    .returns(@success)
     get '/sessiontest'
     assert_response :success
     assert_equal @success, Geokit::GeoLoc.new(JSON.parse(session[:geo_location]).transform_keys(&:to_sym))

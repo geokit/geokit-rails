@@ -23,7 +23,6 @@ unless ENV['COVERAGE'] == 'off'
   COVERAGE_THRESHOLD = 35
   require 'simplecov'
   require 'simplecov-rcov'
-  gem 'coveralls_reborn', '~> 0.26.0'
   require 'coveralls'
   Coveralls.wear!
 
@@ -60,14 +59,20 @@ class GeokitTestCase < ActiveSupport::TestCase
   rescue NameError
     puts "You appear to be using a pre-2.3 version of Rails. No need to include ActiveRecord::TestFixtures."
   end
-  
-  self.fixture_path = (PLUGIN_ROOT + 'test/fixtures').to_s
+
+  # Rails 7.1+ uses fixture_paths instead of fixture_path
+  if respond_to?(:fixture_paths=)
+    self.fixture_paths = [(PLUGIN_ROOT + 'test/fixtures').to_s]
+  else
+    self.fixture_path = (PLUGIN_ROOT + 'test/fixtures').to_s
+  end
+
   if Rails::VERSION::MAJOR >= 5
     self.use_transactional_tests = true
   else
     self.use_transactional_fixtures = true
   end
   self.use_instantiated_fixtures  = false
-  
-  fixtures :all 
+
+  fixtures :all
 end

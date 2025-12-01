@@ -1,20 +1,20 @@
 base: &base
-  host: localhost
-  username: tests
-  password: 
+  host: <%= ENV.fetch('DB_HOST', 'localhost') %>
+  username: <%= ENV.fetch('DB_USERNAME', 'tests') %>
+  password: <%= ENV.fetch('DB_PASSWORD', '') %>
 
 mysql:
-  adapter: mysql
-  database: geokit_rails_tests
+  adapter: mysql2
+  database: <%= ENV.fetch('DB_NAME', 'geokit_rails_tests') %>
   <<: *base
 
 mysql2spatial:
   adapter: mysql2spatial
-  database: geokit_rails_tests
+  database: <%= ENV.fetch('DB_NAME', 'geokit_rails_tests') %>
 
 postgresql:
   adapter: postgresql
-  database: geokit_rails_tests
+  database: <%= ENV.fetch('DB_NAME', 'geokit_rails_tests') %>
   <<: *base
 
 sqlserver:
