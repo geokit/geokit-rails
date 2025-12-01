@@ -88,6 +88,55 @@ jobs:
       - name: Run tests
         run: bundle exec rake test
 
+  test-trilogy:
+    name: Ruby ${{ matrix.ruby }} / ${{ matrix.gemfile }} / Trilogy
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby: '3.2'
+            gemfile: rails_7.1
+          - ruby: '3.3'
+            gemfile: rails_7.2
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: tests
+          MYSQL_PASSWORD: tests
+          MYSQL_DATABASE: geokit_rails_tests
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB: trilogy
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: tests
+      DB_PASSWORD: tests
+      DB_NAME: geokit_rails_tests
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Run tests
+        run: bundle exec rake test
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

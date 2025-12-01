@@ -26,3 +26,8 @@ sqlserver:
 sqlite:
   adapter: sqlite3
   database: test/test.sqlite3
+
+trilogy:
+  adapter: trilogy
+  database: <%= ENV.fetch('DB_NAME', 'geokit_rails_tests') %>
+  <<: *base

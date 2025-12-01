@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "mocha", "~> 0.9"
   spec.add_development_dependency 'coveralls_reborn'
   spec.add_development_dependency "mysql2", ">= 0.2"
+  spec.add_development_dependency "trilogy"
   # spec.add_development_dependency "activerecord-mysql2spatial-adapter"
   spec.add_development_dependency "pg", ">= 0.10"
   spec.add_development_dependency "sqlite3"
