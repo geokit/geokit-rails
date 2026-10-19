@@ -1,6 +1,6 @@
 ## Unreleased
 
-* Run the test suite on GitHub Actions against Ruby 3.2 to 4.0, Rails 7.1 to 8.1, SQLite and MySQL
+* Run the test suite on GitHub Actions against Ruby 3.2 to 4.0, Rails 7.1 to 8.1, SQLite, MySQL and PostgreSQL
 * Only look up finder adapters in `Geokit::Adapters`, so a top-level constant with the same name defined by another gem isn't mistaken for one
 * Fix `in_range` returning records without coordinates on PostgreSQL
 

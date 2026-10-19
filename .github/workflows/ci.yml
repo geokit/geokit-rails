@@ -78,3 +78,48 @@ jobs:
           bundler-cache: true
 
       - run: bundle exec rake test
+
+  postgresql:
+    name: Ruby ${{ matrix.ruby }} / ${{ matrix.gemfile }} / postgresql
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby: '3.2'
+            gemfile: rails7.1
+          - ruby: '4.0'
+            gemfile: rails8.1
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: tests
+          POSTGRES_PASSWORD: tests
+          POSTGRES_DB: geokit_rails_tests
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
+      DB: postgresql
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: tests
+      DB_PASSWORD: tests
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - run: bundle exec rake test
