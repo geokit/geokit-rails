@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        db: [mysql]
+        db: [mysql, trilogy]
         ruby: ['3.2', '4.0']
         include:
           - ruby: '3.2'

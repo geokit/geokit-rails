@@ -11,6 +11,11 @@ mysql:
   database: geokit_rails_tests
   <<: *base
 
+trilogy:
+  adapter: trilogy
+  database: geokit_rails_tests
+  <<: *base
+
 mysql2spatial:
   adapter: mysql2spatial
   database: geokit_rails_tests

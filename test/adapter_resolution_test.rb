@@ -1,14 +1,21 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-# Defines the top-level ::Mysql2 module, which must not be mistaken for the
-# Geokit adapter of the same name.
+# Define the top-level ::Mysql2 and ::Trilogy constants, which must not be
+# mistaken for the Geokit adapters of the same name.
 require 'mysql2'
+require 'trilogy'
 
 class AdapterResolutionTest < GeokitTestCase
   def test_mysql2_adapter
     adapter = finder_adapter_for('Mysql2')
     assert_instance_of Geokit::Adapters::Mysql2, adapter
+  end
+
+  def test_trilogy_adapter
+    adapter = finder_adapter_for('Trilogy')
+    assert_instance_of Geokit::Adapters::Trilogy, adapter
+    assert_kind_of Geokit::Adapters::MySQL, adapter
   end
 
   # Database gems can define a top-level class named like an adapter, as the
