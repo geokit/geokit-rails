@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 group :development, :test do
-  gem 'activerecord', '~> 5.0'
+  gem 'activerecord', '~> 7.2.0'
 end
 
 gemspec :path => "../"

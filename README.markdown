@@ -2,7 +2,7 @@ Geokit Rails
 ============
 
 [![Gem Version](https://badge.fury.io/rb/geokit-rails.svg)](http://badge.fury.io/rb/geokit-rails)
-[![Build Status](https://travis-ci.org/geokit/geokit-rails.svg?branch=master)](https://travis-ci.org/geokit/geokit-rails)
+[![CI](https://github.com/geokit/geokit-rails/actions/workflows/ci.yml/badge.svg)](https://github.com/geokit/geokit-rails/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/geokit/geokit-rails/badge.svg?branch=master)](https://coveralls.io/r/geokit/geokit-rails)
 [![Code Climate](https://codeclimate.com/github/geokit/geokit-rails.svg)](https://codeclimate.com/github/geokit/geokit-rails)
 
@@ -696,7 +696,7 @@ end
 
 ## Database Compatability
 
-* Geokit works with MySQL (tested with version 5.0.41), PostgreSQL (tested with version 8.2.6) and Microsoft SQL Server (tested with 2000).
+* Geokit works with MySQL, PostgreSQL, SQLite and Microsoft SQL Server. The test suite runs against SQLite and MySQL 8.4.
 * Geokit is known to *not* work with Postgres versions under 8.1 -- it uses the least() function.
 
 

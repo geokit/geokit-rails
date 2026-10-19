@@ -1,12 +1,13 @@
 # Bundler
 # http://yehudakatz.com/2010/12/16/clarifying-the-roles-of-the-gemspec-and-gemfile/
 Gemfile.lock
+gemfiles/*.lock
 
 # Test log files
 test/*-debug.log
 
 # SQLite Test DB
-test/test.sqlite3
+test/test.sqlite3*
 
 # SVN
 .svn
@@ -35,3 +36,9 @@ doc
 
 # For MacOS:
 .DS_Store
+
+# Dummy app artifacts
+test/dummy/db/*.sqlite3*
+test/dummy/test/*.sqlite3*
+test/dummy/log/*.log
+test/dummy/tmp/

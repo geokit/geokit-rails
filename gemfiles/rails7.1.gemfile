@@ -1,0 +1,11 @@
+source 'https://rubygems.org'
+
+group :development, :test do
+  gem 'activerecord', '~> 7.1.0'
+  # Rails 7.1's sqlite3 adapter requires sqlite3 1.x
+  gem 'sqlite3', '~> 1.4'
+  # Rails 7.1's test runner doesn't support minitest 6
+  gem 'minitest', '< 6'
+end
+
+gemspec :path => "../"
