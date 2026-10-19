@@ -173,6 +173,10 @@ class ActsAsMappableTest < GeokitTestCase
     assert_equal 6, locations.count
   end
 
+  def test_find_range_skips_locations_without_coordinates
+    assert_not_includes Location.in_range(0..10, :origin => @loc_a), locations(:g)
+  end
+
   def test_find_nearest
     assert_equal @loc_a, Location.nearest(:origin => @loc_a).first
   end

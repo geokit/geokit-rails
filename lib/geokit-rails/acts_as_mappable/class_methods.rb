@@ -38,7 +38,7 @@ module Geokit
       def in_range(range, options = {})
         options[:range] = range
         #geo_scope(options)
-        where(distance_conditions(options))
+        with_latlng.where(distance_conditions(options))
       end
 
       def in_bounds(bounds, options = {})
