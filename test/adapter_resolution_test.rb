@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 # Defines the top-level ::Mysql2 module, which must not be mistaken for the
 # Geokit adapter of the same name.
@@ -20,16 +22,21 @@ class AdapterResolutionTest < GeokitTestCase
   end
 
   def test_unsupported_adapter
-    assert_raises(Geokit::ActsAsMappable::UnsupportedAdapter) { finder_adapter_for('Unknown') }
+    assert_raises(Geokit::ActsAsMappable::UnsupportedAdapter) do
+      finder_adapter_for('Unknown')
+    end
   end
 
   private
 
-  # Resolves the adapter on a throwaway model whose connection reports the given
-  # adapter name, leaving Location's real connection and memoized adapter untouched.
+  # Resolves the adapter on a throwaway model whose connection reports the
+  # given adapter name, leaving Location's real connection and memoized
+  # adapter untouched.
   def finder_adapter_for(adapter_name)
     fake_connection = Struct.new(:adapter_name).new(adapter_name)
-    model = Class.new(Location) { define_singleton_method(:connection) { fake_connection } }
+    model = Class.new(Location) do
+      define_singleton_method(:connection) { fake_connection }
+    end
     model.geokit_finder_adapter
   end
 end

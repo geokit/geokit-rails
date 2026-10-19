@@ -7,8 +7,8 @@ module Geokit
       # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
       def geokit_finder_adapter
         @geokit_finder_adapter ||= begin
-                                     load_adapter(connection.adapter_name)
-                                     klass = Adapters.const_get(connection.adapter_name.camelcase, false)
+                                     adapter_name = connection.adapter_name
+                                     klass = load_adapter(adapter_name)
                                      klass.load(self) unless klass.loaded || skip_loading
                                      klass.new(self)
                                    rescue LoadError
@@ -123,14 +123,16 @@ module Geokit
 
       private
 
-      # Requires the adapter's file unless Geokit::Adapters already defines it. Only
-      # Geokit::Adapters is checked, so a top-level constant with the same name, such
-      # as the mysql2 gem's Mysql2 module, isn't mistaken for the adapter.
+      # Returns the adapter class from Geokit::Adapters, requiring its file
+      # first if needed. Only Geokit::Adapters is checked, so a top-level
+      # constant with the same name, such as the mysql2 gem's Mysql2 module,
+      # isn't mistaken for the adapter.
       def load_adapter(adapter_name)
-        return if Adapters.const_defined?(adapter_name.camelcase, false)
-
-        filename = adapter_name.downcase
-        require File.join('geokit-rails', 'adapters', filename)
+        class_name = adapter_name.camelcase
+        unless Adapters.const_defined?(class_name, false)
+          require File.join('geokit-rails', 'adapters', adapter_name.downcase)
+        end
+        Adapters.const_get(class_name, false)
       end
 
       # Override ActiveRecord::Base.relation to return an instance of Geokit::ActsAsMappable::Relation.
