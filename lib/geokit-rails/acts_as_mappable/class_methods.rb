@@ -7,18 +7,8 @@ module Geokit
       # A proxy to an instance of a finder adapter, inferred from the connection's adapter.
       def geokit_finder_adapter
         @geokit_finder_adapter ||= begin
-                                     unless Adapters.const_defined?(connection.adapter_name.camelcase)
-                                       filename = connection.adapter_name.downcase
-                                       require File.join("geokit-rails", "adapters", filename)
-                                     end
-                                     klass = Adapters.const_get(connection.adapter_name.camelcase)
-                                     if klass.class == Module
-                                       # For some reason Mysql2 adapter was defined in Adapters.constants but was Module instead of a Class
-                                       filename = connection.adapter_name.downcase
-                                       require File.join("geokit-rails", "adapters", filename)
-                                       # Re-init the klass after require
-                                       klass = Adapters.const_get(connection.adapter_name.camelcase)
-                                     end
+                                     load_adapter(connection.adapter_name)
+                                     klass = Adapters.const_get(connection.adapter_name.camelcase, false)
                                      klass.load(self) unless klass.loaded || skip_loading
                                      klass.new(self)
                                    rescue LoadError
@@ -132,6 +122,16 @@ module Geokit
       end
 
       private
+
+      # Requires the adapter's file unless Geokit::Adapters already defines it. Only
+      # Geokit::Adapters is checked, so a top-level constant with the same name, such
+      # as the mysql2 gem's Mysql2 module, isn't mistaken for the adapter.
+      def load_adapter(adapter_name)
+        return if Adapters.const_defined?(adapter_name.camelcase, false)
+
+        filename = adapter_name.downcase
+        require File.join('geokit-rails', 'adapters', filename)
+      end
 
       # Override ActiveRecord::Base.relation to return an instance of Geokit::ActsAsMappable::Relation.
       # TODO: Do we need to override JoinDependency#relation too?
