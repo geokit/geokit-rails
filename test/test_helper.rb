@@ -17,7 +17,7 @@ end
 require 'pathname'
 
 require 'boot'
-require 'mocha/setup'
+require 'mocha/minitest'
 
 unless ENV['COVERAGE'] == 'off'
   COVERAGE_THRESHOLD = 35

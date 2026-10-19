@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'net-http'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rexml'
-  spec.add_development_dependency "mocha", "~> 0.9"
+  spec.add_development_dependency "mocha", "~> 2.0"
   spec.add_development_dependency 'coveralls_reborn'
   spec.add_development_dependency "mysql2", ">= 0.2"
   # spec.add_development_dependency "activerecord-mysql2spatial-adapter"
