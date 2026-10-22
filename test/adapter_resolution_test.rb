@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-# Defines the top-level ::Mysql2 module, which must not be mistaken for the
-# Geokit adapter of the same name.
-require 'mysql2'
 
 class AdapterResolutionTest < GeokitTestCase
   def test_mysql2_adapter
+    begin
+      # Defines the top-level ::Mysql2 module, which must not be mistaken for
+      # the Geokit adapter of the same name.
+      require 'mysql2'
+    rescue LoadError
+      skip 'the mysql2 gem cannot be loaded here'
+    end
     adapter = finder_adapter_for('Mysql2')
     assert_instance_of Geokit::Adapters::Mysql2, adapter
   end
