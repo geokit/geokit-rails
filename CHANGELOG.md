@@ -1,4 +1,4 @@
-## Unreleased
+## 2.5.2
 
 * Add support for the Trilogy MySQL adapter
 
