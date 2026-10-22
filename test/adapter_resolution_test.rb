@@ -1,18 +1,28 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-# Define the top-level ::Mysql2 and ::Trilogy constants, which must not be
-# mistaken for the Geokit adapters of the same name.
-require 'mysql2'
-require 'trilogy'
 
 class AdapterResolutionTest < GeokitTestCase
   def test_mysql2_adapter
+    begin
+      # Defines the top-level ::Mysql2 module, which must not be mistaken for
+      # the Geokit adapter of the same name.
+      require 'mysql2'
+    rescue LoadError
+      skip 'the mysql2 gem cannot be loaded here'
+    end
     adapter = finder_adapter_for('Mysql2')
     assert_instance_of Geokit::Adapters::Mysql2, adapter
   end
 
   def test_trilogy_adapter
+    begin
+      # Defines the top-level ::Trilogy class, which must not be mistaken for
+      # the Geokit adapter of the same name.
+      require 'trilogy'
+    rescue LoadError
+      skip 'the trilogy gem cannot be loaded here'
+    end
     adapter = finder_adapter_for('Trilogy')
     assert_instance_of Geokit::Adapters::Trilogy, adapter
     assert_kind_of Geokit::Adapters::MySQL, adapter
