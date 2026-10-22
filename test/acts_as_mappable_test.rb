@@ -173,6 +173,14 @@ class ActsAsMappableTest < GeokitTestCase
     assert_equal 6, locations.count
   end
 
+  # MockOrganization has no lat/lng columns of its own; they come from
+  # mock_addresses through the join.
+  def test_find_range_with_through
+    organizations = MockOrganization.joins(:mock_address)
+                                    .in_range(0..3, origin: @loc_a)
+    assert_equal [mock_organizations(:barnes_and_noble)], organizations.to_a
+  end
+
   def test_find_nearest
     assert_equal @loc_a, Location.nearest(:origin => @loc_a).first
   end
