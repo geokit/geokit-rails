@@ -696,7 +696,7 @@ end
 
 ## Database Compatability
 
-* Geokit works with MySQL, PostgreSQL, SQLite and Microsoft SQL Server. The test suite runs against SQLite, MySQL 8.4 and PostgreSQL 18.
+* Geokit works with MySQL (through the mysql2 or Trilogy adapters), PostgreSQL, SQLite and Microsoft SQL Server. The test suite runs against SQLite, MySQL 8.4 and PostgreSQL 18.
 * Geokit is known to *not* work with Postgres versions under 8.1 -- it uses the least() function.
 
 

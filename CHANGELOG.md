@@ -1,3 +1,7 @@
+## Unreleased
+
+* Add support for the Trilogy MySQL adapter
+
 ## 2.5.1
 
 * Run the test suite on GitHub Actions against Ruby 3.2 to 4.0, Rails 7.1 to 8.1, SQLite, MySQL and PostgreSQL
