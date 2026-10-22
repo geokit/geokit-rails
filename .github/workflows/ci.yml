@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  sqlite:
+    name: Ruby ${{ matrix.ruby }} / ${{ matrix.gemfile }} / sqlite
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ['3.2', '3.3', '3.4', '4.0']
+        gemfile: [rails7.1, rails7.2, rails8.0, rails8.1]
+
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - run: bundle exec rake test
+
+  mysql:
+    name: Ruby ${{ matrix.ruby }} / ${{ matrix.gemfile }} / ${{ matrix.db }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        db: [mysql]
+        ruby: ['3.2', '4.0']
+        include:
+          - ruby: '3.2'
+            gemfile: rails7.1
+          - ruby: '4.0'
+            gemfile: rails8.1
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: tests
+          MYSQL_PASSWORD: tests
+          MYSQL_DATABASE: geokit_rails_tests
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
+      DB: ${{ matrix.db }}
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: tests
+      DB_PASSWORD: tests
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - run: bundle exec rake test

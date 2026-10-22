@@ -1,10 +1,13 @@
 base: &base
-  host: localhost
-  username: tests
-  password: 
+  host: <%= ENV.fetch('DB_HOST', 'localhost') %>
+<% if ENV['DB_PORT'] %>
+  port: <%= ENV['DB_PORT'] %>
+<% end %>
+  username: <%= ENV.fetch('DB_USERNAME', 'tests') %>
+  password: <%= ENV['DB_PASSWORD'] %>
 
 mysql:
-  adapter: mysql
+  adapter: mysql2
   database: geokit_rails_tests
   <<: *base
 
