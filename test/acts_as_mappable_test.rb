@@ -173,6 +173,11 @@ class ActsAsMappableTest < GeokitTestCase
     assert_equal 6, locations.count
   end
 
+  def test_find_range_skips_locations_without_coordinates
+    nowhere = locations(:g)
+    assert_not_includes Location.in_range(0..10, origin: @loc_a), nowhere
+  end
+
   # MockOrganization has no lat/lng columns of its own; they come from
   # mock_addresses through the join.
   def test_find_range_with_through

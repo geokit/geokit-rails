@@ -38,7 +38,7 @@ module Geokit
       def in_range(range, options = {})
         options[:range] = range
         #geo_scope(options)
-        where(distance_conditions(options))
+        with_latlng.where(distance_conditions(options))
       end
 
       def in_bounds(bounds, options = {})
@@ -61,7 +61,9 @@ module Geokit
       end
 
       def with_latlng
-        where(arel_table[lat_column_name].not_eq(nil).and(arel_table[lng_column_name].not_eq(nil)))
+        lat = Arel.sql(qualified_lat_column_name)
+        lng = Arel.sql(qualified_lng_column_name)
+        where(lat.not_eq(nil).and(lng.not_eq(nil)))
       end
 
       def closest(options = {})
